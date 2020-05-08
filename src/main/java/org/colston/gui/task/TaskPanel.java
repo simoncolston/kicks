@@ -11,8 +11,8 @@ import org.colston.i18n.Message;
 
 public class TaskPanel extends JLayeredPane
 {
-	private static final Integer BASE_LAYER = new Integer(0);
-	private static final Integer GLASS_LAYER = new Integer(1);
+	private static final Integer BASE_LAYER = Integer.valueOf(0);
+	private static final Integer GLASS_LAYER = Integer.valueOf(1);
 
 	private final GlassPane glass;
 	private final JComponent component;

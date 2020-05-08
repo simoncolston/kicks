@@ -48,7 +48,7 @@ public class ActionManager
 	{
 		try
 		{
-			T a = cls.newInstance();
+			T a = cls.getDeclaredConstructor().newInstance();
 			initialiseResources(a);
 			return a;
 		} catch (Exception e)
@@ -87,7 +87,7 @@ public class ActionManager
 			if (!mnemonicName.equalsIgnoreCase(s) && s.length() > 0)
 			{
 				// The mnemonic was found and is not zero length
-				a.putValue(Action.MNEMONIC_KEY, new Integer(s.codePointAt(0)));
+				a.putValue(Action.MNEMONIC_KEY, Integer.valueOf(s.codePointAt(0)));
 			}
 			a.putValue(Action.ACCELERATOR_KEY,
 					KeyStroke.getKeyStroke(Messages.get(a.getClass(), mPrefix + ".shortcut.key")));
