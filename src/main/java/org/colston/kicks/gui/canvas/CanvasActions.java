@@ -237,11 +237,10 @@ final class CanvasActions
 	
 	static void initialise(CanvasControl control)
 	{
-		for (CanvasAction ca : actions.values())
-		{
+		actions.values().forEach(ca -> {
 			ActionManager.initialiseResources(ca);
 			ca.setControl(control);
-		}
+		});
 	}
 
 	static void addPrefixToInputActionMaps(JComponent component, String prefix)
@@ -279,17 +278,11 @@ final class CanvasActions
 
 	static void disableAll()
 	{
-		for (CanvasAction a : actions.values())
-		{
-			a.setEnabled(false);
-		}
+		actions.values().forEach(a -> a.setEnabled(false));
 	}
 
 	static void enableAll()
 	{
-		for (CanvasAction a : actions.values())
-		{
-			a.setEnabled(true);
-		}
+		actions.values().forEach(a -> a.setEnabled(true));
 	}
 }

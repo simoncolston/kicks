@@ -255,14 +255,8 @@ class CanvasControl implements Canvas
 		@Override
 		public void taskStarted()
 		{
-			for (Action a : editActions)
-			{
-				a.setEnabled(false);
-			}
-			for (Action a : documentActions)
-			{
-				a.setEnabled(false);
-			}
+			editActions.forEach(a -> a.setEnabled(false));
+			documentActions.forEach(a -> a.setEnabled(false));
 			CanvasActions.disableAll();
 		}
 
@@ -270,10 +264,7 @@ class CanvasControl implements Canvas
 		public void taskEnded()
 		{
 			updateUndoActions();
-			for (Action a : documentActions)
-			{
-				a.setEnabled(true);
-			}
+			documentActions.forEach(a -> a.setEnabled(true));
 			CanvasActions.enableAll();
 		}
 

@@ -178,7 +178,6 @@ class CanvasPanel extends JPanel implements Printable
 		g2.setColor(BORDER_BOX_COLOUR);
 		while (x > 0)
 		{
-
 			x -= COLUMN_SPACE + COLUMN_WIDTH;
 			g2.drawRect(x, y, COLUMN_WIDTH, CANVAS_HEIGHT);
 			while (y < CANVAS_HEIGHT)
@@ -239,7 +238,6 @@ class CanvasPanel extends JPanel implements Printable
 				y = CANVAS_HEIGHT - TITLE_MARGIN - (sfont.getSize() * tchars.length);
 				for (int i = 0; i < tchars.length; i++)
 				{
-					
 					g2.drawChars(tchars, i, 1, x, y);
 					y += sfont.getSize();
 				}
