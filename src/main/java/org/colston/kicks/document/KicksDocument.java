@@ -262,7 +262,7 @@ public class KicksDocument
 		{
 			Lyric l = lyrics.set(listIndex, lyric);
 			edit = new ReplaceEdit<>(lyric.getIndex(), lyric.getOffset(), lyrics, listIndex, l, 
-					"undo.replace.lyric");
+					Messages.get(getClass(), "undo.replace.lyric"));
 		}
 		fireUndoableEditHappened(new UndoableEditEvent(this, edit));
 		fireDocumentUpdated();
@@ -276,7 +276,8 @@ public class KicksDocument
 		if (listIndex >= 0)
 		{
 			Lyric l = lyrics.remove(listIndex);
-			UndoableEdit edit = new RemoveEdit<>(index, offset, lyrics, listIndex, l, "undo.remove.lyric");
+			UndoableEdit edit = new RemoveEdit<>(index, offset, lyrics, listIndex, l, 
+					Messages.get(getClass(), "undo.remove.lyric"));
 			fireUndoableEditHappened(new UndoableEditEvent(this, edit));
 			fireDocumentUpdated();
 		}
@@ -298,12 +299,14 @@ public class KicksDocument
 		{
 			listIndex = -listIndex - 1;
 			repeats.add(listIndex, repeat);
-			edit = new AddEdit<>(repeat.getIndex(), repeat.getOffset(), repeats, listIndex, "undo.add.repeat");
+			edit = new AddEdit<>(repeat.getIndex(), repeat.getOffset(), repeats, listIndex, 
+					Messages.get(getClass(), "undo.add.repeat"));
 		} 
 		else
 		{
 			Repeat r = repeats.set(listIndex, repeat);
-			edit = new ReplaceEdit<>(r.getIndex(), r.getOffset(), repeats, listIndex, r, "undo.replace.repeat");
+			edit = new ReplaceEdit<>(r.getIndex(), r.getOffset(), repeats, listIndex, r, 
+					Messages.get(getClass(), "undo.replace.repeat"));
 		}
 		fireUndoableEditHappened(new UndoableEditEvent(this, edit));
 		fireDocumentUpdated();
@@ -317,7 +320,8 @@ public class KicksDocument
 		if (listIndex >= 0)
 		{
 			Repeat r = repeats.remove(listIndex);
-			UndoableEdit edit = new RemoveEdit<>(index, offset, repeats, listIndex, r, "undo.remove.repeat");
+			UndoableEdit edit = new RemoveEdit<>(index, offset, repeats, listIndex, r, 
+					Messages.get(getClass(), "undo.remove.repeat"));
 			fireUndoableEditHappened(new UndoableEditEvent(this, edit));
 			fireDocumentUpdated();
 		}
