@@ -20,7 +20,7 @@
 
 	<build>
 
-		<finalName>jsonutils</finalName>
+		<finalName>kicks-base</finalName>
 
 		<plugins>
 			<!-- Allow use of different compilers -->
