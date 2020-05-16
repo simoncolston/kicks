@@ -6,9 +6,9 @@ import javax.swing.AbstractAction;
 import javax.swing.JOptionPane;
 
 import org.colston.gui.actions.ActionManager;
-import org.colston.i18n.Messages;
 import org.colston.kicks.KicksMain;
 import org.colston.kicks.document.KicksDocument;
+import org.colston.sclib.i18n.Messages;
 
 public class Tuning extends AbstractAction
 {

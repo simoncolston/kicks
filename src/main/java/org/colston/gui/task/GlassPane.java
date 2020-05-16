@@ -13,8 +13,8 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 
-import org.colston.i18n.Message;
-import org.colston.i18n.Messages;
+import org.colston.sclib.i18n.Message;
+import org.colston.sclib.i18n.Messages;
 
 class GlassPane extends JPanel
 {

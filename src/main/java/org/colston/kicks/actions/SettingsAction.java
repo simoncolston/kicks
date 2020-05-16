@@ -19,9 +19,9 @@ import javax.swing.SpringLayout;
 import javax.swing.WindowConstants;
 
 import org.colston.gui.actions.ActionManager;
-import org.colston.i18n.Messages;
 import org.colston.kicks.KicksMain;
 import org.colston.kicks.Settings;
+import org.colston.sclib.i18n.Messages;
 import org.colston.utils.SpringUtilities;
 
 public class SettingsAction extends AbstractAction

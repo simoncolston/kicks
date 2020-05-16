@@ -8,7 +8,7 @@ import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.SwingWorker;
 
-import org.colston.i18n.Message;
+import org.colston.sclib.i18n.Message;
 
 public abstract class TaskWorker<T> extends SwingWorker<T, TaskProgressProvider>
 {

@@ -3,7 +3,7 @@ package org.colston.utils;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
-import org.colston.i18n.Messages;
+import org.colston.sclib.i18n.Messages;
 
 public class SimpleFileChooser extends JFileChooser
 {

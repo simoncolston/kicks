@@ -13,8 +13,8 @@ import javax.swing.AbstractAction;
 
 import org.colston.gui.actions.ActionManager;
 import org.colston.gui.task.TaskWorker;
-import org.colston.i18n.Message;
 import org.colston.kicks.KicksMain;
+import org.colston.sclib.i18n.Message;
 import org.colston.utils.Utils;
 
 public class Print extends AbstractAction

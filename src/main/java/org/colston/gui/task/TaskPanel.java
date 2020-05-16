@@ -7,7 +7,7 @@ import java.awt.event.ComponentEvent;
 import javax.swing.JComponent;
 import javax.swing.JLayeredPane;
 
-import org.colston.i18n.Message;
+import org.colston.sclib.i18n.Message;
 
 public class TaskPanel extends JLayeredPane
 {

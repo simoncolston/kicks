@@ -12,7 +12,7 @@ import javax.swing.Action;
 import javax.swing.ImageIcon;
 import javax.swing.KeyStroke;
 
-import org.colston.i18n.Messages;
+import org.colston.sclib.i18n.Messages;
 
 public class ActionManager
 {

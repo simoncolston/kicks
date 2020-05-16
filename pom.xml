@@ -86,6 +86,13 @@
 	</build>
 
 	<dependencies>
+
+		<dependency>
+			<groupId>org.colston.sclib</groupId>
+			<artifactId>sclib</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+
 		<dependency>
 			<groupId>jakarta.xml.bind</groupId>
 			<artifactId>jakarta.xml.bind-api</artifactId>

@@ -1,6 +1,6 @@
 package org.colston.gui.task;
 
-import org.colston.i18n.Message;
+import org.colston.sclib.i18n.Message;
 
 public interface TaskProgressProvider
 {

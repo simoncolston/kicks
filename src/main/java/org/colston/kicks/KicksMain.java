@@ -36,7 +36,6 @@ import org.colston.gui.actions.ActionProvider;
 import org.colston.gui.actions.ActionProviders;
 import org.colston.gui.task.TaskListener;
 import org.colston.gui.task.TaskListeners;
-import org.colston.i18n.Messages;
 import org.colston.kicks.actions.Open;
 import org.colston.kicks.actions.Print;
 import org.colston.kicks.actions.Quit;
@@ -44,10 +43,11 @@ import org.colston.kicks.actions.Save;
 import org.colston.kicks.actions.SaveAsPDF;
 import org.colston.kicks.actions.SettingsAction;
 import org.colston.kicks.document.persistence.DocumentStore;
-import org.colston.kicks.gui.Splash;
-import org.colston.kicks.gui.StatusPanel;
 import org.colston.kicks.gui.canvas.Canvas;
 import org.colston.kicks.gui.canvas.CanvasFactory;
+import org.colston.sclib.gui.Splash;
+import org.colston.sclib.gui.StatusPanel;
+import org.colston.sclib.i18n.Messages;
 import org.colston.utils.Utils;
 
 /**

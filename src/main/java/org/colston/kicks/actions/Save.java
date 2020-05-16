@@ -10,9 +10,9 @@ import javax.swing.AbstractAction;
 
 import org.colston.gui.actions.ActionManager;
 import org.colston.gui.task.TaskWorker;
-import org.colston.i18n.Message;
-import org.colston.i18n.Messages;
 import org.colston.kicks.KicksMain;
+import org.colston.sclib.i18n.Message;
+import org.colston.sclib.i18n.Messages;
 import org.colston.utils.Utils;
 
 public class Save extends AbstractAction
