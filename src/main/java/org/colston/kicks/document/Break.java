@@ -1,69 +1,58 @@
 package org.colston.kicks.document;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.*;
 
 @XmlAccessorType(XmlAccessType.NONE)
 @XmlType(
-propOrder = {
-		"type"
-})
-public class Break
-{
-	@XmlAttribute
-	private int index;
-	
-	@XmlElement
-	private BreakType type;
-	
-	@SuppressWarnings("unused")
-	private Break()
-	{
-	}
-	
-	public Break(int index, BreakType type)
-	{
-		this.index = index;
-		this.type = type;
-	}
+        propOrder = {
+                "type"
+        })
+public class Break {
+    @XmlAttribute
+    private int index;
 
-	public int getIndex()
-	{
-		return index;
-	}
+    @XmlElement
+    private BreakType type;
 
-	public BreakType getType()
-	{
-		return type;
-	}
+    @SuppressWarnings("unused")
+    private Break() {
+    }
 
-	@Override
-	public int hashCode()
-	{
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + index;
-		result = prime * result + ((type == null) ? 0 : type.hashCode());
-		return result;
-	}
+    public Break(int index, BreakType type) {
+        this.index = index;
+        this.type = type;
+    }
 
-	@Override
-	public boolean equals(Object obj)
-	{
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		Break other = (Break) obj;
-		if (index != other.index)
-			return false;
-		if (type != other.type)
-			return false;
-		return true;
-	}
+    public int getIndex() {
+        return index;
+    }
+
+    public BreakType getType() {
+        return type;
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + index;
+        result = prime * result + ((type == null) ? 0 : type.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        Break other = (Break) obj;
+        if (index != other.index)
+            return false;
+        if (type != other.type)
+            return false;
+        return true;
+    }
 }

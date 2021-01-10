@@ -1,18 +1,5 @@
 package org.colston.kicks.gui.canvas;
 
-import java.awt.Component;
-import java.awt.print.Printable;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-import javax.swing.Action;
-import javax.swing.JComponent;
-import javax.swing.JPanel;
-import javax.swing.event.UndoableEditEvent;
-import javax.swing.event.UndoableEditListener;
-import javax.swing.undo.UndoManager;
-
 import org.colston.gui.actions.ActionManager;
 import org.colston.gui.actions.ActionProvider;
 import org.colston.gui.task.TaskListener;
@@ -24,272 +11,238 @@ import org.colston.kicks.actions.Undo;
 import org.colston.kicks.document.KicksDocument;
 import org.colston.kicks.document.KicksDocumentListener;
 
-class CanvasControl implements Canvas
-{
-	private KicksDocumentListener docListener = new KicksDocumentListener()
-	{
-		@Override
-		public void documentUpdated()
-		{
-			updateUndoActions();
-			canvasPanel.revalidate();
-			canvasPanel.repaint();
-		}
+import javax.swing.*;
+import javax.swing.event.UndoableEditEvent;
+import javax.swing.event.UndoableEditListener;
+import javax.swing.undo.UndoManager;
+import java.awt.*;
+import java.awt.print.Printable;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
-		@Override
-		public void locationUpdated(int index, int offset)
-		{
-			canvasPanel.setCursor(index, offset, true);
-		}
-	};
-	
-	private UndoableEditListener undoListener = new UndoableEditListener()
-	{
-		
-		@Override
-		public void undoableEditHappened(UndoableEditEvent e)
-		{
-			undo.addEdit(e.getEdit());
-		}
-	};
-	private CanvasActionProvider actionProvider = new CanvasActionProvider();
-	
-	private JComponent container;
-	private CanvasPanel canvasPanel;
-	private JComponent inputComponent;
-	private UndoManager undo = new UndoManager();
-	private KicksDocument savedDocument = null;
-	
-	CanvasControl(JPanel container, CanvasPanel canvasPanel, JComponent inputComponent)
-	{
-		this.container = container;
-		this.canvasPanel = canvasPanel;
-		this.inputComponent = inputComponent;
-	}
+class CanvasControl implements Canvas {
+    private KicksDocumentListener docListener = new KicksDocumentListener() {
+        @Override
+        public void documentUpdated() {
+            updateUndoActions();
+            canvasPanel.revalidate();
+            canvasPanel.repaint();
+        }
 
-	@Override
-	public void requestFocusInWindow()
-	{
-		canvasPanel.requestFocusInWindow();
-	}
+        @Override
+        public void locationUpdated(int index, int offset) {
+            canvasPanel.setCursor(index, offset, true);
+        }
+    };
 
-	@Override
-	public JComponent getContainer()
-	{
-		return container;
-	}
+    private UndoableEditListener undoListener = new UndoableEditListener() {
 
-	@Override
-	public JComponent getComponent()
-	{
-		return canvasPanel;
-	}
-	
-	@Override
-	public Component getInputComponent()
-	{
-		return inputComponent;
-	}
+        @Override
+        public void undoableEditHappened(UndoableEditEvent e) {
+            undo.addEdit(e.getEdit());
+        }
+    };
+    private CanvasActionProvider actionProvider = new CanvasActionProvider();
 
-	@Override
-	public ActionProvider getActionProvider()
-	{
-		return actionProvider;
-	}
+    private JComponent container;
+    private CanvasPanel canvasPanel;
+    private JComponent inputComponent;
+    private UndoManager undo = new UndoManager();
+    private KicksDocument savedDocument = null;
 
-	@Override
-	public TaskListener getTaskListener()
-	{
-		return actionProvider;
-	}
+    CanvasControl(JPanel container, CanvasPanel canvasPanel, JComponent inputComponent) {
+        this.container = container;
+        this.canvasPanel = canvasPanel;
+        this.inputComponent = inputComponent;
+    }
 
-	@Override
-	public Printable getPrintable()
-	{
-		return canvasPanel;
-	}
+    @Override
+    public void requestFocusInWindow() {
+        canvasPanel.requestFocusInWindow();
+    }
 
-	@Override
-	public KicksDocument getDocument()
-	{
-		return canvasPanel.getDocument();
-	}
+    @Override
+    public JComponent getContainer() {
+        return container;
+    }
 
-	@Override
-	public void setDocument(KicksDocument doc)
-	{
-		undo.discardAllEdits();
-		
-		if (getDocument() != null)
-		{
-			getDocument().removeDocumentListener(docListener);
-			getDocument().removeUndoableEditListener(undoListener);
-		}
-		doc.addDocumentListener(docListener);
-		doc.addUndoableEditListener(undoListener);
-		
-		canvasPanel.setDocument(doc);
-		documentSaved();
-		
-		canvasPanel.revalidate();
-		canvasPanel.repaint();
+    @Override
+    public JComponent getComponent() {
+        return canvasPanel;
+    }
 
-		requestFocusInWindow();
-	}
+    @Override
+    public Component getInputComponent() {
+        return inputComponent;
+    }
 
-	@Override
-	public boolean isDocumentChanged()
-	{
-		return !savedDocument.equals(getDocument());
-	}
+    @Override
+    public ActionProvider getActionProvider() {
+        return actionProvider;
+    }
 
-	@Override
-	public void documentSaved()
-	{
-		savedDocument = KicksMain.getDocumentStore().clone(getDocument());
-	}
+    @Override
+    public TaskListener getTaskListener() {
+        return actionProvider;
+    }
 
-	@Override
-	public void undo()
-	{
-		undo.undo();
-		updateUndoActions();
-	}
+    @Override
+    public Printable getPrintable() {
+        return canvasPanel;
+    }
 
-	@Override
-	public void redo()
-	{
-		undo.redo();
-		updateUndoActions();
-	}
+    @Override
+    public KicksDocument getDocument() {
+        return canvasPanel.getDocument();
+    }
 
-	private void updateUndoActions()
-	{
-		Action u = ActionManager.getAction(Undo.class); 
-		u.setEnabled(undo.canUndo());
-		u.putValue(Action.NAME, undo.getUndoPresentationName());
-		Action r = ActionManager.getAction(Redo.class);
-		r.setEnabled(undo.canRedo());
-		r.putValue(Action.NAME, undo.getRedoPresentationName());
-	}
-	
-	public void addLyric()
-	{
-		canvasPanel.addLyric();
-	}
-	
-	void addNote(int string, int placement, boolean isSmall)
-	{
-		canvasPanel.addNote(string, placement, isSmall);
-	}
+    @Override
+    public void setDocument(KicksDocument doc) {
+        undo.discardAllEdits();
 
-	void moveCursorLeft()
-	{
-		canvasPanel.moveCursorLeft();
-	}
+        if (getDocument() != null) {
+            getDocument().removeDocumentListener(docListener);
+            getDocument().removeUndoableEditListener(undoListener);
+        }
+        doc.addDocumentListener(docListener);
+        doc.addUndoableEditListener(undoListener);
 
-	void moveCursorRight()
-	{
-		canvasPanel.moveCursorRight();
-	}
+        canvasPanel.setDocument(doc);
+        documentSaved();
 
-	void moveCursorUp(int modifiers)
-	{
-		canvasPanel.moveCursorUp(modifiers);
-		
-	}
+        canvasPanel.revalidate();
+        canvasPanel.repaint();
 
-	void moveCursorDown(int modifiers)
-	{
-		canvasPanel.moveCursorDown(modifiers);
-	}
+        requestFocusInWindow();
+    }
 
-	void addRest()
-	{
-		canvasPanel.addRest();
-	}
+    @Override
+    public boolean isDocumentChanged() {
+        return !savedDocument.equals(getDocument());
+    }
 
-	void addRepeat(boolean end)
-	{
-		canvasPanel.addRepeat(end);
-	}
+    @Override
+    public void documentSaved() {
+        savedDocument = KicksMain.getDocumentStore().clone(getDocument());
+    }
 
-	void setFlat()
-	{
-		canvasPanel.setFlat();
-	}
+    @Override
+    public void undo() {
+        undo.undo();
+        updateUndoActions();
+    }
 
-	void setUtou(boolean isKaki)
-	{
-		canvasPanel.setUtou(isKaki);
-	}
+    @Override
+    public void redo() {
+        undo.redo();
+        updateUndoActions();
+    }
 
-	void delete()
-	{
-		canvasPanel.delete();
-	}
+    private void updateUndoActions() {
+        Action u = ActionManager.getAction(Undo.class);
+        u.setEnabled(undo.canUndo());
+        u.putValue(Action.NAME, undo.getUndoPresentationName());
+        Action r = ActionManager.getAction(Redo.class);
+        r.setEnabled(undo.canRedo());
+        r.putValue(Action.NAME, undo.getRedoPresentationName());
+    }
 
-	void setChord()
-	{
-		canvasPanel.setChord();
-	}
+    public void addLyric() {
+        canvasPanel.addLyric();
+    }
 
-	void setSlur()
-	{
-		canvasPanel.setSlur();
-	}
-	
-	private class CanvasActionProvider implements ActionProvider, TaskListener
-	{
-		private List<Action> editActions = new ArrayList<>();
-		private List<Action> documentActions = new ArrayList<>();
-		
-		public CanvasActionProvider()
-		{
-			editActions.add(ActionManager.getAction(Undo.class));
-			editActions.add(ActionManager.getAction(Redo.class));
-			documentActions.add(ActionManager.getAction(Title.class));
-			documentActions.add(ActionManager.getAction(Tuning.class));
-		}
-		
-		@Override
-		public void taskStarted()
-		{
-			editActions.forEach(a -> a.setEnabled(false));
-			documentActions.forEach(a -> a.setEnabled(false));
-			CanvasActions.disableAll();
-		}
+    void addNote(int string, int placement, boolean isSmall) {
+        canvasPanel.addNote(string, placement, isSmall);
+    }
 
-		@Override
-		public void taskEnded()
-		{
-			updateUndoActions();
-			documentActions.forEach(a -> a.setEnabled(true));
-			CanvasActions.enableAll();
-		}
+    void moveCursorLeft() {
+        canvasPanel.moveCursorLeft();
+    }
 
-		@Override
-		public List<Action> getMenuActions(String menuName)
-		{
-			if ("menu.edit".equals(menuName))
-			{
-				return Collections.unmodifiableList(editActions);
-			}
-			if ("menu.document".equals(menuName))
-			{
-				return Collections.unmodifiableList(documentActions);
-			}
-			return null;
-		}
+    void moveCursorRight() {
+        canvasPanel.moveCursorRight();
+    }
 
-		@Override
-		public List<Action> getToolBarActions(String menuName)
-		{
-			if ("menu.edit".equals(menuName))
-			{
-				return Collections.unmodifiableList(editActions);
-			}
-			return null;
-		}
-	}
+    void moveCursorUp(int modifiers) {
+        canvasPanel.moveCursorUp(modifiers);
+
+    }
+
+    void moveCursorDown(int modifiers) {
+        canvasPanel.moveCursorDown(modifiers);
+    }
+
+    void addRest() {
+        canvasPanel.addRest();
+    }
+
+    void addRepeat(boolean end) {
+        canvasPanel.addRepeat(end);
+    }
+
+    void setFlat() {
+        canvasPanel.setFlat();
+    }
+
+    void setUtou(boolean isKaki) {
+        canvasPanel.setUtou(isKaki);
+    }
+
+    void delete() {
+        canvasPanel.delete();
+    }
+
+    void setChord() {
+        canvasPanel.setChord();
+    }
+
+    void setSlur() {
+        canvasPanel.setSlur();
+    }
+
+    private class CanvasActionProvider implements ActionProvider, TaskListener {
+        private List<Action> editActions = new ArrayList<>();
+        private List<Action> documentActions = new ArrayList<>();
+
+        public CanvasActionProvider() {
+            editActions.add(ActionManager.getAction(Undo.class));
+            editActions.add(ActionManager.getAction(Redo.class));
+            documentActions.add(ActionManager.getAction(Title.class));
+            documentActions.add(ActionManager.getAction(Tuning.class));
+        }
+
+        @Override
+        public void taskStarted() {
+            editActions.forEach(a -> a.setEnabled(false));
+            documentActions.forEach(a -> a.setEnabled(false));
+            CanvasActions.disableAll();
+        }
+
+        @Override
+        public void taskEnded() {
+            updateUndoActions();
+            documentActions.forEach(a -> a.setEnabled(true));
+            CanvasActions.enableAll();
+        }
+
+        @Override
+        public List<Action> getMenuActions(String menuName) {
+            if ("menu.edit".equals(menuName)) {
+                return Collections.unmodifiableList(editActions);
+            }
+            if ("menu.document".equals(menuName)) {
+                return Collections.unmodifiableList(documentActions);
+            }
+            return null;
+        }
+
+        @Override
+        public List<Action> getToolBarActions(String menuName) {
+            if ("menu.edit".equals(menuName)) {
+                return Collections.unmodifiableList(editActions);
+            }
+            return null;
+        }
+    }
 }

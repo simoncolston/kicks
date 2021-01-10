@@ -1,99 +1,79 @@
 package org.colston.gui.task;
 
-import java.awt.Container;
+import org.colston.sclib.i18n.Message;
+
+import javax.swing.*;
+import java.awt.*;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
-import javax.swing.JComponent;
-import javax.swing.JFrame;
-import javax.swing.SwingWorker;
+public abstract class TaskWorker<T> extends SwingWorker<T, TaskProgressProvider> {
+    // TODO: This is to show a dialog box if there is an exception thrown
+    @SuppressWarnings("unused")
+    private final JFrame frame;
+    private TaskPanel taskPanel;
 
-import org.colston.sclib.i18n.Message;
+    public TaskWorker(JFrame frame, JComponent component) {
+        this.frame = frame;
 
-public abstract class TaskWorker<T> extends SwingWorker<T, TaskProgressProvider>
-{
-	// TODO: This is to show a dialog box if there is an exception thrown
-	@SuppressWarnings("unused")
-	private JFrame frame;
-	private TaskPanel taskPanel;
+        Container c = component;
+        while (c != null) {
 
-	public TaskWorker(JFrame frame, JComponent component)
-	{
-		this.frame = frame;
+            if (c instanceof TaskPanel) {
 
-		Container c = component;
-		while (c != null)
-		{
+                this.taskPanel = (TaskPanel) c;
+                break;
+            }
+            c = c.getParent();
+        }
+    }
 
-			if (c instanceof TaskPanel)
-			{
+    public void executeTask() {
+        executeTask(new Message(TaskWorker.class, "task.default.progress.message"));
+    }
 
-				this.taskPanel = (TaskPanel) c;
-				break;
-			}
-			c = c.getParent();
-		}
-	}
+    public void executeTask(Message initialMessage) {
+        if (taskPanel != null) {
+            taskPanel.showGlass(initialMessage);
+        }
+        execute();
+    }
 
-	public void executeTask() 
-	{
-		executeTask(new Message(TaskWorker.class, "task.default.progress.message"));
-	}
-	
-	public void executeTask(Message initialMessage)
-	{
-		if (taskPanel != null)
-		{
-			taskPanel.showGlass(initialMessage);
-		}
-		execute();
-	}
+    @Override
+    protected void process(List<TaskProgressProvider> chunks) {
+        processTaskProgress(chunks);
+    }
 
-	@Override
-	protected void process(List<TaskProgressProvider> chunks)
-	{
-		processTaskProgress(chunks);
-	}
+    private void processTaskProgress(List<TaskProgressProvider> chunks) {
+        if (taskPanel == null) return;
 
-	private void processTaskProgress(List<TaskProgressProvider> chunks)
-	{
-		if (taskPanel == null) return;
+        for (TaskProgressProvider chunk : chunks) {
 
-		for (TaskProgressProvider chunk : chunks)
-		{
+            taskPanel.updateProgress(chunk);
+        }
+    }
 
-			taskPanel.updateProgress(chunk);
-		}
-	}
+    protected void doneTask() {
+    }
 
-	protected void doneTask()
-	{
-	}
+    @Override
+    protected void done() {
+        try {
+            get();
+            doneTask();
+            if (taskPanel != null) {
+                taskPanel.removeGlass();
+            }
+        } catch (InterruptedException | ExecutionException e) {
+            doneException(e);
+        }
+    }
 
-	@Override
-	protected void done()
-	{
-		try
-		{
-			get();
-			doneTask();
-			if (taskPanel != null)
-			{
-				taskPanel.removeGlass();
-			}
-		} catch (InterruptedException | ExecutionException e)
-		{
-			doneException(e);
-		}
-	}
-
-	protected void doneException(Exception e)
-	{
-		// TODO: show error in dialog by default
-		e.printStackTrace();
-		if (taskPanel != null)
-		{
-			taskPanel.removeGlass();
-		}
-	}
+    protected void doneException(Exception e) {
+        // TODO: show error in dialog by default
+        e.printStackTrace();
+        if (taskPanel != null) {
+            taskPanel.removeGlass();
+        }
+    }
 }

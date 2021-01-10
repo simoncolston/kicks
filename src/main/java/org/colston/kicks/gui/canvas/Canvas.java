@@ -1,39 +1,37 @@
 package org.colston.kicks.gui.canvas;
 
-import java.awt.Component;
-import java.awt.print.Printable;
-
-import javax.swing.JComponent;
-
 import org.colston.gui.actions.ActionProvider;
 import org.colston.gui.task.TaskListener;
 import org.colston.kicks.document.KicksDocument;
 
-public interface Canvas
-{
-	void requestFocusInWindow();
+import javax.swing.*;
+import java.awt.*;
+import java.awt.print.Printable;
 
-	JComponent getContainer();
-	
-	JComponent getComponent();
-	
-	Component getInputComponent();
-	
-	ActionProvider getActionProvider();
-	
-	TaskListener getTaskListener();
+public interface Canvas {
+    void requestFocusInWindow();
 
-	Printable getPrintable();
-	
-	KicksDocument getDocument();
-	
-	void setDocument(KicksDocument doc);
+    JComponent getContainer();
 
-	boolean isDocumentChanged();
+    JComponent getComponent();
 
-	void documentSaved();
-	
-	void undo();
-	
-	void redo();
+    Component getInputComponent();
+
+    ActionProvider getActionProvider();
+
+    TaskListener getTaskListener();
+
+    Printable getPrintable();
+
+    KicksDocument getDocument();
+
+    void setDocument(KicksDocument doc);
+
+    boolean isDocumentChanged();
+
+    void documentSaved();
+
+    void undo();
+
+    void redo();
 }

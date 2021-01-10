@@ -1,123 +1,95 @@
 package org.colston.kicks.actions;
 
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.FlowLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
-import javax.swing.AbstractAction;
-import javax.swing.BorderFactory;
-import javax.swing.DefaultListCellRenderer;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JDialog;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.SpringLayout;
-import javax.swing.WindowConstants;
-
 import org.colston.gui.actions.ActionManager;
 import org.colston.kicks.KicksMain;
 import org.colston.kicks.Settings;
 import org.colston.sclib.i18n.Messages;
 import org.colston.utils.SpringUtilities;
 
-public class SettingsAction extends AbstractAction
-{
-	public static final String ACTION_COMMAND = "action.settings";
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
 
-	private static final String MESSAGE_RESOURCE_PREFIX = "settings";
+public class SettingsAction extends AbstractAction {
+    public static final String ACTION_COMMAND = "action.settings";
 
-	private JDialog dialog;
-	private JComboBox<Character.Subset[]> charSubsetCombo;
-	private Character.Subset[][] charSubsets = new Character.Subset[][] { Settings.HIRAGANA, Settings.KATAKANA };
+    private static final String MESSAGE_RESOURCE_PREFIX = "settings";
 
-	public SettingsAction()
-	{
-		putValue(ACTION_COMMAND_KEY, ACTION_COMMAND);
-		putValue(ActionManager.MESSAGE_RESOURCE_PREFIX_KEY, MESSAGE_RESOURCE_PREFIX);
-	}
+    private JDialog dialog;
+    private JComboBox<Character.Subset[]> charSubsetCombo;
+    private final Character.Subset[][] charSubsets = new Character.Subset[][]{Settings.HIRAGANA, Settings.KATAKANA};
 
-	private JDialog getDialog()
-	{
+    public SettingsAction() {
+        putValue(ACTION_COMMAND_KEY, ACTION_COMMAND);
+        putValue(ActionManager.MESSAGE_RESOURCE_PREFIX_KEY, MESSAGE_RESOURCE_PREFIX);
+    }
 
-		if (dialog == null)
-		{
+    private JDialog getDialog() {
 
-			dialog = new JDialog(KicksMain.getFrame(), Messages.get(SettingsAction.class, "settings.dialog.title"), true);
+        if (dialog == null) {
 
-			JPanel panel = new JPanel(new SpringLayout());
-			dialog.add(panel, BorderLayout.CENTER);
+            dialog = new JDialog(KicksMain.getFrame(), Messages.get(SettingsAction.class, "settings.dialog.title"), true);
 
-			panel.add(new JLabel(Messages.get(SettingsAction.class, "settings.default.ime.charset.prompt")));
+            JPanel panel = new JPanel(new SpringLayout());
+            dialog.add(panel, BorderLayout.CENTER);
 
-			charSubsetCombo = new JComboBox<>(charSubsets);
-			panel.add(charSubsetCombo, BorderLayout.NORTH);
+            panel.add(new JLabel(Messages.get(SettingsAction.class, "settings.default.ime.charset.prompt")));
 
-			charSubsetCombo.setRenderer(new CharacterSubsetRenderer());
+            charSubsetCombo = new JComboBox<>(charSubsets);
+            panel.add(charSubsetCombo, BorderLayout.NORTH);
 
-			SpringUtilities.makeCompactGrid(panel, 1, 2, 5, 5, 5, 5);
+            charSubsetCombo.setRenderer(new CharacterSubsetRenderer());
 
-			JPanel buttons = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-			dialog.add(buttons, BorderLayout.SOUTH);
+            SpringUtilities.makeCompactGrid(panel, 1, 2, 5, 5, 5, 5);
 
-			buttons.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
+            JPanel buttons = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+            dialog.add(buttons, BorderLayout.SOUTH);
 
-			JButton b = new JButton(Messages.get(SettingsAction.class, "settings.submit.button"));
-			buttons.add(b);
+            buttons.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
 
-			b.addActionListener(new ActionListener()
-			{
+            JButton b = new JButton(Messages.get(SettingsAction.class, "settings.submit.button"));
+            buttons.add(b);
 
-				@Override
-				public void actionPerformed(ActionEvent e)
-				{
-					KicksMain.getSettings().setCharacterSubset((Character.Subset[]) charSubsetCombo.getSelectedItem());
-					dialog.setVisible(false);
-					dialog.dispose();
-				}
-			});
+            b.addActionListener(e -> {
+                KicksMain.getSettings().setCharacterSubset((Character.Subset[]) charSubsetCombo.getSelectedItem());
+                dialog.setVisible(false);
+                dialog.dispose();
+            });
 
-			dialog.getRootPane().setDefaultButton(b);
-			dialog.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
-			dialog.pack();
-			dialog.setLocationRelativeTo(KicksMain.getFrame());
-		}
-		charSubsetCombo.requestFocusInWindow();
-		return dialog;
-	}
+            dialog.getRootPane().setDefaultButton(b);
+            dialog.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+            dialog.pack();
+            dialog.setLocationRelativeTo(KicksMain.getFrame());
+        }
+        charSubsetCombo.requestFocusInWindow();
+        return dialog;
+    }
 
-	@Override
-	public void actionPerformed(ActionEvent e)
-	{
-		JDialog d = getDialog();
-		charSubsetCombo.setSelectedItem(KicksMain.getSettings().getCharacterSubset());
-		d.setVisible(true);
-	}
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        JDialog d = getDialog();
+        charSubsetCombo.setSelectedItem(KicksMain.getSettings().getCharacterSubset());
+        d.setVisible(true);
+    }
 
-	private class CharacterSubsetRenderer extends DefaultListCellRenderer
-	{
+    private static class CharacterSubsetRenderer extends DefaultListCellRenderer {
 
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see
-		 * javax.swing.DefaultListCellRenderer#getListCellRendererComponent(javax.swing.
-		 * JList, java.lang.Object, int, boolean, boolean)
-		 */
-		@Override
-		public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected,
-				boolean cellHasFocus)
-		{
+        /*
+         * (non-Javadoc)
+         *
+         * @see
+         * javax.swing.DefaultListCellRenderer#getListCellRendererComponent(javax.swing.
+         * JList, java.lang.Object, int, boolean, boolean)
+         */
+        @Override
+        public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected,
+                                                      boolean cellHasFocus) {
 
-			if (!(value instanceof Character.Subset[]))
-			{
-				return null;
-			}
-			Character.Subset[] v = (Character.Subset[]) value;
-			return super.getListCellRendererComponent(list, v[0], index, isSelected, cellHasFocus);
-		}
-	}
+            if (!(value instanceof Character.Subset[])) {
+                return null;
+            }
+            Character.Subset[] v = (Character.Subset[]) value;
+            return super.getListCellRendererComponent(list, v[0], index, isSelected, cellHasFocus);
+        }
+    }
 }

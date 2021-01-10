@@ -1,12 +1,10 @@
 package org.colston.gui.actions;
 
+import javax.swing.*;
 import java.util.List;
 
-import javax.swing.Action;
+public interface ActionProvider {
+    List<Action> getMenuActions(String menuName);
 
-public interface ActionProvider
-{
-	List<Action> getMenuActions(String menuName);
-
-	List<Action> getToolBarActions(String menuName);
+    List<Action> getToolBarActions(String menuName);
 }

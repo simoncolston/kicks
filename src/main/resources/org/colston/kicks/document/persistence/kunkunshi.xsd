@@ -1,187 +1,187 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
 
-	<xs:element name="kunkunshi">
-		<xs:complexType>
+    <xs:element name="kunkunshi">
+        <xs:complexType>
 
-			<xs:sequence>
+            <xs:sequence>
 
-				<xs:element name="properties">
-					<xs:complexType>
-						<xs:sequence>
-							<xs:element name="name"        type="xs:string" minOccurs="0"/>
-							<xs:element name="description" type="xs:string" minOccurs="0"/>
-							<xs:element name="version"     type="xs:string" minOccurs="0"/>
-							<xs:element name="layout"      type="layout"    default="LANDSCAPE_11COL_12CELL"/>
-						</xs:sequence>
-					</xs:complexType>
-				</xs:element>
-				
-				<xs:element name="songs">
-					<xs:complexType>
-						<xs:sequence maxOccurs="unbounded">
-							<xs:element name="song" type="song"/>
-						</xs:sequence>
-					</xs:complexType>
-				</xs:element>
-				
-				<xs:element name="notes" minOccurs="0">
-					<xs:complexType>
-						<xs:sequence minOccurs="0" maxOccurs="unbounded">
-							<xs:element name="note" type="note" />
-						</xs:sequence>
-					</xs:complexType>
-				</xs:element>
-				
-				<xs:element name="breaks" minOccurs="0">
-					<xs:complexType>
-						<xs:sequence minOccurs="0" maxOccurs="unbounded">
-							<xs:element name="break" type="break" />
-						</xs:sequence>
-					</xs:complexType>
-				</xs:element>
-				
-				<xs:element name="repeats" minOccurs="0">
-					<xs:complexType>
-						<xs:sequence minOccurs="0" maxOccurs="unbounded">
-							<xs:element name="repeat" type="repeat" />
-						</xs:sequence>
-					</xs:complexType>
-				</xs:element>
-				
-				<xs:element name="lyrics" minOccurs="0">
-					<xs:complexType>
-						<xs:sequence minOccurs="0" maxOccurs="unbounded">
-							<xs:element name="lyric" type="lyric" />
-						</xs:sequence>
-					</xs:complexType>
-				</xs:element>
+                <xs:element name="properties">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="name" type="xs:string" minOccurs="0"/>
+                            <xs:element name="description" type="xs:string" minOccurs="0"/>
+                            <xs:element name="version" type="xs:string" minOccurs="0"/>
+                            <xs:element name="layout" type="layout" default="LANDSCAPE_11COL_12CELL"/>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
 
-			</xs:sequence>
+                <xs:element name="songs">
+                    <xs:complexType>
+                        <xs:sequence maxOccurs="unbounded">
+                            <xs:element name="song" type="song"/>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
 
-			<!-- Schema version number -->
-			<xs:attribute name="version" type="indexRange" use="required" />
+                <xs:element name="notes" minOccurs="0">
+                    <xs:complexType>
+                        <xs:sequence minOccurs="0" maxOccurs="unbounded">
+                            <xs:element name="note" type="note"/>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
 
-		</xs:complexType>
-	</xs:element>
+                <xs:element name="breaks" minOccurs="0">
+                    <xs:complexType>
+                        <xs:sequence minOccurs="0" maxOccurs="unbounded">
+                            <xs:element name="break" type="break"/>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
 
-	<xs:complexType name="note">
-		<xs:sequence>
-			<xs:element name="small"      type="xs:boolean" minOccurs="0" default="false" />
-			<xs:element name="accidental" type="accidental" minOccurs="0" default="NONE" />
-			<xs:element name="utou"       type="utou"       minOccurs="0" default="NONE" />
-			<xs:element name="chord"      type="xs:boolean" minOccurs="0" default="false" />
-			<xs:element name="slur"       type="xs:boolean" minOccurs="0" default="false" />
-		</xs:sequence>
-		<xs:attributeGroup ref="locatable" />
-		<xs:attribute name="string" use="required">
-			<xs:simpleType>
-				<xs:restriction base="xs:int">
-					<xs:minInclusive value="0"/>
-					<xs:maxInclusive value="3"/>
-				</xs:restriction>
-			</xs:simpleType>
-		</xs:attribute>
-		<xs:attribute name="placement" use="required">
-			<xs:simpleType>
-				<xs:restriction base="xs:int">
-					<xs:minInclusive value="0"/>
-					<xs:maxInclusive value="8"/>
-				</xs:restriction>
-			</xs:simpleType>
-		</xs:attribute>
-	</xs:complexType>
+                <xs:element name="repeats" minOccurs="0">
+                    <xs:complexType>
+                        <xs:sequence minOccurs="0" maxOccurs="unbounded">
+                            <xs:element name="repeat" type="repeat"/>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
 
-	<xs:complexType name="break">
-		<xs:sequence>
-			<xs:element name="type" type="breakType"/>
-		</xs:sequence>
-		<xs:attribute name="index" type="indexRange"/>
-	</xs:complexType>
-	
-	<xs:complexType name="repeat">
-		<xs:sequence>
-			<xs:element name="back" type="xs:boolean" />
-			<xs:element name="style" type="repeatStyle" minOccurs="0" default="TRIANGLE_FILLED" />
-		</xs:sequence>
-		<xs:attributeGroup ref="locatable" />
-	</xs:complexType>
+                <xs:element name="lyrics" minOccurs="0">
+                    <xs:complexType>
+                        <xs:sequence minOccurs="0" maxOccurs="unbounded">
+                            <xs:element name="lyric" type="lyric"/>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
 
-	<xs:complexType name="lyric">
-		<xs:sequence>
-			<xs:element name="value" type="xs:string"/>
-		</xs:sequence>
-		<xs:attributeGroup ref="locatable" />
-	</xs:complexType>
+            </xs:sequence>
 
-	<xs:complexType name="song">
-		<xs:sequence>
-			<xs:element name="title"  type="xs:string" minOccurs="0"/>
-			<xs:element name="tuning" type="tuning"    minOccurs="0"/>
-			<xs:element name="tempo"  type="xs:string" minOccurs="0"/>
-		</xs:sequence>
-		<xs:attribute name="index" type="indexRange" use="required"/>
-	</xs:complexType>
-	
-	<!-- Implemented as an interface on all objects in the document -->
-	<xs:attributeGroup name="locatable">
-		<xs:attribute name="index"  type="indexRange"  use="required" />
-		<xs:attribute name="offset" type="offsetRange" use="required" />
-	</xs:attributeGroup>
+            <!-- Schema version number -->
+            <xs:attribute name="version" type="indexRange" use="required"/>
 
-	<xs:simpleType name="indexRange">
-		<xs:restriction base="xs:int">
-			<xs:minInclusive value="0" />
-		</xs:restriction>
-	</xs:simpleType>
+        </xs:complexType>
+    </xs:element>
 
-	<xs:simpleType name="offsetRange">
-		<xs:restriction base="xs:int">
-			<xs:minInclusive value="0" />
-			<xs:maxInclusive value="12" />
-		</xs:restriction>
-	</xs:simpleType>
+    <xs:complexType name="note">
+        <xs:sequence>
+            <xs:element name="small" type="xs:boolean" minOccurs="0" default="false"/>
+            <xs:element name="accidental" type="accidental" minOccurs="0" default="NONE"/>
+            <xs:element name="utou" type="utou" minOccurs="0" default="NONE"/>
+            <xs:element name="chord" type="xs:boolean" minOccurs="0" default="false"/>
+            <xs:element name="slur" type="xs:boolean" minOccurs="0" default="false"/>
+        </xs:sequence>
+        <xs:attributeGroup ref="locatable"/>
+        <xs:attribute name="string" use="required">
+            <xs:simpleType>
+                <xs:restriction base="xs:int">
+                    <xs:minInclusive value="0"/>
+                    <xs:maxInclusive value="3"/>
+                </xs:restriction>
+            </xs:simpleType>
+        </xs:attribute>
+        <xs:attribute name="placement" use="required">
+            <xs:simpleType>
+                <xs:restriction base="xs:int">
+                    <xs:minInclusive value="0"/>
+                    <xs:maxInclusive value="8"/>
+                </xs:restriction>
+            </xs:simpleType>
+        </xs:attribute>
+    </xs:complexType>
 
-	<xs:simpleType name="breakType">
-		<xs:restriction base="xs:string">
-			<xs:enumeration value="LINE"/>
-			<xs:enumeration value="PAGE"/>
-		</xs:restriction>
-	</xs:simpleType>
-	
-	<xs:simpleType name="repeatStyle">
-		<xs:restriction base="xs:string">
-			<xs:enumeration value="TRIANGLE_FILLED" />
-			<xs:enumeration value="TRIANGLE_OUTLINE" />
-		</xs:restriction>
-	</xs:simpleType>
-	
-	<xs:simpleType name="accidental">
-		<xs:restriction base="xs:string">
-			<xs:enumeration value="NONE" />
-			<xs:enumeration value="FLAT" />
-		</xs:restriction>
-	</xs:simpleType>
-	
-	<xs:simpleType name="utou">
-		<xs:restriction base="xs:string">
-			<xs:enumeration value="NONE" />
-			<xs:enumeration value="UCHI" />
-			<xs:enumeration value="KAKI" />
-		</xs:restriction>
-	</xs:simpleType>
-	
-	<xs:simpleType name="tuning">
-		<xs:restriction base="xs:string">
-			<xs:enumeration value="HONCHOUSHI" />
-			<xs:enumeration value="SANSAGE" />
-			<xs:enumeration value="NIAGE" />
-		</xs:restriction>
-	</xs:simpleType>
-	
-	<xs:simpleType name="layout">
-		<xs:restriction base="xs:string">
-			<xs:enumeration value="LANDSCAPE_11COL_12CELL"/>
-		</xs:restriction>
-	</xs:simpleType>
+    <xs:complexType name="break">
+        <xs:sequence>
+            <xs:element name="type" type="breakType"/>
+        </xs:sequence>
+        <xs:attribute name="index" type="indexRange"/>
+    </xs:complexType>
+
+    <xs:complexType name="repeat">
+        <xs:sequence>
+            <xs:element name="back" type="xs:boolean"/>
+            <xs:element name="style" type="repeatStyle" minOccurs="0" default="TRIANGLE_FILLED"/>
+        </xs:sequence>
+        <xs:attributeGroup ref="locatable"/>
+    </xs:complexType>
+
+    <xs:complexType name="lyric">
+        <xs:sequence>
+            <xs:element name="value" type="xs:string"/>
+        </xs:sequence>
+        <xs:attributeGroup ref="locatable"/>
+    </xs:complexType>
+
+    <xs:complexType name="song">
+        <xs:sequence>
+            <xs:element name="title" type="xs:string" minOccurs="0"/>
+            <xs:element name="tuning" type="tuning" minOccurs="0"/>
+            <xs:element name="tempo" type="xs:string" minOccurs="0"/>
+        </xs:sequence>
+        <xs:attribute name="index" type="indexRange" use="required"/>
+    </xs:complexType>
+
+    <!-- Implemented as an interface on all objects in the document -->
+    <xs:attributeGroup name="locatable">
+        <xs:attribute name="index" type="indexRange" use="required"/>
+        <xs:attribute name="offset" type="offsetRange" use="required"/>
+    </xs:attributeGroup>
+
+    <xs:simpleType name="indexRange">
+        <xs:restriction base="xs:int">
+            <xs:minInclusive value="0"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="offsetRange">
+        <xs:restriction base="xs:int">
+            <xs:minInclusive value="0"/>
+            <xs:maxInclusive value="12"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="breakType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="LINE"/>
+            <xs:enumeration value="PAGE"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="repeatStyle">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="TRIANGLE_FILLED"/>
+            <xs:enumeration value="TRIANGLE_OUTLINE"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="accidental">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="NONE"/>
+            <xs:enumeration value="FLAT"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="utou">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="NONE"/>
+            <xs:enumeration value="UCHI"/>
+            <xs:enumeration value="KAKI"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="tuning">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="HONCHOUSHI"/>
+            <xs:enumeration value="SANSAGE"/>
+            <xs:enumeration value="NIAGE"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="layout">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="LANDSCAPE_11COL_12CELL"/>
+        </xs:restriction>
+    </xs:simpleType>
 </xs:schema>
