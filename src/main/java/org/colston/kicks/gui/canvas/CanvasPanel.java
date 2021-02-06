@@ -1,6 +1,3 @@
-/**
- *
- */
 package org.colston.kicks.gui.canvas;
 
 import org.colston.gui.actions.ActionManager;
@@ -67,32 +64,32 @@ class CanvasPanel extends JPanel implements Printable {
     /*
      * Fonts
      */
-    private Font titleFont = new Font(KicksMain.FONT_NAME, Font.PLAIN, 26);
-    private Font font = new Font(KicksMain.FONT_NAME, Font.PLAIN, 16);
-    private Font fontBold = new Font(KicksMain.FONT_NAME, Font.BOLD, 16);
-    private Font sfont = new Font(KicksMain.FONT_NAME, Font.PLAIN, 12);
-    private Font sfontBold = new Font(KicksMain.FONT_NAME, Font.BOLD, 12);
-    private Font lyricFont = new Font(KicksMain.FONT_NAME, Font.PLAIN, 11);
-    private Font flatFont = new Font(KicksMain.FONT_NAME, Font.PLAIN, 8);
+    private final Font titleFont = new Font(KicksMain.FONT_NAME, Font.PLAIN, 26);
+    private final Font font = new Font(KicksMain.FONT_NAME, Font.PLAIN, 16);
+    private final Font fontBold = new Font(KicksMain.FONT_NAME, Font.BOLD, 16);
+    private final Font sfont = new Font(KicksMain.FONT_NAME, Font.PLAIN, 12);
+    private final Font sfontBold = new Font(KicksMain.FONT_NAME, Font.BOLD, 12);
+    private final Font lyricFont = new Font(KicksMain.FONT_NAME, Font.PLAIN, 11);
+    private final Font flatFont = new Font(KicksMain.FONT_NAME, Font.PLAIN, 8);
 
     /*
      * Strokes
      */
-    private Stroke stroke = new BasicStroke(1.0f);
-    private Stroke decorateStroke = new BasicStroke(1.1f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
-    private Stroke cursorStroke = new BasicStroke(1.3f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+    private final Stroke stroke = new BasicStroke(1.0f);
+    private final Stroke decorateStroke = new BasicStroke(1.1f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+    private final Stroke cursorStroke = new BasicStroke(1.3f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
 
     /*
      * Text input
      */
-    private JTextComponent text;
+    private final JTextComponent text;
 
     /*
      * Configurables
      */
-    private Dimension dimension = new Dimension();
+    private final Dimension dimension = new Dimension();
     private int borderWidth;
-    private double scale = 1;
+    private final double scale;
 
     /*
      * Cursor
@@ -170,7 +167,7 @@ class CanvasPanel extends JPanel implements Printable {
 
         g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 
-        FontMetrics fm = null;
+        FontMetrics fm;
         g2.setColor(FOREGROUND_COLOUR);
 
         String title = doc.getTitle();
@@ -212,8 +209,8 @@ class CanvasPanel extends JPanel implements Printable {
         }
 
         // draw the notes
-        FontMetrics lfm = null;
-        FontMetrics sfm = null;
+        FontMetrics lfm;
+        FontMetrics sfm;
         g2.setFont(sfont);
         sfm = g2.getFontMetrics();
         g2.setFont(font);
@@ -240,7 +237,7 @@ class CanvasPanel extends JPanel implements Printable {
             drawNote(g2, n, fm);
             cursorEndHighlight(g2, n.isSmall() ? sfont : font);
 
-            if ((chordStart != null) != n.isChord()) //state has changed
+            if ((chordStart == null) == n.isChord()) //state has changed
             {
                 if (n.isChord()) {
                     chordStart = n;
@@ -249,7 +246,7 @@ class CanvasPanel extends JPanel implements Printable {
                     chordStart = null;
                 }
             }
-            if ((slurStart != null) != n.isSlur()) //state has changed
+            if ((slurStart == null) == n.isSlur()) //state has changed
             {
                 if (n.isSlur()) {
                     slurStart = n;
@@ -279,7 +276,7 @@ class CanvasPanel extends JPanel implements Printable {
 
         // draw the lyrics
         g2.setFont(lyricFont);
-        fm = lfm = g2.getFontMetrics();
+        fm = g2.getFontMetrics();
         for (Lyric l : doc.getLyrics()) {
             char[] ch = l.getValue().toCharArray();
             for (int i = 0; i < ch.length; i++) {
@@ -368,7 +365,7 @@ class CanvasPanel extends JPanel implements Printable {
         char[] ch = NoteValues.get(n.getString(), n.getPlacement()).toCharArray();
         int x = x(n.getIndex());
         int y = y(n.getIndex(), n.getOffset(), fm) - 1;
-        int chw = 0;
+        int chw;
         if (ch.length == 1) {
             chw = fm.charWidth(ch[0]);
             x += (COLUMN_WIDTH / 2 - chw) / 2;
@@ -441,8 +438,7 @@ class CanvasPanel extends JPanel implements Printable {
 
     private int x(int index) {
         int col = index / CELLS_PER_COL;
-        int x = CANVAS_WIDTH - TITLE_WIDTH - (COLUMN_SPACE + COLUMN_WIDTH) - (COLUMN_SPACE + COLUMN_WIDTH) * col;
-        return x;
+        return CANVAS_WIDTH - TITLE_WIDTH - (COLUMN_SPACE + COLUMN_WIDTH) - (COLUMN_SPACE + COLUMN_WIDTH) * col;
     }
 
     private int y(int index, int offset, FontMetrics fm) {
@@ -614,7 +610,7 @@ class CanvasPanel extends JPanel implements Printable {
 
     public void moveCursorLeft() {
         if (!cursorOnNote) {
-            setCursorOnNote(!cursorOnNote);
+            setCursorOnNote(true);
         } else if (moveCursor(CELLS_PER_COL * CELL_TICKS)) {
             setCursorOnNote(!cursorOnNote);
         }
@@ -622,7 +618,7 @@ class CanvasPanel extends JPanel implements Printable {
 
     public void moveCursorRight() {
         if (cursorOnNote) {
-            setCursorOnNote(!cursorOnNote);
+            setCursorOnNote(false);
         } else if (moveCursor(-CELLS_PER_COL * CELL_TICKS)) {
             setCursorOnNote(!cursorOnNote);
         }

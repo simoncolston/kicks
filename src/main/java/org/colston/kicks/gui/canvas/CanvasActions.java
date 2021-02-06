@@ -252,10 +252,8 @@ final class CanvasActions {
     }
 
     static List<CanvasAction> getActionsWithPrefix(String prefix) {
-        List<CanvasAction> list = actions.values().stream()
-                .filter(e -> e.getActionCommand().startsWith(prefix))
-                .collect(Collectors.toList());
-        return list;
+        return actions.values().stream().filter(
+                e -> e.getActionCommand().startsWith(prefix)).collect(Collectors.toList());
     }
 
     private static void addToInputActionMaps(JComponent component, CanvasAction ca) {

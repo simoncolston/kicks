@@ -27,7 +27,7 @@ class KicksDocumentTest {
 
         for (KicksDocument doc : docs) {
             KicksDocument doc2 = docStore.clone(doc);
-            assertFalse(doc == doc2);
+            assertNotSame(doc, doc2);
             assertEquals(doc, doc2);
         }
     }
@@ -92,7 +92,6 @@ class KicksDocumentTest {
     }
 
     private KicksDocument createMinimalDocument() {
-        KicksDocument doc = new KicksDocument();
-        return doc;
+        return new KicksDocument();
     }
 }

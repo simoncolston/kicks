@@ -22,7 +22,7 @@ import java.util.Collections;
 import java.util.List;
 
 class CanvasControl implements Canvas {
-    private KicksDocumentListener docListener = new KicksDocumentListener() {
+    private final KicksDocumentListener docListener = new KicksDocumentListener() {
         @Override
         public void documentUpdated() {
             updateUndoActions();
@@ -36,19 +36,19 @@ class CanvasControl implements Canvas {
         }
     };
 
-    private UndoableEditListener undoListener = new UndoableEditListener() {
+    private final UndoableEditListener undoListener = new UndoableEditListener() {
 
         @Override
         public void undoableEditHappened(UndoableEditEvent e) {
             undo.addEdit(e.getEdit());
         }
     };
-    private CanvasActionProvider actionProvider = new CanvasActionProvider();
+    private final CanvasActionProvider actionProvider = new CanvasActionProvider();
 
-    private JComponent container;
-    private CanvasPanel canvasPanel;
-    private JComponent inputComponent;
-    private UndoManager undo = new UndoManager();
+    private final JComponent container;
+    private final CanvasPanel canvasPanel;
+    private final JComponent inputComponent;
+    private final UndoManager undo = new UndoManager();
     private KicksDocument savedDocument = null;
 
     CanvasControl(JPanel container, CanvasPanel canvasPanel, JComponent inputComponent) {
@@ -202,8 +202,8 @@ class CanvasControl implements Canvas {
     }
 
     private class CanvasActionProvider implements ActionProvider, TaskListener {
-        private List<Action> editActions = new ArrayList<>();
-        private List<Action> documentActions = new ArrayList<>();
+        private final List<Action> editActions = new ArrayList<>();
+        private final List<Action> documentActions = new ArrayList<>();
 
         public CanvasActionProvider() {
             editActions.add(ActionManager.getAction(Undo.class));
