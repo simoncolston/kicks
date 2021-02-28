@@ -1,6 +1,6 @@
 package org.colston.kicks.document;
 
-import javax.xml.bind.annotation.XmlEnum;
+import jakarta.xml.bind.annotation.XmlEnum;
 
 @XmlEnum(String.class)
 public enum Tuning {
@@ -8,7 +8,7 @@ public enum Tuning {
     SANSAGE("三下げ"),
     NIAGE("二揚げ");
 
-    private String displayName;
+    private final String displayName;
 
     Tuning(String v) {
         this.displayName = v;

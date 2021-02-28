@@ -1,6 +1,6 @@
 package org.colston.kicks.document;
 
-import javax.xml.bind.annotation.*;
+import jakarta.xml.bind.annotation.*;
 
 @XmlAccessorType(XmlAccessType.NONE)
 @XmlType(
@@ -51,8 +51,6 @@ public class Break {
         Break other = (Break) obj;
         if (index != other.index)
             return false;
-        if (type != other.type)
-            return false;
-        return true;
+        return type == other.type;
     }
 }

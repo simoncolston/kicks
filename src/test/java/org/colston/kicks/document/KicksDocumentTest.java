@@ -39,12 +39,8 @@ class KicksDocumentTest {
         docs[1] = createFullSingletonDocument();
 
         for (KicksDocument doc : docs) {
-            docStore.save(doc, System.out);
-            System.out.println();
-
             Path tmp = Files.createTempFile("kicks", ".kicks");
             tmp.toFile().deleteOnExit();
-//			System.out.println("Saved: " + tmp.toString());
             try (OutputStream os = Files.newOutputStream(tmp)) {
                 docStore.save(doc, os);
             }

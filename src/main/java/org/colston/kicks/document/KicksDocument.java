@@ -1,5 +1,6 @@
 package org.colston.kicks.document;
 
+import jakarta.xml.bind.annotation.*;
 import org.colston.sclib.i18n.Messages;
 
 import javax.swing.event.EventListenerList;
@@ -8,7 +9,6 @@ import javax.swing.event.UndoableEditListener;
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
 import javax.swing.undo.UndoableEdit;
-import javax.xml.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -28,35 +28,35 @@ import java.util.function.BiConsumer;
                         "lyrics"
                 })
 public class KicksDocument {
-    private EventListenerList listeners = new EventListenerList();
-    private Comparator<Locatable> comparator = new LocatableComparator();
+    private final EventListenerList listeners = new EventListenerList();
+    private final Comparator<Locatable> comparator = new LocatableComparator();
     private final Key key = new Key();
 
     @XmlAttribute(required = true)
-    private int version = 1;
+    private final int version = 1;
 
     @XmlElement(required = true)
-    private Properties properties = new Properties();
+    private final Properties properties = new Properties();
 
     @XmlElementWrapper(name = "songs", required = true)
     @XmlElement(name = "song")
-    private List<Song> songs = new ArrayList<>();
+    private final List<Song> songs = new ArrayList<>();
 
     @XmlElementWrapper(name = "notes")
     @XmlElement(name = "note")
-    private List<Note> notes = new ArrayList<>();
+    private final List<Note> notes = new ArrayList<>();
 
     @XmlElementWrapper(name = "breaks")
     @XmlElement(name = "break")
-    private List<Break> breaks = new ArrayList<>();
+    private final List<Break> breaks = new ArrayList<>();
 
     @XmlElementWrapper(name = "repeats")
     @XmlElement(name = "repeat")
-    private List<Repeat> repeats = new ArrayList<>();
+    private final List<Repeat> repeats = new ArrayList<>();
 
     @XmlElementWrapper(name = "lyrics")
     @XmlElement(name = "lyric")
-    private List<Lyric> lyrics = new ArrayList<>();
+    private final List<Lyric> lyrics = new ArrayList<>();
 
     public KicksDocument() {
         songs.add(new Song(0));
@@ -93,7 +93,7 @@ public class KicksDocument {
 
     public void setTitle(String newTitle) {
         Song song = songs.get(0);
-        UndoableEdit edit = new SetEdit<>(song, song.getTitle(), newTitle, (t, v) -> t.setTitle(v),
+        UndoableEdit edit = new SetEdit<>(song, song.getTitle(), newTitle, Song::setTitle,
                 Messages.get(getClass(), "undo.set.title"));
         song.setTitle(newTitle);
         fireUndoableEditHappened(new UndoableEditEvent(this, edit));
@@ -101,13 +101,12 @@ public class KicksDocument {
     }
 
     public Tuning getTuning() {
-        Tuning t = songs.get(0).getTuning();
-        return t;
+        return songs.get(0).getTuning();
     }
 
     public void setTuning(Tuning tuning) {
         Song song = songs.get(0);
-        UndoableEdit edit = new SetEdit<>(song, song.getTuning(), tuning, (t, v) -> t.setTuning(v),
+        UndoableEdit edit = new SetEdit<>(song, song.getTuning(), tuning, Song::setTuning,
                 Messages.get(getClass(), "undo.set.tuning"));
         song.setTuning(tuning);
         fireUndoableEditHappened(new UndoableEditEvent(this, edit));
@@ -154,12 +153,12 @@ public class KicksDocument {
             if (n.getUtou() == newValue) {
                 n.setUtou(Utou.NONE);
                 edit = new SetEdit<>(index, offset, n, newValue, Utou.NONE,
-                        (e, v) -> e.setUtou(v), Messages.get(getClass(), "undo.set.utou"));
+                        Note::setUtou, Messages.get(getClass(), "undo.set.utou"));
             } else {
                 Utou oldValue = n.getUtou();
                 n.setUtou(newValue);
                 edit = new SetEdit<>(index, offset, n, oldValue, newValue,
-                        (e, v) -> e.setUtou(v), Messages.get(getClass(), "undo.set.utou"));
+                        Note::setUtou, Messages.get(getClass(), "undo.set.utou"));
             }
             fireUndoableEditHappened(new UndoableEditEvent(this, edit));
             fireDocumentUpdated();
@@ -176,7 +175,7 @@ public class KicksDocument {
             Accidental newValue = oldValue == Accidental.FLAT ? Accidental.NONE : Accidental.FLAT;
             n.setAccidental(newValue);
             SetEdit<Note, Accidental> edit = new SetEdit<>(index, offset, n, oldValue, newValue,
-                    (e, v) -> e.setAccidental(v), Messages.get(getClass(), "undo.set.utou"));
+                    Note::setAccidental, Messages.get(getClass(), "undo.set.utou"));
             fireUndoableEditHappened(new UndoableEditEvent(this, edit));
             fireDocumentUpdated();
         }
@@ -191,7 +190,7 @@ public class KicksDocument {
             boolean oldValue = n.isChord();
             n.setChord(!n.isChord());
             SetEdit<Note, Boolean> edit = new SetEdit<>(index, offset, n, oldValue, !oldValue,
-                    (e, v) -> e.setChord(v), Messages.get(getClass(), "undo.set.chord"));
+                    Note::setChord, Messages.get(getClass(), "undo.set.chord"));
             fireUndoableEditHappened(new UndoableEditEvent(this, edit));
             fireDocumentUpdated();
         }
@@ -206,7 +205,7 @@ public class KicksDocument {
             boolean oldValue = n.isSlur();
             n.setSlur(!n.isSlur());
             SetEdit<Note, Boolean> edit = new SetEdit<>(index, offset, n, oldValue, !oldValue,
-                    (e, v) -> e.setSlur(v), Messages.get(getClass(), "undo.set.slur"));
+                    Note::setSlur, Messages.get(getClass(), "undo.set.slur"));
             fireUndoableEditHappened(new UndoableEditEvent(this, edit));
             fireDocumentUpdated();
         }
@@ -283,12 +282,12 @@ public class KicksDocument {
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ((breaks == null) ? 0 : breaks.hashCode());
-        result = prime * result + ((lyrics == null) ? 0 : lyrics.hashCode());
-        result = prime * result + ((notes == null) ? 0 : notes.hashCode());
-        result = prime * result + ((properties == null) ? 0 : properties.hashCode());
-        result = prime * result + ((repeats == null) ? 0 : repeats.hashCode());
-        result = prime * result + ((songs == null) ? 0 : songs.hashCode());
+        result = prime * result + breaks.hashCode();
+        result = prime * result + lyrics.hashCode();
+        result = prime * result + notes.hashCode();
+        result = prime * result + properties.hashCode();
+        result = prime * result + repeats.hashCode();
+        result = prime * result + songs.hashCode();
         result = prime * result + version;
         return result;
     }
@@ -302,39 +301,17 @@ public class KicksDocument {
         if (getClass() != obj.getClass())
             return false;
         KicksDocument other = (KicksDocument) obj;
-        if (breaks == null) {
-            if (other.breaks != null)
-                return false;
-        } else if (!breaks.equals(other.breaks))
+        if (!breaks.equals(other.breaks))
             return false;
-        if (lyrics == null) {
-            if (other.lyrics != null)
-                return false;
-        } else if (!lyrics.equals(other.lyrics))
+        if (!lyrics.equals(other.lyrics))
             return false;
-        if (notes == null) {
-            if (other.notes != null)
-                return false;
-        } else if (!notes.equals(other.notes))
+        if (!notes.equals(other.notes))
             return false;
-        if (properties == null) {
-            if (other.properties != null)
-                return false;
-        } else if (!properties.equals(other.properties))
+        if (!properties.equals(other.properties))
             return false;
-        if (repeats == null) {
-            if (other.repeats != null)
-                return false;
-        } else if (!repeats.equals(other.repeats))
+        if (!repeats.equals(other.repeats))
             return false;
-        if (songs == null) {
-            if (other.songs != null)
-                return false;
-        } else if (!songs.equals(other.songs))
-            return false;
-        if (version != other.version)
-            return false;
-        return true;
+        return songs.equals(other.songs);
     }
 
     public void addDocumentListener(KicksDocumentListener l) {
@@ -373,8 +350,8 @@ public class KicksDocument {
     }
 
     private class AddEdit<T> extends KicksDocumentEdit {
-        private List<T> list;
-        private int listIndex;
+        private final List<T> list;
+        private final int listIndex;
         private T element;
 
         AddEdit(int index, int offset, List<T> list, int listIndex, String presentationName) {
@@ -399,8 +376,8 @@ public class KicksDocument {
     }
 
     private class ReplaceEdit<T> extends KicksDocumentEdit {
-        private List<T> list;
-        private int listIndex;
+        private final List<T> list;
+        private final int listIndex;
         private T element;
 
         public ReplaceEdit(int index, int offset, List<T> list, int listIndex, T element, String presentationName) {
@@ -426,8 +403,8 @@ public class KicksDocument {
     }
 
     private class RemoveEdit<T> extends KicksDocumentEdit {
-        private List<T> list;
-        private int listIndex;
+        private final List<T> list;
+        private final int listIndex;
         private T element;
 
         public RemoveEdit(int index, int offset, List<T> list, int listIndex, T element, String presentationName) {
@@ -453,10 +430,10 @@ public class KicksDocument {
     }
 
     private class SetEdit<T, V> extends KicksDocumentEdit {
-        private T element;
-        private V oldValue;
-        private V newValue;
-        private BiConsumer<T, V> consumer;
+        private final T element;
+        private final V oldValue;
+        private final V newValue;
+        private final BiConsumer<T, V> consumer;
 
         public SetEdit(int index, int offset, T element, V oldValue, V newValue, BiConsumer<T, V> c,
                        String presentationName) {
@@ -498,7 +475,7 @@ public class KicksDocument {
         }
     }
 
-    private class Key implements Locatable {
+    private static class Key implements Locatable {
         private int index;
         private int offset;
 
@@ -513,7 +490,7 @@ public class KicksDocument {
         }
     }
 
-    private class LocatableComparator implements Comparator<Locatable> {
+    private static class LocatableComparator implements Comparator<Locatable> {
         @Override
         public int compare(Locatable o1, Locatable o2) {
             return o1.getIndex() == o2.getIndex() ? o1.getOffset() - o2.getOffset() : o1.getIndex() - o2.getIndex();

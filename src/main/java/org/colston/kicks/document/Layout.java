@@ -1,6 +1,6 @@
 package org.colston.kicks.document;
 
-import javax.xml.bind.annotation.XmlEnum;
+import jakarta.xml.bind.annotation.XmlEnum;
 
 @XmlEnum(String.class)
 public enum Layout {
