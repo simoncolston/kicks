@@ -27,12 +27,13 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.logging.Level;
 
 /**
  * The main startup class for the application.
  */
 public class KicksMain {
-    private static final String splashFileName = "splash.png";
+    private static final String SPLASH_FILE_NAME = "splash.png";
 
     public static final String APPLICATION_NAME = "kicks";
 
@@ -130,7 +131,7 @@ public class KicksMain {
         frame = new JFrame(APPLICATION_NAME);
 
         // create and show the splash screen
-        final Splash splash = new Splash(frame, Utils.createIconFromResource(KicksMain.class, splashFileName));
+        final Splash splash = new Splash(frame, Utils.createIconFromResource(KicksMain.class, SPLASH_FILE_NAME));
         splash.showSplash();
 
         //give ourselves minimum time for splash screen
@@ -140,13 +141,15 @@ public class KicksMain {
 
         createUI();
 
+        loadDocument(args);
+
         // show the GUI and get rid of the splash
         EventQueue.invokeLater(() ->
         {
             frame.pack();
             frame.setLocationRelativeTo(null);
 
-            long timeLeft = 3000 - (System.currentTimeMillis() - startMillis);
+            long timeLeft = 1500 - (System.currentTimeMillis() - startMillis);
             if (timeLeft > 0) {
                 //pause
                 try {
@@ -159,6 +162,23 @@ public class KicksMain {
             canvas.requestFocusInWindow();
             splash.disposeSplash();
         });
+    }
+
+    private static void loadDocument(String[] args) {
+        if (args.length < 1) {
+            return;
+        }
+        File file = new File(args[0]);
+        if (!file.exists() || !file.canRead()) {
+            System.err.printf("Cannot read file: %s%n", file.getAbsolutePath());
+            return;
+        }
+        Open action = ActionManager.getAction(Open.class);
+        try {
+            action.openDocumentFromFile(file);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private static void createUI() {
@@ -187,11 +207,9 @@ public class KicksMain {
                             frame.dispose();
                         }
                         break;
-
                     case 1:
                         frame.dispose();
                         break;
-
                     case JOptionPane.CLOSED_OPTION:
                     case 2:
                     default:

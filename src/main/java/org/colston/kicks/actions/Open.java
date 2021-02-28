@@ -43,16 +43,13 @@ public class Open extends AbstractAction {
 
             @Override
             protected KicksDocument doInBackground() throws Exception {
-                try (InputStream is = new BufferedInputStream(new FileInputStream(f))) {
-                    return KicksMain.getDocumentStore().load(is);
-                }
+                return loadDocument(f);
             }
 
             @Override
             protected void doneTask() {
                 try {
-                    KicksMain.getCanvas().setDocument(get());
-                    KicksMain.setCurrentFile(f);
+                    setDocument(f, get());
                 } catch (InterruptedException | ExecutionException e) {
                     // TODO Auto-generated catch block
                     e.printStackTrace();
@@ -60,5 +57,29 @@ public class Open extends AbstractAction {
             }
         };
         tw.executeTask(new Message(Open.class, "open.progress.message"));
+    }
+
+    /**
+     * Loads a document from the file and sets it on the canvas.
+     * <p>
+     * <em>NOTE: This is not event thread safe!</em>  This should only be called <em>off</em> the event thread
+     * and only if you know what the consequences are.<br><br>
+     * It is only intended to load a document from a file at program initialisation.
+     * @param file file to load the document from
+     * @throws Exception error during load
+     */
+    public void openDocumentFromFile(File file) throws Exception {
+        setDocument(file, loadDocument(file));
+    }
+
+    private KicksDocument loadDocument(File file) throws Exception {
+        try (InputStream is = new BufferedInputStream(new FileInputStream(file))) {
+            return KicksMain.getDocumentStore().load(is);
+        }
+    }
+
+    private void setDocument(File file, KicksDocument document) {
+        KicksMain.getCanvas().setDocument(document);
+        KicksMain.setCurrentFile(file);
     }
 }
