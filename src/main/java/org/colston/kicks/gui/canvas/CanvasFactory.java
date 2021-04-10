@@ -1,6 +1,5 @@
 package org.colston.kicks.gui.canvas;
 
-import org.colston.gui.task.TaskPanel;
 import org.colston.kicks.KicksMain;
 import org.colston.kicks.Settings;
 import org.colston.kicks.document.KicksDocument;
@@ -26,8 +25,7 @@ public final class CanvasFactory {
         container.setBackground(Color.GRAY);
         container.setLayout(new BoxLayout(container, BoxLayout.Y_AXIS));
         container.add(Box.createVerticalStrut(10));
-        TaskPanel taskPanel = new TaskPanel(canvas);
-        container.add(taskPanel);
+        container.add(canvas);
         container.add(Box.createVerticalStrut(10));
 
         JPanel inputComponent = new JPanel();
@@ -47,6 +45,8 @@ public final class CanvasFactory {
 
         CanvasActions.addPrefixToInputActionMaps(text, "canvas.cursor.");
         CanvasActions.addPrefixToInputActionMaps(text, "canvastext.");
+
+        CanvasActions.enableAll();
 
         return control;
     }

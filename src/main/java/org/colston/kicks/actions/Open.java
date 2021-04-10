@@ -1,9 +1,9 @@
 package org.colston.kicks.actions;
 
 import org.colston.gui.actions.ActionManager;
-import org.colston.gui.task.TaskWorker;
 import org.colston.kicks.KicksMain;
 import org.colston.kicks.document.KicksDocument;
+import org.colston.sclib.gui.task.Task;
 import org.colston.sclib.i18n.Message;
 import org.colston.sclib.i18n.Messages;
 import org.colston.utils.Utils;
@@ -14,7 +14,6 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
-import java.util.concurrent.ExecutionException;
 
 public class Open extends AbstractAction {
     public static final String ACTION_COMMAND = "action.open";
@@ -38,8 +37,7 @@ public class Open extends AbstractAction {
         if (f == null || !f.exists()) {
             return;
         }
-        TaskWorker<KicksDocument> tw = new TaskWorker<>(KicksMain.getFrame(),
-                KicksMain.getCanvas().getComponent()) {
+        Task<KicksDocument> tw = new Task<>() {
 
             @Override
             protected KicksDocument doInBackground() throws Exception {
@@ -47,16 +45,11 @@ public class Open extends AbstractAction {
             }
 
             @Override
-            protected void doneTask() {
-                try {
-                    setDocument(f, get());
-                } catch (InterruptedException | ExecutionException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
+            protected void updateUI() {
+                setDocument(f, get());
             }
         };
-        tw.executeTask(new Message(Open.class, "open.progress.message"));
+        tw.execute(new Message(Open.class, "open.progress.message"));
     }
 
     /**

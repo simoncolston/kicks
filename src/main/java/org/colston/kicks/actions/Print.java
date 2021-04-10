@@ -1,8 +1,8 @@
 package org.colston.kicks.actions;
 
 import org.colston.gui.actions.ActionManager;
-import org.colston.gui.task.TaskWorker;
 import org.colston.kicks.KicksMain;
+import org.colston.sclib.gui.task.Task;
 import org.colston.sclib.i18n.Message;
 import org.colston.utils.Utils;
 
@@ -47,7 +47,7 @@ public class Print extends AbstractAction {
         attributeSet.add(new JobName(jobName, null));
 
         if (printJob.printDialog(attributeSet)) {
-            TaskWorker<Object> tw = new TaskWorker<>(KicksMain.getFrame(), KicksMain.getCanvas().getComponent()) {
+            Task<Object> tw = new Task<>() {
                 @Override
                 protected Object doInBackground() throws Exception {
                     //TODO: add a print job listener to handle printer problems
@@ -55,8 +55,12 @@ public class Print extends AbstractAction {
                     printJob.print(attributeSet);
                     return null;
                 }
+
+                @Override
+                protected void updateUI() {
+                }
             };
-            tw.executeTask(new Message(getClass(), "print.progress.message"));
+            tw.execute(new Message(getClass(), "print.progress.message"));
         }
     }
 }

@@ -2,7 +2,6 @@ package org.colston.kicks.gui.canvas;
 
 import org.colston.gui.actions.ActionManager;
 import org.colston.gui.actions.ActionProvider;
-import org.colston.gui.task.TaskListener;
 import org.colston.kicks.KicksMain;
 import org.colston.kicks.actions.Redo;
 import org.colston.kicks.actions.Title;
@@ -83,11 +82,6 @@ class CanvasControl implements Canvas {
     }
 
     @Override
-    public TaskListener getTaskListener() {
-        return actionProvider;
-    }
-
-    @Override
     public Printable getPrintable() {
         return canvasPanel;
     }
@@ -100,6 +94,7 @@ class CanvasControl implements Canvas {
     @Override
     public void setDocument(KicksDocument doc) {
         undo.discardAllEdits();
+        updateUndoActions();
 
         if (getDocument() != null) {
             getDocument().removeDocumentListener(docListener);
@@ -201,7 +196,7 @@ class CanvasControl implements Canvas {
         canvasPanel.setSlur();
     }
 
-    private class CanvasActionProvider implements ActionProvider, TaskListener {
+    private static class CanvasActionProvider implements ActionProvider {
         private final List<Action> editActions = new ArrayList<>();
         private final List<Action> documentActions = new ArrayList<>();
 
@@ -210,20 +205,6 @@ class CanvasControl implements Canvas {
             editActions.add(ActionManager.getAction(Redo.class));
             documentActions.add(ActionManager.getAction(Title.class));
             documentActions.add(ActionManager.getAction(Tuning.class));
-        }
-
-        @Override
-        public void taskStarted() {
-            editActions.forEach(a -> a.setEnabled(false));
-            documentActions.forEach(a -> a.setEnabled(false));
-            CanvasActions.disableAll();
-        }
-
-        @Override
-        public void taskEnded() {
-            updateUndoActions();
-            documentActions.forEach(a -> a.setEnabled(true));
-            CanvasActions.enableAll();
         }
 
         @Override

@@ -1,7 +1,6 @@
 package org.colston.kicks.gui.canvas;
 
 import org.colston.gui.actions.ActionProvider;
-import org.colston.gui.task.TaskListener;
 import org.colston.kicks.document.KicksDocument;
 
 import javax.swing.*;
@@ -18,8 +17,6 @@ public interface Canvas {
     Component getInputComponent();
 
     ActionProvider getActionProvider();
-
-    TaskListener getTaskListener();
 
     Printable getPrintable();
 

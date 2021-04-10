@@ -7,6 +7,8 @@ TODO
   - [ ] **1** Enable/disable actions depending on canvas cursor position/selection/etc.
   - [x] **1** Move 'Lyric' action to the canvas (and not use a dialog!)
   - [ ] **1** Combine Title and Tuning into one dialogue box
+  - [x] **1** Prompt to save if document modified - when quitting
+  - [ ] **1** Prompt to save if document modified - when opening document
   
 ##### Document
   - [x] **1** Extended notes: see `_test.xml`
@@ -33,7 +35,6 @@ TODO
   - [ ] **1** Delete from canvas (*after* selection)
   - [ ] **1** Cut/copy/paste
   - [x] **1** Undo/redo
-  - [x] **1** Prompt to save if document modified
   
 ##### Printing
   - [x] **1** Save as PDF (using Apache PDF implemented through Java Print API) 

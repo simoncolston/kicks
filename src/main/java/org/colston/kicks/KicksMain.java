@@ -3,14 +3,13 @@ package org.colston.kicks;
 import org.colston.gui.actions.ActionManager;
 import org.colston.gui.actions.ActionProvider;
 import org.colston.gui.actions.ActionProviders;
-import org.colston.gui.task.TaskListener;
-import org.colston.gui.task.TaskListeners;
 import org.colston.kicks.actions.*;
 import org.colston.kicks.document.persistence.DocumentStore;
 import org.colston.kicks.gui.canvas.Canvas;
 import org.colston.kicks.gui.canvas.CanvasFactory;
 import org.colston.sclib.gui.Splash;
 import org.colston.sclib.gui.StatusPanel;
+import org.colston.sclib.gui.task.Task;
 import org.colston.sclib.i18n.Messages;
 import org.colston.utils.Utils;
 
@@ -27,7 +26,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.logging.Level;
+import java.util.Objects;
 
 /**
  * The main startup class for the application.
@@ -222,21 +221,21 @@ public class KicksMain {
         try {
             List<Image> images = new ArrayList<>(ICON_RESOURCES.length);
             for (String iconResource : ICON_RESOURCES) {
-                images.add(ImageIO.read(KicksMain.class.getResource(iconResource)));
+                images.add(ImageIO.read(Objects.requireNonNull(KicksMain.class.getResource(iconResource))));
             }
             frame.setIconImages(images);
         } catch (IOException e1) {
             e1.printStackTrace();
         }
+        // All chores use this root pane by default
+        Task.getConfig().setRootPane(frame);
 
         //main actions
         ActionProviders.register(mainActionProvider);
-        TaskListeners.register(mainActionProvider);
 
         //create other components that can register action providers
         canvas = CanvasFactory.create();
         ActionProviders.register(canvas.getActionProvider());
-        TaskListeners.register(canvas.getTaskListener());
 
         statusPanel = new StatusPanel();
 
@@ -343,7 +342,7 @@ public class KicksMain {
         }
     }
 
-    private static class MainActionProvider implements ActionProvider, TaskListener {
+    private static class MainActionProvider implements ActionProvider {
         private static final List<Action> actions = new ArrayList<>();
 
         static {
@@ -373,20 +372,6 @@ public class KicksMain {
                 list.add(ActionManager.getAction(Print.class));
             }
             return list;
-        }
-
-        @Override
-        public void taskStarted() {
-            for (Action a : actions) {
-                a.setEnabled(false);
-            }
-        }
-
-        @Override
-        public void taskEnded() {
-            for (Action a : actions) {
-                a.setEnabled(true);
-            }
         }
     }
 }

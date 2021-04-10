@@ -1,11 +1,10 @@
 package org.colston.kicks.actions;
 
 import org.colston.gui.actions.ActionManager;
-import org.colston.gui.task.TaskWorker;
 import org.colston.kicks.KicksMain;
 import org.colston.printpdf.PDFBoxPrintFontMap;
 import org.colston.printpdf.PDFBoxPrintService;
-import org.colston.sclib.i18n.Message;
+import org.colston.sclib.gui.task.Task;
 import org.colston.sclib.i18n.Messages;
 import org.colston.utils.Utils;
 
@@ -48,7 +47,8 @@ public class SaveAsPDF extends AbstractAction {
             return;
         }
 
-        TaskWorker<Object> tw = new TaskWorker<>(KicksMain.getFrame(), KicksMain.getCanvas().getComponent()) {
+        Task<Object> task = new Task<>() {
+
             @Override
             protected Object doInBackground() throws Exception {
                 Printable printable = KicksMain.getCanvas().getPrintable();
@@ -85,8 +85,12 @@ public class SaveAsPDF extends AbstractAction {
 
                 return null;
             }
+
+            @Override
+            protected void updateUI() {
+            }
         };
-        tw.executeTask(new Message(SaveAsPDF.class, "saveaspdf.progress.message"));
+        task.execute();
     }
 
     protected static File createPDFDestination() {

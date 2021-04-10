@@ -1,8 +1,8 @@
 package org.colston.kicks.actions;
 
 import org.colston.gui.actions.ActionManager;
-import org.colston.gui.task.TaskWorker;
 import org.colston.kicks.KicksMain;
+import org.colston.sclib.gui.task.Task;
 import org.colston.sclib.i18n.Message;
 import org.colston.sclib.i18n.Messages;
 import org.colston.utils.Utils;
@@ -41,7 +41,7 @@ public class Save extends AbstractAction {
                 return false;
             }
         }
-        TaskWorker<Object> tw = new TaskWorker<>(KicksMain.getFrame(), KicksMain.getCanvas().getComponent()) {
+        Task<Object> tw = new Task<>() {
             @Override
             protected Object doInBackground() throws Exception {
                 try (OutputStream is = new BufferedOutputStream(new FileOutputStream(file))) {
@@ -51,13 +51,13 @@ public class Save extends AbstractAction {
             }
 
             @Override
-            protected void doneTask() {
+            protected void updateUI() {
                 KicksMain.getCanvas().documentSaved();
                 KicksMain.setCurrentFile(file);
             }
 
         };
-        tw.executeTask(new Message(getClass(), "save.progress.message"));
+        tw.execute(new Message(getClass(), "save.progress.message"));
         return true;
     }
 
