@@ -26,7 +26,6 @@ public class PDFBoxGraphics2D extends Graphics2D implements Cloneable {
         STROKE
     }
 
-    ;
     /*
      * This is the object that this object was cloned from.  Allows a call to the parent to reset the state
      * of things like colour, stroke, etc. once this new context is finished.  Note that null indicates the root.
@@ -447,7 +446,7 @@ public class PDFBoxGraphics2D extends Graphics2D implements Cloneable {
     public void setFont(Font font) {
         PDFont pdfont = shared.fontStore.get(font);
         if (pdfont == null) {
-            System.err.println("There is no font mapping for font: " + font.toString());
+            System.err.println("There is no font mapping for font: " + font);
             return;
         }
         try {

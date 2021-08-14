@@ -1,7 +1,7 @@
 package org.colston.kicks.actions;
 
 import org.colston.gui.actions.ActionManager;
-import org.colston.kicks.KicksMain;
+import org.colston.kicks.KicksApp;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -23,6 +23,6 @@ public class Redo extends AbstractAction {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        KicksMain.getCanvas().redo();
+        KicksApp.canvas().redo();
     }
 }

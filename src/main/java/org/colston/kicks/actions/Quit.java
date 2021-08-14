@@ -1,7 +1,7 @@
 package org.colston.kicks.actions;
 
 import org.colston.gui.actions.ActionManager;
-import org.colston.kicks.KicksMain;
+import org.colston.kicks.KicksApp;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -19,7 +19,7 @@ public class Quit extends AbstractAction {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        JFrame frame = KicksMain.getFrame();
+        JFrame frame = KicksApp.frame();
         frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING));
     }
 }

@@ -22,6 +22,7 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
+import java.util.Objects;
 
 public class PDFBoxPrintJob implements DocPrintJob {
     private final PDFBoxPrintService service;
@@ -142,7 +143,7 @@ public class PDFBoxPrintJob implements DocPrintJob {
                 if (addedFonts != null) {
                     for (PDFBoxPrintFontMap.Mapping m : addedFonts) {
                         try (BufferedInputStream bis = new BufferedInputStream(
-                                m.getCls().getResourceAsStream(m.getFontResourceName()))) {
+                                Objects.requireNonNull(m.getCls().getResourceAsStream(m.getFontResourceName())))) {
                             PDFont pdfont = PDType0Font.load(doc, bis);
                             fontStore.put(m.getFont(), pdfont);
                         }

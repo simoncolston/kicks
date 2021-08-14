@@ -4,6 +4,7 @@
  */
 package org.colston.utils;
 
+import org.colston.kicks.KicksApp;
 import org.colston.kicks.KicksMain;
 
 import javax.swing.*;
@@ -71,7 +72,7 @@ public class Utils {
         chooser.setDialogTitle(title);
         int r = chooser.showDialog(frame, approveButtonText);
         if (r == JFileChooser.APPROVE_OPTION) {
-            Preferences.userNodeForPackage(KicksMain.class).put(LAST_DIR, chooser.getCurrentDirectory().toString());
+            Preferences.userNodeForPackage(KicksApp.class).put(LAST_DIR, chooser.getCurrentDirectory().toString());
             return chooser.getSelectedFile();
         }
         return null;

@@ -1,7 +1,7 @@
 package org.colston.kicks.actions;
 
 import org.colston.gui.actions.ActionManager;
-import org.colston.kicks.KicksMain;
+import org.colston.kicks.KicksApp;
 import org.colston.kicks.Settings;
 import org.colston.sclib.i18n.Messages;
 import org.colston.utils.SpringUtilities;
@@ -28,7 +28,7 @@ public class SettingsAction extends AbstractAction {
 
         if (dialog == null) {
 
-            dialog = new JDialog(KicksMain.getFrame(), Messages.get(SettingsAction.class, "settings.dialog.title"), true);
+            dialog = new JDialog(KicksApp.frame(), Messages.get(SettingsAction.class, "settings.dialog.title"), true);
 
             JPanel panel = new JPanel(new SpringLayout());
             dialog.add(panel, BorderLayout.CENTER);
@@ -51,7 +51,7 @@ public class SettingsAction extends AbstractAction {
             buttons.add(b);
 
             b.addActionListener(e -> {
-                KicksMain.getSettings().setCharacterSubset((Character.Subset[]) charSubsetCombo.getSelectedItem());
+                KicksApp.settings().setCharacterSubset((Character.Subset[]) charSubsetCombo.getSelectedItem());
                 dialog.setVisible(false);
                 dialog.dispose();
             });
@@ -59,7 +59,7 @@ public class SettingsAction extends AbstractAction {
             dialog.getRootPane().setDefaultButton(b);
             dialog.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
             dialog.pack();
-            dialog.setLocationRelativeTo(KicksMain.getFrame());
+            dialog.setLocationRelativeTo(KicksApp.frame());
         }
         charSubsetCombo.requestFocusInWindow();
         return dialog;
@@ -68,7 +68,7 @@ public class SettingsAction extends AbstractAction {
     @Override
     public void actionPerformed(ActionEvent e) {
         JDialog d = getDialog();
-        charSubsetCombo.setSelectedItem(KicksMain.getSettings().getCharacterSubset());
+        charSubsetCombo.setSelectedItem(KicksApp.settings().getCharacterSubset());
         d.setVisible(true);
     }
 

@@ -1,6 +1,6 @@
 package org.colston.kicks.gui.canvas;
 
-import org.colston.kicks.KicksMain;
+import org.colston.kicks.KicksApp;
 import org.colston.kicks.Settings;
 import org.colston.kicks.document.KicksDocument;
 
@@ -71,7 +71,7 @@ public final class CanvasFactory {
         public void focusGained(FocusEvent e) {
             InputContext ic = e.getComponent().getInputContext();
             ic.selectInputMethod(Locale.JAPAN);
-            ic.setCharacterSubsets(KicksMain.getSettings().getCharacterSubset());
+            ic.setCharacterSubsets(KicksApp.settings().getCharacterSubset());
         }
 
         @Override

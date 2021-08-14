@@ -1,7 +1,7 @@
 package org.colston.kicks.actions;
 
 import org.colston.gui.actions.ActionManager;
-import org.colston.kicks.KicksMain;
+import org.colston.kicks.KicksApp;
 import org.colston.sclib.gui.task.Task;
 import org.colston.sclib.i18n.Message;
 import org.colston.sclib.i18n.Messages;
@@ -31,9 +31,9 @@ public class Save extends AbstractAction {
     }
 
     public boolean save() {
-        file = KicksMain.getCurrentFile();
+        file = KicksApp.getCurrentFile();
         if (file == null) {
-            file = Utils.chooseFile(KicksMain.getFrame(),
+            file = Utils.chooseFile(KicksApp.frame(),
                     Messages.get(Save.class, "save.file.choose.title"),
                     Messages.get(Save.class, "save.file.choose.submit.button"),
                     null, Utils.FILE_FILTER, true, Utils.FILE_EXT);
@@ -45,15 +45,15 @@ public class Save extends AbstractAction {
             @Override
             protected Object doInBackground() throws Exception {
                 try (OutputStream is = new BufferedOutputStream(new FileOutputStream(file))) {
-                    KicksMain.getDocumentStore().save(KicksMain.getCanvas().getDocument(), is);
+                    KicksApp.documentStore().save(KicksApp.canvas().getDocument(), is);
                 }
                 return null;
             }
 
             @Override
             protected void updateUI() {
-                KicksMain.getCanvas().documentSaved();
-                KicksMain.setCurrentFile(file);
+                KicksApp.canvas().documentSaved();
+                KicksApp.setCurrentFile(file);
             }
 
         };

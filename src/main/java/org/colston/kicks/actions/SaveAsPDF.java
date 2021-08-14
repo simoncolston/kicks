@@ -1,7 +1,7 @@
 package org.colston.kicks.actions;
 
 import org.colston.gui.actions.ActionManager;
-import org.colston.kicks.KicksMain;
+import org.colston.kicks.KicksApp;
 import org.colston.printpdf.PDFBoxPrintFontMap;
 import org.colston.printpdf.PDFBoxPrintService;
 import org.colston.sclib.gui.task.Task;
@@ -39,7 +39,7 @@ public class SaveAsPDF extends AbstractAction {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        destination = Utils.chooseFile(KicksMain.getFrame(),
+        destination = Utils.chooseFile(KicksApp.frame(),
                 Messages.get(this.getClass(), "saveaspdf.file.choose.title"),
                 Messages.get(this.getClass(), "saveaspdf.file.choose.submit.button"),
                 createPDFDestination(), Utils.PDF_FILE_FILTER, true, Utils.PDF_FILE_EXT);
@@ -51,7 +51,7 @@ public class SaveAsPDF extends AbstractAction {
 
             @Override
             protected Object doInBackground() throws Exception {
-                Printable printable = KicksMain.getCanvas().getPrintable();
+                Printable printable = KicksApp.canvas().getPrintable();
                 DocFlavor flavor = DocFlavor.SERVICE_FORMATTED.PRINTABLE;
                 PrintRequestAttributeSet aset = new HashPrintRequestAttributeSet();
                 aset.add(MediaSizeName.ISO_A4);
@@ -75,10 +75,10 @@ public class SaveAsPDF extends AbstractAction {
                 MediaPrintableArea mpa = new MediaPrintableArea(MARGIN, MARGIN, width, height, MediaPrintableArea.MM);
                 aset.add(mpa);
 
-                Font font = new Font(KicksMain.FONT_NAME, Font.PLAIN, 1);
+                Font font = new Font(KicksApp.FONT_NAME, Font.PLAIN, 1);
 
                 PDFBoxPrintFontMap fontMap = new PDFBoxPrintFontMap();
-                fontMap.add(font, KicksMain.class, KicksMain.FONT_RESOURCE_NAME);
+                fontMap.add(font, KicksApp.class, KicksApp.FONT_RESOURCE_NAME);
                 aset.add(fontMap);
 
                 printJob.print(doc, aset);
@@ -94,10 +94,10 @@ public class SaveAsPDF extends AbstractAction {
     }
 
     protected static File createPDFDestination() {
-        File destination = KicksMain.getCurrentFile();
+        File destination = KicksApp.getCurrentFile();
         if (destination == null) {
             File pwd = Utils.getWorkingDirectory();
-            destination = new File(pwd, KicksMain.APPLICATION_NAME + Utils.PDF_FILE_EXT);
+            destination = new File(pwd, KicksApp.APPLICATION_NAME + Utils.PDF_FILE_EXT);
         }
         destination = Utils.fixFileExtension(destination, Utils.PDF_FILE_EXT);
         return destination;

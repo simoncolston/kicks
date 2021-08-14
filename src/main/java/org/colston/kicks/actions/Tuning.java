@@ -1,7 +1,7 @@
 package org.colston.kicks.actions;
 
 import org.colston.gui.actions.ActionManager;
-import org.colston.kicks.KicksMain;
+import org.colston.kicks.KicksApp;
 import org.colston.kicks.document.KicksDocument;
 import org.colston.sclib.i18n.Messages;
 
@@ -20,11 +20,16 @@ public class Tuning extends AbstractAction {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        KicksDocument doc = KicksMain.getCanvas().getDocument();
+        KicksDocument doc = KicksApp.canvas().getDocument();
         Object[] objs = org.colston.kicks.document.Tuning.values();
-        org.colston.kicks.document.Tuning t = (org.colston.kicks.document.Tuning) JOptionPane.showInputDialog(KicksMain.getFrame(),
-                Messages.get(Tuning.class, "tuning.dialog.message"), Messages.get(Tuning.class, "tuning.dialog.title"),
-                JOptionPane.PLAIN_MESSAGE, null, objs, doc.getTuning());
+        org.colston.kicks.document.Tuning t =
+                (org.colston.kicks.document.Tuning) JOptionPane.showInputDialog(KicksApp.frame(),
+                        Messages.get(Tuning.class, "tuning.dialog.message"),
+                        Messages.get(Tuning.class, "tuning.dialog.title"),
+                        JOptionPane.PLAIN_MESSAGE,
+                        null,
+                        objs,
+                        doc.getTuning());
         if (t != null) {
             doc.setTuning(t);
         }

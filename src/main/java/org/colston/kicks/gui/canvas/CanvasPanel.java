@@ -1,7 +1,7 @@
 package org.colston.kicks.gui.canvas;
 
 import org.colston.gui.actions.ActionManager;
-import org.colston.kicks.KicksMain;
+import org.colston.kicks.KicksApp;
 import org.colston.kicks.actions.Title;
 import org.colston.kicks.document.*;
 
@@ -64,13 +64,13 @@ class CanvasPanel extends JPanel implements Printable {
     /*
      * Fonts
      */
-    private final Font titleFont = new Font(KicksMain.FONT_NAME, Font.PLAIN, 26);
-    private final Font font = new Font(KicksMain.FONT_NAME, Font.PLAIN, 16);
-    private final Font fontBold = new Font(KicksMain.FONT_NAME, Font.BOLD, 16);
-    private final Font sfont = new Font(KicksMain.FONT_NAME, Font.PLAIN, 12);
-    private final Font sfontBold = new Font(KicksMain.FONT_NAME, Font.BOLD, 12);
-    private final Font lyricFont = new Font(KicksMain.FONT_NAME, Font.PLAIN, 11);
-    private final Font flatFont = new Font(KicksMain.FONT_NAME, Font.PLAIN, 8);
+    private final Font titleFont = new Font(KicksApp.FONT_NAME, Font.PLAIN, 26);
+    private final Font font = new Font(KicksApp.FONT_NAME, Font.PLAIN, 16);
+    private final Font fontBold = new Font(KicksApp.FONT_NAME, Font.BOLD, 16);
+    private final Font sfont = new Font(KicksApp.FONT_NAME, Font.PLAIN, 12);
+    private final Font sfontBold = new Font(KicksApp.FONT_NAME, Font.BOLD, 12);
+    private final Font lyricFont = new Font(KicksApp.FONT_NAME, Font.PLAIN, 11);
+    private final Font flatFont = new Font(KicksApp.FONT_NAME, Font.PLAIN, 8);
 
     /*
      * Strokes

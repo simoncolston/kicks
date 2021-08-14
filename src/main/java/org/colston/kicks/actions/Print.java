@@ -1,7 +1,7 @@
 package org.colston.kicks.actions;
 
 import org.colston.gui.actions.ActionManager;
-import org.colston.kicks.KicksMain;
+import org.colston.kicks.KicksApp;
 import org.colston.sclib.gui.task.Task;
 import org.colston.sclib.i18n.Message;
 import org.colston.utils.Utils;
@@ -33,7 +33,7 @@ public class Print extends AbstractAction {
     @Override
     public void actionPerformed(ActionEvent e) {
         PrinterJob printJob = PrinterJob.getPrinterJob();
-        printJob.setPrintable(KicksMain.getCanvas().getPrintable());
+        printJob.setPrintable(KicksApp.canvas().getPrintable());
 
         // create a meaningful job name
         File pdfDestination = SaveAsPDF.createPDFDestination();

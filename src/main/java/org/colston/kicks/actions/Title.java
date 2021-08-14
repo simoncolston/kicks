@@ -1,7 +1,7 @@
 package org.colston.kicks.actions;
 
 import org.colston.gui.actions.ActionManager;
-import org.colston.kicks.KicksMain;
+import org.colston.kicks.KicksApp;
 import org.colston.kicks.document.KicksDocument;
 import org.colston.sclib.i18n.Messages;
 
@@ -20,8 +20,8 @@ public class Title extends AbstractAction {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        KicksDocument doc = KicksMain.getCanvas().getDocument();
-        String s = (String) JOptionPane.showInputDialog(KicksMain.getFrame(),
+        KicksDocument doc = KicksApp.canvas().getDocument();
+        String s = (String) JOptionPane.showInputDialog(KicksApp.frame(),
                 Messages.get(Title.class, "title.dialog.message"), Messages.get(Title.class, "title.dialog.title"),
                 JOptionPane.PLAIN_MESSAGE, null, null, doc.getTitle());
         if (s != null) {

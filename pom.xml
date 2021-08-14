@@ -63,7 +63,7 @@
 							<archive>
 								<manifest>
 									<mainClass>
-										org.colston.kicks.KicksMain
+										org.colston.kicks.KicksApp
 									</mainClass>
 								</manifest>
 							</archive>

@@ -2,7 +2,7 @@ package org.colston.kicks.gui.canvas;
 
 import org.colston.gui.actions.ActionManager;
 import org.colston.gui.actions.ActionProvider;
-import org.colston.kicks.KicksMain;
+import org.colston.kicks.KicksApp;
 import org.colston.kicks.actions.Redo;
 import org.colston.kicks.actions.Title;
 import org.colston.kicks.actions.Tuning;
@@ -119,7 +119,7 @@ class CanvasControl implements Canvas {
 
     @Override
     public void documentSaved() {
-        savedDocument = KicksMain.getDocumentStore().clone(getDocument());
+        savedDocument = KicksApp.documentStore().clone(getDocument());
     }
 
     @Override

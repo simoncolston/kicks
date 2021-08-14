@@ -1,7 +1,7 @@
 package org.colston.kicks.actions;
 
 import org.colston.gui.actions.ActionManager;
-import org.colston.kicks.KicksMain;
+import org.colston.kicks.KicksApp;
 import org.colston.kicks.document.KicksDocument;
 import org.colston.sclib.gui.task.Task;
 import org.colston.sclib.i18n.Message;
@@ -31,7 +31,7 @@ public class Open extends AbstractAction {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        File f = Utils.chooseFile(KicksMain.getFrame(), Messages.get(Open.class, "open.file.choose.title"),
+        File f = Utils.chooseFile(KicksApp.frame(), Messages.get(Open.class, "open.file.choose.title"),
                 Messages.get(Open.class, "open.file.choose.submit.button"),
                 null, Utils.FILE_FILTER, false, null);
         if (f == null || !f.exists()) {
@@ -67,12 +67,12 @@ public class Open extends AbstractAction {
 
     private KicksDocument loadDocument(File file) throws Exception {
         try (InputStream is = new BufferedInputStream(new FileInputStream(file))) {
-            return KicksMain.getDocumentStore().load(is);
+            return KicksApp.documentStore().load(is);
         }
     }
 
     private void setDocument(File file, KicksDocument document) {
-        KicksMain.getCanvas().setDocument(document);
-        KicksMain.setCurrentFile(file);
+        KicksApp.canvas().setDocument(document);
+        KicksApp.setCurrentFile(file);
     }
 }
