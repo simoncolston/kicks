@@ -380,9 +380,9 @@ class CanvasPanel extends JPanel implements Printable {
             chw = fontMetrics.charWidth(ch[0]) + 2;
 
             x += ((COLUMN_WIDTH / 2) - chw) / 2;
-            y = y(n.getIndex(), n.getOffset()) + 2;      //+2 here to squash them together vertically
+            y = y(n.getIndex(), n.getOffset()) + 1;      //+1 here to squash them together vertically
             g2.drawChars(ch, 0, 1, x + 1, y);
-            y += (font.getSize() / 2) - 1; //-1 here to squash them together vertically
+            y += (font.getSize() / 2);                   //-1 here to squash them together vertically (if necessary)
             g2.drawChars(ch, 1, 1, x + 1, y);
 
             g2.setFont(currentFont);
@@ -394,7 +394,7 @@ class CanvasPanel extends JPanel implements Printable {
             chw = chw0 + chw1;
             x += ((COLUMN_WIDTH / 2) - chw) / 2;
             g2.drawChars(ch, 0, 1, x - 2, y);
-            g2.drawChars(ch, 1, 1, x + chw0 - 2, y);
+            g2.drawChars(ch, 1, 1, x + chw0 - 1, y);
 
             //to add a little more padding to the 'utou' for double characters
             chw += 2;

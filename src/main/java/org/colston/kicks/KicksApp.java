@@ -41,8 +41,10 @@ public class KicksApp extends GuiApp {
             "icon24.png",
             "icon16.png",
     };
-    public static final String FONT_NAME = "HanaMinA Regular";
-    public static final String FONT_RESOURCE_NAME = "HanaMinA.ttf";
+//    public static final String FONT_NAME = "HanaMinA Regular";
+//    public static final String FONT_RESOURCE_NAME = "HanaMinA.ttf";
+    public static final String FONT_NAME = "Harano Aji Mincho";
+    public static final String FONT_RESOURCE_NAME = "HaranoAjiMincho-Regular.otf";
 
     private static KicksApp kicks;
     //TODO: Make this system dependent?  Go for a "dot file" config?
