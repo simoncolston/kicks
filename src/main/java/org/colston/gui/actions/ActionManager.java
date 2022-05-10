@@ -68,7 +68,8 @@ public class ActionManager {
     public static synchronized void initialiseResources(Action a) {
         String mPrefix = (String) a.getValue(MESSAGE_RESOURCE_PREFIX_KEY);
         if (mPrefix != null) {
-            a.putValue(Action.NAME, Messages.get(a.getClass(), mPrefix + ".name"));
+            a.putValue(Action.NAME, getNullableMessage(a.getClass(), mPrefix + ".name"));
+            // leave the tooltip - good for debugging
             a.putValue(Action.SHORT_DESCRIPTION, Messages.get(a.getClass(), mPrefix + ".tooltip"));
             String mnemonicName = mPrefix + ".mnemonic";
             String s = Messages.get(a.getClass(), mnemonicName);
@@ -76,8 +77,11 @@ public class ActionManager {
                 // The mnemonic was found and is not zero length
                 a.putValue(Action.MNEMONIC_KEY, s.codePointAt(0));
             }
-            a.putValue(Action.ACCELERATOR_KEY,
-                    KeyStroke.getKeyStroke(Messages.get(a.getClass(), mPrefix + ".shortcut.key")));
+            s = getNullableMessage(a.getClass(), mPrefix + ".shortcut.key");
+            if (s != null) {
+                // don't overwrite shortcut unless specified
+                a.putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(s));
+            }
         }
         String s = (String) a.getValue(SMALL_ICON_NAME_KEY);
         if (s != null) {
@@ -94,5 +98,10 @@ public class ActionManager {
                 a.putValue(Action.LARGE_ICON_KEY, new ImageIcon(url));
             }
         }
+    }
+
+    private static String getNullableMessage(Class<?> clss, String key) {
+        String value = Messages.get(clss, key);
+        return key.equalsIgnoreCase(value) ? null : value;
     }
 }

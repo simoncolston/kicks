@@ -10,6 +10,7 @@ import org.colston.kicks.gui.canvas.CanvasFactory;
 import org.colston.sclib.gui.GuiApp;
 import org.colston.sclib.gui.task.Task;
 import org.colston.sclib.i18n.Messages;
+import org.colston.utils.Utils;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -41,7 +42,9 @@ public class KicksApp extends GuiApp {
             "icon24.png",
             "icon16.png",
     };
-//    public static final String FONT_NAME = "HanaMinA Regular";
+    private static final String SPLASH_FILE_NAME = "splash.png";
+
+    //    public static final String FONT_NAME = "HanaMinA Regular";
 //    public static final String FONT_RESOURCE_NAME = "HanaMinA.ttf";
     public static final String FONT_NAME = "Harano Aji Mincho";
     public static final String FONT_RESOURCE_NAME = "HaranoAjiMincho-Regular.otf";
@@ -82,11 +85,12 @@ public class KicksApp extends GuiApp {
 
     public static void setCurrentFile(File currentFile) {
         kicks.currentFile = currentFile;
+        kicks.statusPanel.setMessage(currentFile == null ? "" : currentFile.getAbsolutePath());
     }
 
     @Override
     protected Icon getSplashIcon() {
-        return null;
+        return Utils.createIconFromResource(KicksMain.class, SPLASH_FILE_NAME);
     }
 
     @Override

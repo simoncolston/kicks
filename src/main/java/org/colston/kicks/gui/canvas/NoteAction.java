@@ -1,14 +1,17 @@
 package org.colston.kicks.gui.canvas;
 
+import org.colston.gui.actions.ActionManager;
+
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 
 class NoteAction extends CanvasAction {
-    private int string;
-    private int placement;
+    private final int string;
+    private final int placement;
 
     NoteAction(KeyStroke[] keyStrokes, String actionCommand, int string, int placement) {
         super(keyStrokes, actionCommand);
+        putValue(ActionManager.MESSAGE_RESOURCE_PREFIX_KEY, "canvas.note." + string + "." + placement);
         this.string = string;
         this.placement = placement;
     }

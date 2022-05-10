@@ -25,7 +25,10 @@ TODO
   - [ ]   5   Highlight
   - [ ]   5   Import/Export Paul's JSON
   - [x] **1** Use JAXB for saving/loading document to XML
-  
+
+#### View
+  - [ ]   2   Zoom
+
 ##### Selection
   - [x] **1** Mouse to move cursor on canvas
   - [ ] **1** Selection on canvas
@@ -43,12 +46,12 @@ TODO
   - [x] **1** Bundle nice font with the application
   
 ##### Input
-  - [ ] **1** Input notes using mouse
+  - [x] **1** Input notes using mouse
   - [x] **1** Automatically switch IME when inputting lyrics
   - [x] **1** Restrict lyric input to 2 chars
   - [ ]   2   Cursor advance selection: None, half cell, full cell 
   
 ##### Settings
   - [x] **1** Refactor settings into Main class (includes moving UIFactory into Main)
-  - [ ] **1** Settings stored using Preferences (or ~/.kicks file ?)
+  - [ ]   2   Settings stored using Preferences (or ~/.kicks file ?)
   
