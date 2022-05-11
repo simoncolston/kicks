@@ -54,4 +54,7 @@ TODO
 ##### Settings
   - [x] **1** Refactor settings into Main class (includes moving UIFactory into Main)
   - [ ]   2   Settings stored using Preferences (or ~/.kicks file ?)
-  
+
+##### Build
+  - [ ] **1** Upgrade to Java 17
+  - [ ] **1** Create executable
