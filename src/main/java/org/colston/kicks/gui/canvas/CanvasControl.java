@@ -5,7 +5,6 @@ import org.colston.gui.actions.ActionProvider;
 import org.colston.kicks.KicksApp;
 import org.colston.kicks.actions.Redo;
 import org.colston.kicks.actions.Title;
-import org.colston.kicks.actions.Tuning;
 import org.colston.kicks.actions.Undo;
 import org.colston.kicks.document.KicksDocument;
 import org.colston.kicks.document.KicksDocumentListener;
@@ -204,7 +203,6 @@ class CanvasControl implements Canvas {
             editActions.add(ActionManager.getAction(Undo.class));
             editActions.add(ActionManager.getAction(Redo.class));
             documentActions.add(ActionManager.getAction(Title.class));
-            documentActions.add(ActionManager.getAction(Tuning.class));
         }
 
         @Override
