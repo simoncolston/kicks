@@ -29,6 +29,10 @@ TODO
 #### View
   - [ ]   2   Zoom
 
+#### Help
+  - [ ]   5   Add help (using JavaHelp - is that still a thing?)
+  - [ ] **1** About box (taking version from the manifest file)
+
 ##### Selection
   - [x] **1** Mouse to move cursor on canvas
   - [ ] **1** Selection on canvas
@@ -56,5 +60,5 @@ TODO
   - [ ]   2   Settings stored using Preferences (or ~/.kicks file ?)
 
 ##### Build
-  - [ ] **1** Upgrade to Java 17
+  - [x] **1** Upgrade to Java 17
   - [ ] **1** Create executable

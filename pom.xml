@@ -13,15 +13,17 @@
 	<description>Kunkunshi Editor</description>
 
 	<properties>
-		<jaxb.version>3.0.0</jaxb.version>
+		<jaxb.version>3.0.2</jaxb.version>
 		<pdfbox.version>2.0.26</pdfbox.version>
 
 		<junit.version>5.8.2</junit.version>
 
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<maven.compiler.release>11</maven.compiler.release>
-		<maven.compiler.source>11</maven.compiler.source>
-		<maven.compiler.target>11</maven.compiler.target>
+
+		<kicks.java.version>17</kicks.java.version>
+		<maven.compiler.release>${kicks.java.version}</maven.compiler.release>
+		<maven.compiler.source>${kicks.java.version}</maven.compiler.source>
+		<maven.compiler.target>${kicks.java.version}</maven.compiler.target>
 	</properties>
 
 	<build>
@@ -44,7 +46,7 @@
 				<configuration>
 					<toolchains>
 						<jdk>
-							<version>11</version>
+							<version>${kicks.java.version}</version>
 							<vendor>openjdk</vendor>
 						</jdk>
 					</toolchains>
@@ -55,6 +57,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-assembly-plugin</artifactId>
+				<version>3.3.0</version>
 				<executions>
 					<execution>
 						<phase>package</phase>
@@ -64,9 +67,8 @@
 						<configuration>
 							<archive>
 								<manifest>
-									<mainClass>
-										org.colston.kicks.KicksApp
-									</mainClass>
+									<mainClass>org.colston.kicks.KicksApp</mainClass>
+									<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
 								</manifest>
 							</archive>
 							<descriptorRefs>
@@ -100,13 +102,13 @@
 		</dependency>
 
 		<dependency>
-			<groupId>jakarta.xml.bind</groupId>
-			<artifactId>jakarta.xml.bind-api</artifactId>
+			<groupId>org.glassfish.jaxb</groupId>
+			<artifactId>jaxb-core</artifactId>
 			<version>${jaxb.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>com.sun.xml.bind</groupId>
-			<artifactId>jaxb-impl</artifactId>
+			<groupId>org.glassfish.jaxb</groupId>
+			<artifactId>jaxb-runtime</artifactId>
 			<version>${jaxb.version}</version>
 			<scope>runtime</scope>
 		</dependency>
