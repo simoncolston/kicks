@@ -278,6 +278,25 @@ public class KicksDocument {
         }
     }
 
+    public Note findPreviousNote(int index, int offset) {
+        if (notes.isEmpty()) {
+            return null;
+        }
+        key.index = index;
+        key.offset = offset;
+        int listIndex = Collections.binarySearch(notes, key, comparator);
+        if (listIndex == -1) {
+            // reached the start of the document
+            return null;
+        } else if (listIndex >= 0) {
+            // return the note at this index and offset
+            return notes.get(listIndex);
+        } else {
+            // listIndex = -(insertion point) - 1, so add 2 to get the previous note
+            return notes.get(Math.abs(listIndex + 2));
+        }
+    }
+
     @Override
     public int hashCode() {
         final int prime = 31;

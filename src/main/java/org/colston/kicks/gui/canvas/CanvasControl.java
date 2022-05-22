@@ -187,6 +187,10 @@ class CanvasControl implements Canvas {
         canvasPanel.delete();
     }
 
+    void backspace() {
+        canvasPanel.backspace();
+    }
+
     void setChord() {
         canvasPanel.setChord();
     }

@@ -75,7 +75,7 @@ final class CanvasActions {
                 {
                         KeyStroke.getKeyStroke(KeyEvent.VK_PERIOD, 0),
                         KeyStroke.getKeyStroke(KeyEvent.VK_PERIOD, InputEvent.SHIFT_DOWN_MASK)
-                }, "canvas.note.ｲ乙", string, placement++));
+                }, "canvas.note.ｲ乙", string, placement));
 
         // --- middle string
         string = 2;
@@ -124,7 +124,7 @@ final class CanvasActions {
                 {
                         KeyStroke.getKeyStroke(KeyEvent.VK_L, 0),
                         KeyStroke.getKeyStroke(KeyEvent.VK_L, InputEvent.SHIFT_DOWN_MASK)
-                }, "canvas.note.ｲ上", string, placement++));
+                }, "canvas.note.ｲ上", string, placement));
 
         // --- high string
         string = 3;
@@ -173,7 +173,7 @@ final class CanvasActions {
                 {
                         KeyStroke.getKeyStroke(KeyEvent.VK_O, 0),
                         KeyStroke.getKeyStroke(KeyEvent.VK_O, InputEvent.SHIFT_DOWN_MASK)
-                }, "canvas.note.ｲ五", string, placement++));
+                }, "canvas.note.ｲ五", string, placement));
 
         // --- rest
         map.put("canvas.rest", new CanvasAction((c, e) -> c.addRest(),
@@ -196,6 +196,8 @@ final class CanvasActions {
         //Edit commands
         map.put("canvas.delete", new CanvasAction((c, e) -> c.delete(),
                 new KeyStroke[]{KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0)}, "canvas.delete"));
+        map.put("canvas.backspace", new CanvasAction((c, e) -> c.backspace(),
+                new KeyStroke[]{KeyStroke.getKeyStroke(KeyEvent.VK_BACK_SPACE, 0)}, "canvas.backspace"));
 
         //Cursor movement
         map.put("canvas.cursor.left", new CanvasAction((c, e) -> c.moveCursorLeft(),
@@ -251,6 +253,7 @@ final class CanvasActions {
         addToInputActionMaps(component, actions.get(actionName));
     }
 
+    @SuppressWarnings("SameParameterValue")
     static List<CanvasAction> getActionsWithPrefix(String prefix) {
         return actions.values().stream().filter(
                 e -> e.getActionCommand().startsWith(prefix)).collect(Collectors.toList());

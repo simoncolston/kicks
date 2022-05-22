@@ -136,8 +136,7 @@ class CanvasPanel extends JPanel implements Printable {
     protected void setDocument(KicksDocument doc) {
         this.doc = doc;
 
-        cursorIndex = 0;
-        cursorOffset = CELL_TICKS / 2;
+        initialiseCursor();
         cursorOnNote = true;
         text.setVisible(false);
     }
@@ -412,15 +411,15 @@ class CanvasPanel extends JPanel implements Printable {
         y -= fm.getFont().getSize() + 1;
 
         switch (n.getUtou()) {
-            case KAKI:
+            case KAKI -> {
                 g2.setStroke(decorateStroke);
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
                 g2.drawLine(x, y, x + 1 - fm.getFont().getSize() / 2, y);
                 g2.drawLine(x, y, x, y - 1 + fm.getFont().getSize() / 2);
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
                 g2.setStroke(stroke);
-                break;
-            case UCHI:
+            }
+            case UCHI -> {
                 g2.setStroke(decorateStroke);
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
                 g2.drawLine(x - fm.getFont().getSize() / 4, y, x, y + fm.getFont().getSize() / 4);
@@ -428,11 +427,9 @@ class CanvasPanel extends JPanel implements Printable {
                 g2.drawLine(x, y + fm.getFont().getSize() / 4, x + 1, y - 1 + fm.getFont().getSize() / 4);
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
                 g2.setStroke(stroke);
-                break;
-            case NONE:
-                break;
-            default:
-                break;
+            }
+            case NONE -> {
+            }
         }
     }
 
@@ -462,6 +459,7 @@ class CanvasPanel extends JPanel implements Printable {
 
         g2.scale(scale, scale);
         if (borderWidth > 0) {
+            //noinspection SuspiciousNameCombination
             g2.translate(borderWidth, borderWidth);
         }
 
@@ -537,13 +535,17 @@ class CanvasPanel extends JPanel implements Printable {
 
     /**
      * NOTE: This is package private to allow the cursor to be set by undo.
-     * @param index
-     * @param offset
-     * @param onNote
+     * @param index index for cursor
+     * @param offset offset for cursor
+     * @param onNote note column or lyric column
      */
     void setCursor(int index, int offset, boolean onNote) {
         setCursorOnNote(onNote);
         setCursor(index, offset);
+    }
+
+    private void initialiseCursor() {
+        setCursor(0, CELL_TICKS / 2);
     }
 
     private void setCursorOnNote(boolean newValue) {
@@ -563,6 +565,7 @@ class CanvasPanel extends JPanel implements Printable {
             // convert to screen coordinates
             x = (int) ((x + borderWidth) * scale);
             y = (int) ((y + borderWidth) * scale);
+            //noinspection SuspiciousNameCombination
             text.setBounds(x, y, height, height);
 
             Lyric l = doc.getLyric(cursorIndex, cursorOffset);
@@ -665,6 +668,9 @@ class CanvasPanel extends JPanel implements Printable {
         doc.setSlur(cursorIndex, cursorOffset);
     }
 
+    /**
+     * Delete note, repeat or lyric.
+     */
     public void delete() {
         if (cursorOnNote) {
             doc.removeNote(cursorIndex, cursorOffset);
@@ -672,6 +678,23 @@ class CanvasPanel extends JPanel implements Printable {
         } else {
             doc.removeLyric(cursorIndex, cursorOffset);
         }
+    }
+
+    /**
+     * Move to the position of the current or previous note then delete it.
+     * Ignored if not in the note column.
+     */
+    public void backspace() {
+        if (!cursorOnNote) {
+            return;
+        }
+        Locatable locatable = doc.findPreviousNote(cursorIndex, cursorOffset);
+        if (locatable == null) {
+            initialiseCursor();
+        } else {
+            setCursor(locatable.getIndex(), locatable.getOffset());
+        }
+        delete();
     }
 
     class ML extends MouseAdapter implements MouseListener {
