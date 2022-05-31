@@ -31,4 +31,8 @@ public interface Canvas {
     void undo();
 
     void redo();
+
+    enum AutoCursor {
+        OFF, HALF, ONE
+    }
 }

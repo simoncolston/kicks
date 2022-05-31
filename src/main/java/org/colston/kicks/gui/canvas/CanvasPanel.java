@@ -98,6 +98,7 @@ class CanvasPanel extends JPanel implements Printable {
     private int cursorOffset = CELL_TICKS / 2; // offset within a cell (0 - CELL_TICKS)
     private boolean cursorOnNote = true;       // flag indicating whether cursor on the notes or the lyrics
     private boolean cursorHighlight = false;   // flag indicating temporarily in mode for highlighting
+    private Canvas.AutoCursor autoCursor = Canvas.AutoCursor.ONE; // where to move the cursor after input
 
     /*
      * The document.
@@ -577,8 +578,13 @@ class CanvasPanel extends JPanel implements Printable {
         }
     }
 
-    private void moveHalfCell() {
-        moveCursor(CELL_TICKS / 2);
+    private void doAutoCursor() {
+        int ticks = switch (autoCursor) {
+            case OFF -> 0;
+            case HALF -> CELL_TICKS / 2;
+            case ONE -> CELL_TICKS;
+        };
+        moveCursor(ticks);
     }
 
     public void addNote(int string, int placement, boolean isSmall) {
@@ -587,7 +593,7 @@ class CanvasPanel extends JPanel implements Printable {
         if (isSmall) {
             n.setSmall(true);
         }
-        moveHalfCell();
+        doAutoCursor();
     }
 
     public void addRest() {
@@ -608,7 +614,7 @@ class CanvasPanel extends JPanel implements Printable {
             Lyric l = new Lyric(cursorIndex, cursorOffset, s);
             doc.addLyric(l);
         }
-        moveHalfCell();
+        doAutoCursor();
     }
 
     public void moveCursorLeft() {
@@ -645,6 +651,10 @@ class CanvasPanel extends JPanel implements Printable {
         } else {
             moveCursor(CELL_TICKS / 2);
         }
+    }
+
+    void setAutoCursor(Canvas.AutoCursor autoCursor) {
+        this.autoCursor = autoCursor;
     }
 
     public void addRepeat(boolean end) {

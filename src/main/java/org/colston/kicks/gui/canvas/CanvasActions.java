@@ -1,6 +1,7 @@
 package org.colston.kicks.gui.canvas;
 
 import org.colston.gui.actions.ActionManager;
+import org.colston.gui.actions.ComponentAction;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -193,13 +194,13 @@ final class CanvasActions {
                                 KeyStroke.getKeyStroke(KeyEvent.VK_MINUS, InputEvent.SHIFT_DOWN_MASK)
                         }, "canvas.utou"));
 
-        //Edit commands
+        // Edit commands
         map.put("canvas.delete", new CanvasAction((c, e) -> c.delete(),
                 new KeyStroke[]{KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0)}, "canvas.delete"));
         map.put("canvas.backspace", new CanvasAction((c, e) -> c.backspace(),
                 new KeyStroke[]{KeyStroke.getKeyStroke(KeyEvent.VK_BACK_SPACE, 0)}, "canvas.backspace"));
 
-        //Cursor movement
+        // Cursor movement and control
         map.put("canvas.cursor.left", new CanvasAction((c, e) -> c.moveCursorLeft(),
                 new KeyStroke[]{KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, 0)}, "canvas.cursor.left"));
         map.put("canvas.cursor.right", new CanvasAction((c, e) -> c.moveCursorRight(),
@@ -218,8 +219,17 @@ final class CanvasActions {
                                 KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, InputEvent.CTRL_DOWN_MASK),
                                 KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, InputEvent.ALT_DOWN_MASK)
                         }, "canvas.cursor.down"));
+        map.put("canvas.cursor.auto.off", new CanvasAction((c, e) -> c.setAutoCursor(Canvas.AutoCursor.OFF),
+                new KeyStroke[]{KeyStroke.getKeyStroke(KeyEvent.VK_F6, InputEvent.CTRL_DOWN_MASK)},
+                "canvas.cursor.auto.off"));
+        map.put("canvas.cursor.auto.half", new CanvasAction((c, e) -> c.setAutoCursor(Canvas.AutoCursor.HALF),
+                new KeyStroke[]{KeyStroke.getKeyStroke(KeyEvent.VK_F6, InputEvent.SHIFT_DOWN_MASK)},
+                "canvas.cursor.auto.half"));
+        map.put("canvas.cursor.auto.one", new CanvasAction((c, e) -> c.setAutoCursor(Canvas.AutoCursor.ONE),
+                new KeyStroke[]{KeyStroke.getKeyStroke(KeyEvent.VK_F6, 0)},
+                "canvas.cursor.auto.one"));
 
-        //Add other things
+        // Add other things like repeats
         map.put("canvas.repeatstart", new CanvasAction((c, e) -> c.addRepeat(false),
                 new KeyStroke[]{KeyStroke.getKeyStroke(KeyEvent.VK_OPEN_BRACKET, 0)},
                 "canvas.repeatstart"));
@@ -231,6 +241,7 @@ final class CanvasActions {
         map.put("canvastext.enter", new CanvasAction((c, e) -> c.addLyric(),
                 new KeyStroke[]{KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0)},
                 "canvastext.enter"));
+
         actions = Collections.unmodifiableMap(map);
     }
 
@@ -257,6 +268,10 @@ final class CanvasActions {
     static List<CanvasAction> getActionsWithPrefix(String prefix) {
         return actions.values().stream().filter(
                 e -> e.getActionCommand().startsWith(prefix)).collect(Collectors.toList());
+    }
+
+    static CanvasAction getAction(String name) {
+        return actions.get(name);
     }
 
     private static void addToInputActionMaps(JComponent component, CanvasAction ca) {

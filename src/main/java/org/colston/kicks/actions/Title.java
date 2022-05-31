@@ -4,6 +4,7 @@ import org.colston.gui.actions.ActionManager;
 import org.colston.kicks.KicksApp;
 import org.colston.kicks.document.KicksDocument;
 import org.colston.kicks.document.Tuning;
+import org.colston.kicks.gui.util.JapaneseTextFocusListener;
 import org.colston.sclib.i18n.Messages;
 import org.colston.utils.SpringUtilities;
 
@@ -28,6 +29,7 @@ public class Title extends AbstractAction {
         dialog = new JDialog(KicksApp.frame(), Messages.get(Title.class, "title.dialog.title"), true);
 
         JTextField titleText = new JTextField(doc.getTitle(), 30);
+        titleText.addFocusListener(new JapaneseTextFocusListener());
         Tuning[] tunings = Tuning.values();
         JComboBox<Tuning> tuningCombo = new JComboBox<>(tunings);
         tuningCombo.setSelectedItem((doc.getTuning() != null) ? doc.getTuning() : Tuning.HONCHOUSHI);

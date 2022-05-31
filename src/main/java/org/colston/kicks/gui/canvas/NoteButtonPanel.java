@@ -24,12 +24,12 @@ public class NoteButtonPanel extends JPanel {
         Dimension dim = new Dimension(WIDTH, HEIGHT);
         setPreferredSize(dim);
         setMaximumSize(dim);
+        setMinimumSize(dim);
 
         for (CanvasAction ca : CanvasActions.getActionsWithPrefix("canvas.note")) {
-            if (!(ca instanceof NoteAction)) {
+            if (!(ca instanceof NoteAction na)) {
                 continue;
             }
-            NoteAction na = (NoteAction) ca;
             JButton b = new JButton(na);
             b.setIcon(NoteValues.getImage(na.getString(), na.getPlacement()));
             b.setMargin(new Insets(2, 2, 2, 2));

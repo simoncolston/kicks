@@ -199,6 +199,10 @@ class CanvasControl implements Canvas {
         canvasPanel.setSlur();
     }
 
+    void setAutoCursor(AutoCursor autoCursor) {
+        canvasPanel.setAutoCursor(autoCursor);
+    }
+
     private static class CanvasActionProvider implements ActionProvider {
         private final List<Action> editActions = new ArrayList<>();
         private final List<Action> documentActions = new ArrayList<>();
