@@ -23,10 +23,8 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Collections;
+import java.util.*;
 import java.util.List;
-import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -90,7 +88,7 @@ public class KicksApp extends GuiApp {
 
     @Override
     protected Icon getSplashIcon() {
-        return Utils.createIconFromResource(KicksMain.class, SPLASH_FILE_NAME);
+        return Utils.createIconFromResource(KicksApp.class, SPLASH_FILE_NAME);
     }
 
     @Override
@@ -123,7 +121,7 @@ public class KicksApp extends GuiApp {
     }
 
     public static InputStream openFontResourceInputStream() {
-        return KicksMain.class.getResourceAsStream(FONT_RESOURCE_NAME);
+        return KicksApp.class.getResourceAsStream(FONT_RESOURCE_NAME);
     }
 
     @Override
@@ -131,11 +129,20 @@ public class KicksApp extends GuiApp {
         try {
             List<Image> images = new ArrayList<>(ICON_RESOURCES.length);
             for (String iconResource : ICON_RESOURCES) {
-                images.add(ImageIO.read(Objects.requireNonNull(KicksMain.class.getResource(iconResource))));
+                images.add(ImageIO.read(Objects.requireNonNull(KicksApp.class.getResource(iconResource))));
             }
             return images;
         } catch (IOException e) {
             logger.log(Level.WARNING, "Error loading frame icon images", e);
+        }
+        return null;
+    }
+
+    public static Image getBiggestIconImage() {
+        try {
+            return ImageIO.read(Objects.requireNonNull(KicksApp.class.getResource(ICON_RESOURCES[0])));
+        } catch (IOException e) {
+            logger.log(Level.WARNING, "Error loading biggest icon image", e);
         }
         return null;
     }
@@ -150,13 +157,13 @@ public class KicksApp extends GuiApp {
                     frame.dispose();
                     return;
                 }
-                String message = Messages.get(KicksMain.class, "window.closing.message");
-                String title = Messages.get(KicksMain.class, "window.closing.title");
+                String message = Messages.get(KicksApp.class, "window.closing.message");
+                String title = Messages.get(KicksApp.class, "window.closing.title");
                 Object[] options = new Object[]
                         {
-                                Messages.get(KicksMain.class, "window.closing.save"),
-                                Messages.get(KicksMain.class, "window.closing.dont.save"),
-                                Messages.get(KicksMain.class, "window.closing.cancel")
+                                Messages.get(KicksApp.class, "window.closing.save"),
+                                Messages.get(KicksApp.class, "window.closing.dont.save"),
+                                Messages.get(KicksApp.class, "window.closing.cancel")
                         };
                 int ret = JOptionPane.showOptionDialog(frame, message, title, JOptionPane.YES_NO_CANCEL_OPTION,
                         JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
@@ -248,14 +255,15 @@ public class KicksApp extends GuiApp {
         addMenu(menuBar, "menu.file");
         addMenu(menuBar, "menu.edit");
         addMenu(menuBar, "menu.document");
+        addMenu(menuBar, "menu.help");
         return menuBar;
     }
 
     private static void addMenu(JMenuBar menuBar, String menuName) {
         JMenu menu = new JMenu();
         menuBar.add(menu);
-        menu.setText(Messages.get(KicksMain.class, menuName));
-        String s = Messages.get(KicksMain.class, menuName + ".mnemonic");
+        menu.setText(Messages.get(KicksApp.class, menuName));
+        String s = Messages.get(KicksApp.class, menuName + ".mnemonic");
         menu.setMnemonic(KeyEvent.getExtendedKeyCodeForChar(s.codePointAt(0)));
         populateMenu(menu, menuName);
     }
@@ -308,21 +316,28 @@ public class KicksApp extends GuiApp {
     }
 
     private static class MainActionProvider implements ActionProvider {
-        private static final List<Action> actions = new ArrayList<>();
 
-        static {
-            actions.add(ActionManager.getAction(Open.class));
-            actions.add(ActionManager.getAction(Save.class));
-            actions.add(ActionManager.getAction(SaveAsPDF.class));
-            actions.add(ActionManager.getAction(Print.class));
-            actions.add(ActionManager.getAction(SettingsAction.class));
-            actions.add(ActionManager.getAction(Quit.class));
+        private final List<Action> fileActions = new ArrayList<>();
+        private final List<Action> helpActions = new ArrayList<>();
+
+        public MainActionProvider() {
+            fileActions.add(ActionManager.getAction(Open.class));
+            fileActions.add(ActionManager.getAction(Save.class));
+            fileActions.add(ActionManager.getAction(SaveAsPDF.class));
+            fileActions.add(ActionManager.getAction(Print.class));
+            fileActions.add(ActionManager.getAction(SettingsAction.class));
+            fileActions.add(ActionManager.getAction(Quit.class));
+
+            helpActions.add(ActionManager.getAction(KeyboardShortcuts.class));
+            helpActions.add(ActionManager.getAction(About.class));
         }
 
         @Override
         public List<Action> getMenuActions(String menuName) {
             if ("menu.file".equals(menuName)) {
-                return Collections.unmodifiableList(actions);
+                return fileActions;
+            } else if ("menu.help".equals(menuName)) {
+                return helpActions;
             }
             return null;
         }
@@ -337,6 +352,13 @@ public class KicksApp extends GuiApp {
                 list.add(ActionManager.getAction(Print.class));
             }
             return list;
+        }
+
+        @Override
+        public Collection<? extends Action> getAllActions() {
+            List<Action> actions = new ArrayList<>(fileActions);
+            actions.addAll(helpActions);
+            return actions;
         }
     }
 }

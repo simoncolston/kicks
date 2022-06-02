@@ -5,11 +5,15 @@
 package org.colston.utils;
 
 import org.colston.kicks.KicksApp;
-import org.colston.kicks.KicksMain;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
+import java.awt.*;
+import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
 import java.io.File;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.net.URL;
 import java.util.prefs.Preferences;
 
@@ -102,6 +106,64 @@ public class Utils {
     }
 
     private static String getLastDir() {
-        return Preferences.userNodeForPackage(KicksMain.class).get(LAST_DIR, null);
+        return Preferences.userNodeForPackage(KicksApp.class).get(LAST_DIR, null);
+    }
+
+    /**
+     * Create a display string for the keystroke. Modified version of {@link AWTKeyStroke#toString()} that gives a
+     * more universal value.
+     * @param stroke the stroke to convert to string
+     * @return string describing key stroke
+     */
+    public static String toString(KeyStroke stroke) {
+        return getModifiersText(stroke.getModifiers()) + getVKText(stroke.getKeyCode());
+    }
+
+    private static String getModifiersText(int modifiers) {
+        StringBuilder buf = new StringBuilder();
+        if ((modifiers & InputEvent.SHIFT_DOWN_MASK) != 0 ) {
+            buf.append("Shift-");
+        }
+        if ((modifiers & InputEvent.CTRL_DOWN_MASK) != 0 ) {
+            buf.append("Ctrl-");
+        }
+        if ((modifiers & InputEvent.META_DOWN_MASK) != 0 ) {
+            buf.append("Meta-");
+        }
+        if ((modifiers & InputEvent.ALT_DOWN_MASK) != 0 ) {
+            buf.append("Alt-");
+        }
+        if ((modifiers & InputEvent.ALT_GRAPH_DOWN_MASK) != 0 ) {
+            buf.append("AltGraph-");
+        }
+        if ((modifiers & InputEvent.BUTTON1_DOWN_MASK) != 0 ) {
+            buf.append("Button1-");
+        }
+        if ((modifiers & InputEvent.BUTTON2_DOWN_MASK) != 0 ) {
+            buf.append("Button2-");
+        }
+        if ((modifiers & InputEvent.BUTTON3_DOWN_MASK) != 0 ) {
+            buf.append("Button3-");
+        }
+        return buf.toString();
+    }
+
+    private static String getVKText(int keyCode) {
+        int expected_modifiers = (Modifier.PUBLIC | Modifier.STATIC | Modifier.FINAL);
+        Field[] fields = KeyEvent.class.getDeclaredFields();
+        for (Field field : fields) {
+            try {
+                if (field.getModifiers() == expected_modifiers
+                        && field.getType() == Integer.TYPE
+                        && field.getName().startsWith("VK_")
+                        && field.getInt(KeyEvent.class) == keyCode) {
+                    String name = field.getName();
+                    return name.substring(3);
+                }
+            } catch (IllegalAccessException e) {
+                assert (false);
+            }
+        }
+        return "UNKNOWN";
     }
 }

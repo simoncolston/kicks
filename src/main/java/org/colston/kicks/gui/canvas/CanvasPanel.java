@@ -8,7 +8,6 @@ import org.colston.kicks.document.*;
 import javax.swing.*;
 import javax.swing.text.JTextComponent;
 import java.awt.*;
-import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -578,13 +577,37 @@ class CanvasPanel extends JPanel implements Printable {
         }
     }
 
+    /**
+     * Move on to the next cell midpoint or boundary, if enabled.
+     */
     private void doAutoCursor() {
-        int ticks = switch (autoCursor) {
-            case OFF -> 0;
-            case HALF -> CELL_TICKS / 2;
-            case ONE -> CELL_TICKS;
+        moveCursor(calcAutoCursorTicksDown());
+    }
+
+    /**
+     * Calculate number of ticks required to move on to next boundary set by the auto cursor setting.
+     * @return number of ticks
+     */
+    private int calcAutoCursorTicksDown() {
+        return switch (autoCursor) {
+            case OFF -> 1;
+            case HALF -> CELL_TICKS / 2 - cursorOffset % (CELL_TICKS / 2);
+            case ONE -> (CELL_TICKS / 2) * (((cursorOffset % 12) / (CELL_TICKS / 2)) + 1)
+                    - cursorOffset % (CELL_TICKS / 2);
         };
-        moveCursor(ticks);
+    }
+
+    /**
+     * Calculate number of ticks required to move back to next boundary set by the auto cursor setting.
+     * @return number of ticks
+     */
+    private int calcAutoCursorTicksUp() {
+        return switch (autoCursor) {
+            case OFF -> -1;
+            case HALF -> -((cursorOffset - 1) % (CELL_TICKS / 2) + 1);
+            case ONE -> ((CELL_TICKS / 2) * (((cursorOffset % 12) / (CELL_TICKS / 2)) + 1)
+                    - cursorOffset % (CELL_TICKS / 2)) % CELL_TICKS - CELL_TICKS;
+        };
     }
 
     public void addNote(int string, int placement, boolean isSmall) {
@@ -633,23 +656,27 @@ class CanvasPanel extends JPanel implements Printable {
         }
     }
 
-    public void moveCursorUp(int modifiers) {
-        if ((modifiers & ActionEvent.CTRL_MASK) > 0) {
-            moveCursor(-CELL_TICKS);
-        } else if ((modifiers & ActionEvent.ALT_MASK) > 0) {
+    public void moveCursorUpMinAmount() {
+        moveCursor(-1);
+    }
+
+    public void moveCursorUp() {
+        if (autoCursor == Canvas.AutoCursor.OFF) {
             moveCursor(-1);
         } else {
-            moveCursor(-CELL_TICKS / 2);
+            moveCursor(calcAutoCursorTicksUp());
         }
     }
 
-    public void moveCursorDown(int modifiers) {
-        if ((modifiers & ActionEvent.CTRL_MASK) > 0) {
-            moveCursor(CELL_TICKS);
-        } else if ((modifiers & ActionEvent.ALT_MASK) > 0) {
+    public void moveCursorDownMinAmount() {
+        moveCursor(1);
+    }
+
+    public void moveCursorDown() {
+        if (autoCursor == Canvas.AutoCursor.OFF) {
             moveCursor(1);
         } else {
-            moveCursor(CELL_TICKS / 2);
+            moveCursor(calcAutoCursorTicksDown());
         }
     }
 

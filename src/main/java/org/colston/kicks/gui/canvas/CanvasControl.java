@@ -14,8 +14,10 @@ import javax.swing.event.UndoableEditEvent;
 import javax.swing.event.UndoableEditListener;
 import javax.swing.undo.UndoManager;
 import java.awt.*;
+import java.awt.event.ActionEvent;
 import java.awt.print.Printable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -159,12 +161,19 @@ class CanvasControl implements Canvas {
     }
 
     void moveCursorUp(int modifiers) {
-        canvasPanel.moveCursorUp(modifiers);
-
+        if ((modifiers & ActionEvent.ALT_MASK) > 0) {
+            canvasPanel.moveCursorUpMinAmount();
+        } else {
+            canvasPanel.moveCursorUp();
+        }
     }
 
     void moveCursorDown(int modifiers) {
-        canvasPanel.moveCursorDown(modifiers);
+        if ((modifiers & ActionEvent.ALT_MASK) > 0) {
+            canvasPanel.moveCursorDownMinAmount();
+        } else {
+            canvasPanel.moveCursorDown();
+        }
     }
 
     void addRest() {
@@ -230,6 +239,13 @@ class CanvasControl implements Canvas {
                 return Collections.unmodifiableList(editActions);
             }
             return null;
+        }
+
+        @Override
+        public Collection<? extends Action> getAllActions() {
+            List<Action> actions = new ArrayList<>(editActions);
+            actions.addAll(documentActions);
+            return actions;
         }
     }
 }

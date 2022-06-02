@@ -1,14 +1,13 @@
 package org.colston.kicks.gui.canvas;
 
 import org.colston.gui.actions.ActionManager;
-import org.colston.gui.actions.ComponentAction;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -26,7 +25,7 @@ final class CanvasActions {
      * It will be easier to spot clashes and give all the actions sensible values.
      */
     static {
-        Map<String, CanvasAction> map = new HashMap<>();
+        Map<String, CanvasAction> map = new LinkedHashMap<>();
 
         //Notes
         // --- low string
