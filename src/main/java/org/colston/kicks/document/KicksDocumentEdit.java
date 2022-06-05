@@ -8,7 +8,7 @@ public class KicksDocumentEdit extends AbstractUndoableEdit implements Locatable
 
     private boolean updateLocation = true;
 
-    private String presentationName;
+    private final String presentationName;
 
     public KicksDocumentEdit(int index, int offset, String presentationName) {
         this.index = index;

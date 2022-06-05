@@ -20,7 +20,7 @@ class KicksDocumentTest {
     }
 
     @Test
-    void testClone() throws Exception {
+    void testClone() {
         KicksDocument[] docs = new KicksDocument[2];
         docs[0] = createMinimalDocument();
         docs[1] = createFullSingletonDocument();
@@ -47,6 +47,8 @@ class KicksDocumentTest {
             try (InputStream is = Files.newInputStream(tmp)) {
                 KicksDocument doc2 = docStore.load(is);
                 assertNotNull(doc2);
+                assertNotSame(doc, doc2);
+                assertEquals(doc, doc2);
             }
         }
     }

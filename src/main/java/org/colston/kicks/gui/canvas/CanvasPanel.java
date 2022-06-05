@@ -100,13 +100,14 @@ class CanvasPanel extends JPanel implements Printable {
     private Canvas.AutoCursor autoCursor = Canvas.AutoCursor.ONE; // where to move the cursor after input
 
     /*
-     * The document.
+     * The model.
      */
-    private KicksDocument doc;
+    private final CanvasModel model;
 
-    public CanvasPanel(JTextComponent text) {
+    public CanvasPanel(CanvasModel model, JTextComponent text) {
         // remove default layout manager - use absolute positioning for text field
         super(null);
+        this.model = model;
 
         int res = Toolkit.getDefaultToolkit().getScreenResolution();
         scale = (1.0f * res / 72f);
@@ -129,16 +130,16 @@ class CanvasPanel extends JPanel implements Printable {
         setMaximumSize(dimension);
     }
 
-    protected KicksDocument getDocument() {
-        return doc;
-    }
-
-    protected void setDocument(KicksDocument doc) {
-        this.doc = doc;
-
+    void documentSet() {
         initialiseCursor();
         cursorOnNote = true;
         text.setVisible(false);
+        documentUpdated();
+    }
+
+    void documentUpdated() {
+        revalidate();
+        repaint();
     }
 
     private void doPaint(Graphics2D g2, boolean print) {
@@ -159,6 +160,7 @@ class CanvasPanel extends JPanel implements Printable {
             y = 0;
         }
 
+        KicksDocument doc = model.getDocument();
         if (doc == null) {
             // empty document
             return;
@@ -514,7 +516,7 @@ class CanvasPanel extends JPanel implements Printable {
         setCursor(index, offset);
     }
 
-    private void setCursor(int index, int offset) {
+    void setCursor(int index, int offset) {
         cursorIndex = index;
         cursorOffset = offset;
         /*
@@ -533,18 +535,20 @@ class CanvasPanel extends JPanel implements Printable {
         repaint();
     }
 
-    /**
-     * NOTE: This is package private to allow the cursor to be set by undo.
-     * @param index index for cursor
-     * @param offset offset for cursor
-     * @param onNote note column or lyric column
-     */
+    int getCursorIndex() {
+        return cursorIndex;
+    }
+
+    int getCursorOffset() {
+        return cursorOffset;
+    }
+
     void setCursor(int index, int offset, boolean onNote) {
         setCursorOnNote(onNote);
         setCursor(index, offset);
     }
 
-    private void initialiseCursor() {
+    void initialiseCursor() {
         setCursor(0, CELL_TICKS / 2);
     }
 
@@ -555,20 +559,23 @@ class CanvasPanel extends JPanel implements Printable {
         repaint();
     }
 
+    boolean isCursorOnNote() {
+        return cursorOnNote;
+    }
+
     private void handleText() {
         if (cursorOnNote) {
             text.setVisible(false);
         } else {
-            int height = COLUMN_WIDTH / 2;
+            int size = COLUMN_WIDTH / 2;
             int x = x(cursorIndex) + 7 * COLUMN_WIDTH / 8;
-            int y = y(cursorIndex, cursorOffset) - height / 3;
+            int y = y(cursorIndex, cursorOffset) - size / 3;
             // convert to screen coordinates
             x = (int) ((x + borderWidth) * scale);
             y = (int) ((y + borderWidth) * scale);
-            //noinspection SuspiciousNameCombination
-            text.setBounds(x, y, height, height);
+            text.setBounds(x, y, size, size);
 
-            Lyric l = doc.getLyric(cursorIndex, cursorOffset);
+            Lyric l = model.getDocument().getLyric(cursorIndex, cursorOffset);
             text.setText(l != null ? l.getValue() : null);
             text.selectAll();
 
@@ -577,10 +584,14 @@ class CanvasPanel extends JPanel implements Printable {
         }
     }
 
+    String getText() {
+        return text.getText();
+    }
+
     /**
      * Move on to the next cell midpoint or boundary, if enabled.
      */
-    private void doAutoCursor() {
+    void doAutoCursor() {
         moveCursor(calcAutoCursorTicksDown());
     }
 
@@ -608,36 +619,6 @@ class CanvasPanel extends JPanel implements Printable {
             case ONE -> ((CELL_TICKS / 2) * (((cursorOffset % 12) / (CELL_TICKS / 2)) + 1)
                     - cursorOffset % (CELL_TICKS / 2)) % CELL_TICKS - CELL_TICKS;
         };
-    }
-
-    public void addNote(int string, int placement, boolean isSmall) {
-        Note n = new Note(cursorIndex, cursorOffset, string, placement);
-        doc.addNote(n);
-        if (isSmall) {
-            n.setSmall(true);
-        }
-        doAutoCursor();
-    }
-
-    public void addRest() {
-        cursorOffset = CELL_TICKS / 2;
-        Note n = new Note(cursorIndex, cursorOffset, NoteValues.REST_STRING, NoteValues.REST_PLACEMENT);
-        doc.addNote(n);
-        moveCursor(CELL_TICKS);
-    }
-
-    public void addLyric() {
-        String s = text.getText();
-        if (s == null || s.isEmpty()) {
-            doc.removeLyric(cursorIndex, cursorOffset);
-        } else {
-            if (s.length() > 2) {
-                s = s.substring(0, 2);
-            }
-            Lyric l = new Lyric(cursorIndex, cursorOffset, s);
-            doc.addLyric(l);
-        }
-        doAutoCursor();
     }
 
     public void moveCursorLeft() {
@@ -682,56 +663,6 @@ class CanvasPanel extends JPanel implements Printable {
 
     void setAutoCursor(Canvas.AutoCursor autoCursor) {
         this.autoCursor = autoCursor;
-    }
-
-    public void addRepeat(boolean end) {
-        Repeat r = new Repeat(cursorIndex, cursorOffset, end);
-        doc.addRepeat(r);
-    }
-
-    public void setFlat() {
-        doc.setFlat(cursorIndex, cursorOffset);
-    }
-
-    public void setUtou(boolean isKaki) {
-        doc.setUtou(cursorIndex, cursorOffset, isKaki ? Utou.KAKI : Utou.UCHI);
-    }
-
-    public void setChord() {
-        doc.setChord(cursorIndex, cursorOffset);
-    }
-
-    public void setSlur() {
-        doc.setSlur(cursorIndex, cursorOffset);
-    }
-
-    /**
-     * Delete note, repeat or lyric.
-     */
-    public void delete() {
-        if (cursorOnNote) {
-            doc.removeNote(cursorIndex, cursorOffset);
-            doc.removeRepeat(cursorIndex, cursorOffset);
-        } else {
-            doc.removeLyric(cursorIndex, cursorOffset);
-        }
-    }
-
-    /**
-     * Move to the position of the current or previous note then delete it.
-     * Ignored if not in the note column.
-     */
-    public void backspace() {
-        if (!cursorOnNote) {
-            return;
-        }
-        Locatable locatable = doc.findPreviousNote(cursorIndex, cursorOffset);
-        if (locatable == null) {
-            initialiseCursor();
-        } else {
-            setCursor(locatable.getIndex(), locatable.getOffset());
-        }
-        delete();
     }
 
     class ML extends MouseAdapter implements MouseListener {

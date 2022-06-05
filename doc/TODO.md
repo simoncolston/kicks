@@ -10,6 +10,7 @@ TODO
   - [x] **1** Prompt to save if document modified - when quitting
   - [ ] **1** Prompt to save if document modified - when opening document
   - [ ]   2   New document action
+  - [ ]   2   Save As... action
   
 ##### Document
   - [x] **1** Extended notes: see `_test.xml`
@@ -29,10 +30,11 @@ TODO
 
 #### View
   - [ ]   2   Zoom
+  - [ ]   3   Show cursor coordinates
 
 #### Help
   - [ ]   5   Add help (using JavaHelp - is that still a thing?)
-  - [ ] **1** About box (taking version from the manifest file)
+  - [x] **1** About box (taking version from the manifest file)
   - [ ] **1** Keyboard shortcuts
 
 ##### Selection

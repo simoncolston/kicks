@@ -14,12 +14,15 @@ import java.awt.im.InputContext;
 
 public final class CanvasFactory {
     public static Canvas create() {
+
+        CanvasModel model = new CanvasModel();
+
         JTextField text = new JTextField();
         text.setBorder(BorderFactory.createLineBorder(CanvasPanel.CURSOR_COLOUR));
         text.enableInputMethods(true);
         text.addFocusListener(new JapaneseTextFocusListener());
 
-        CanvasPanel canvas = new CanvasPanel(text);
+        CanvasPanel canvas = new CanvasPanel(model, text);
         canvas.addFocusListener(new CanvasPanelFocusListener());
 
         JPanel container = new JPanel();
@@ -43,7 +46,7 @@ public final class CanvasFactory {
         inputComponent.add(cursorPanel);
         inputComponent.add(Box.createHorizontalGlue());
 
-        CanvasControl control = new CanvasControl(container, canvas, inputComponent);
+        CanvasControl control = new CanvasControl(container, canvas, model, inputComponent);
         control.setDocument(new KicksDocument());
 
         /*

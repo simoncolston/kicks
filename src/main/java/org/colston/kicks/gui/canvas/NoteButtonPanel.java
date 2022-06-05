@@ -34,7 +34,6 @@ public class NoteButtonPanel extends JPanel {
             b.setIcon(NoteValues.getImage(na.getString(), na.getPlacement()));
             b.setMargin(new Insets(2, 2, 2, 2));
             b.setFocusable(false);
-            b.setFont(b.getFont().deriveFont(18f));
 
             int x = BRIDGE_OFFSET - BUTTON_SIZE.width / 2;
             x += na.getPlacement() * (BUTTON_SIZE.width + SPACING);

@@ -6,8 +6,7 @@ import org.colston.kicks.KicksApp;
 import org.colston.kicks.actions.Redo;
 import org.colston.kicks.actions.Title;
 import org.colston.kicks.actions.Undo;
-import org.colston.kicks.document.KicksDocument;
-import org.colston.kicks.document.KicksDocumentListener;
+import org.colston.kicks.document.*;
 
 import javax.swing.*;
 import javax.swing.event.UndoableEditEvent;
@@ -26,8 +25,7 @@ class CanvasControl implements Canvas {
         @Override
         public void documentUpdated() {
             updateUndoActions();
-            canvasPanel.revalidate();
-            canvasPanel.repaint();
+            canvasPanel.documentUpdated();
         }
 
         @Override
@@ -47,13 +45,15 @@ class CanvasControl implements Canvas {
 
     private final JComponent container;
     private final CanvasPanel canvasPanel;
+    private final CanvasModel model;
     private final JComponent inputComponent;
     private final UndoManager undo = new UndoManager();
     private KicksDocument savedDocument = null;
 
-    CanvasControl(JPanel container, CanvasPanel canvasPanel, JComponent inputComponent) {
+    CanvasControl(JPanel container, CanvasPanel canvasPanel, CanvasModel model, JComponent inputComponent) {
         this.container = container;
         this.canvasPanel = canvasPanel;
+        this.model = model;
         this.inputComponent = inputComponent;
     }
 
@@ -89,7 +89,7 @@ class CanvasControl implements Canvas {
 
     @Override
     public KicksDocument getDocument() {
-        return canvasPanel.getDocument();
+        return model.getDocument();
     }
 
     @Override
@@ -104,11 +104,10 @@ class CanvasControl implements Canvas {
         doc.addDocumentListener(docListener);
         doc.addUndoableEditListener(undoListener);
 
-        canvasPanel.setDocument(doc);
+        model.setDocument(doc);
         documentSaved();
 
-        canvasPanel.revalidate();
-        canvasPanel.repaint();
+        canvasPanel.documentSet();
 
         requestFocusInWindow();
     }
@@ -139,17 +138,40 @@ class CanvasControl implements Canvas {
         Action u = ActionManager.getAction(Undo.class);
         u.setEnabled(undo.canUndo());
         u.putValue(Action.NAME, undo.getUndoPresentationName());
+        u.putValue(Action.SHORT_DESCRIPTION, undo.getUndoPresentationName());
         Action r = ActionManager.getAction(Redo.class);
         r.setEnabled(undo.canRedo());
         r.putValue(Action.NAME, undo.getRedoPresentationName());
+        r.putValue(Action.SHORT_DESCRIPTION, undo.getRedoPresentationName());
     }
 
     public void addLyric() {
-        canvasPanel.addLyric();
+        String s = canvasPanel.getText();
+        Lyric l = model.getDocument().getLyric(canvasPanel.getCursorIndex(), canvasPanel.getCursorOffset());
+        if (l == null && (s == null || s.isEmpty())) {
+            // user hit enter, nothing to do, so just auto cursor (avoid creating undo edit)
+            canvasPanel.doAutoCursor();
+            return;
+        }
+        if (s == null || s.isEmpty()) {
+            model.getDocument().removeLyric(canvasPanel.getCursorIndex(), canvasPanel.getCursorOffset());
+        } else {
+            if (s.length() > 2) {
+                s = s.substring(0, 2);
+            }
+            l = new Lyric(canvasPanel.getCursorIndex(), canvasPanel.getCursorOffset(), s);
+            model.getDocument().addLyric(l);
+        }
+        canvasPanel.doAutoCursor();
     }
 
     void addNote(int string, int placement, boolean isSmall) {
-        canvasPanel.addNote(string, placement, isSmall);
+        Note n = new Note(canvasPanel.getCursorIndex(), canvasPanel.getCursorOffset(), string, placement);
+        getDocument().addNote(n);
+        if (isSmall) {
+            n.setSmall(true);
+        }
+        canvasPanel.doAutoCursor();
     }
 
     void moveCursorLeft() {
@@ -177,35 +199,59 @@ class CanvasControl implements Canvas {
     }
 
     void addRest() {
-        canvasPanel.addRest();
+        Note n = new Note(canvasPanel.getCursorIndex(), canvasPanel.getCursorOffset(),
+                NoteValues.REST_STRING, NoteValues.REST_PLACEMENT);
+        getDocument().addNote(n);
+        canvasPanel.doAutoCursor();
     }
 
     void addRepeat(boolean end) {
-        canvasPanel.addRepeat(end);
+        Repeat r = new Repeat(canvasPanel.getCursorIndex(), canvasPanel.getCursorOffset(), end);
+        model.getDocument().addRepeat(r);
     }
 
     void setFlat() {
-        canvasPanel.setFlat();
+        model.getDocument().setFlat(canvasPanel.getCursorIndex(), canvasPanel.getCursorOffset());
     }
 
     void setUtou(boolean isKaki) {
-        canvasPanel.setUtou(isKaki);
-    }
-
-    void delete() {
-        canvasPanel.delete();
-    }
-
-    void backspace() {
-        canvasPanel.backspace();
+        model.getDocument().setUtou(canvasPanel.getCursorIndex(), canvasPanel.getCursorOffset(),
+                isKaki ? Utou.KAKI : Utou.UCHI);
     }
 
     void setChord() {
-        canvasPanel.setChord();
+        model.getDocument().setChord(canvasPanel.getCursorIndex(), canvasPanel.getCursorOffset());
     }
 
     void setSlur() {
-        canvasPanel.setSlur();
+        model.getDocument().setSlur(canvasPanel.getCursorIndex(), canvasPanel.getCursorOffset());
+    }
+
+    void delete() {
+        if (canvasPanel.isCursorOnNote()) {
+            model.getDocument().removeNote(canvasPanel.getCursorIndex(), canvasPanel.getCursorOffset());
+            model.getDocument().removeRepeat(canvasPanel.getCursorIndex(), canvasPanel.getCursorOffset());
+        } else {
+            model.getDocument().removeLyric(canvasPanel.getCursorIndex(), canvasPanel.getCursorOffset());
+        }
+    }
+
+    /**
+     * Move to the position of the current or previous note then delete it.
+     * Ignored if not in the note column.
+     */
+    void backspace() {
+        if (!canvasPanel.isCursorOnNote()) {
+            return;
+        }
+        Locatable locatable = model.getDocument().findPreviousNote(canvasPanel.getCursorIndex(),
+                canvasPanel.getCursorOffset());
+        if (locatable == null) {
+            canvasPanel.initialiseCursor();
+        } else {
+            canvasPanel.setCursor(locatable.getIndex(), locatable.getOffset());
+        }
+        delete();
     }
 
     void setAutoCursor(AutoCursor autoCursor) {
