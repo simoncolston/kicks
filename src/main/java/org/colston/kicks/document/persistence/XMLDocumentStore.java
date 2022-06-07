@@ -4,15 +4,13 @@ import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.Marshaller;
 import jakarta.xml.bind.Unmarshaller;
+import org.colston.kicks.KicksApp;
 import org.colston.kicks.document.KicksDocument;
 
 import javax.xml.XMLConstants;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.StringReader;
-import java.io.StringWriter;
+import java.io.*;
 import java.net.URL;
 
 public class XMLDocumentStore implements DocumentStore {
@@ -22,6 +20,13 @@ public class XMLDocumentStore implements DocumentStore {
         URL url = XMLDocumentStore.class.getResource("kunkunshi.xsd");
         SchemaFactory sf = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
         schema = sf.newSchema(url);
+    }
+
+    @Override
+    public KicksDocument load(File file) throws Exception {
+        try (InputStream is = new BufferedInputStream(new FileInputStream(file))) {
+            return load(is);
+        }
     }
 
     @Override

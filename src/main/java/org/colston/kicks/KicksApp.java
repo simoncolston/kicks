@@ -4,6 +4,7 @@ import org.colston.gui.actions.ActionManager;
 import org.colston.gui.actions.ActionProvider;
 import org.colston.gui.actions.ActionProviders;
 import org.colston.kicks.actions.*;
+import org.colston.kicks.document.KicksDocument;
 import org.colston.kicks.document.persistence.DocumentStore;
 import org.colston.kicks.gui.canvas.Canvas;
 import org.colston.kicks.gui.canvas.CanvasFactory;
@@ -81,9 +82,14 @@ public class KicksApp extends GuiApp {
         return kicks.currentFile;
     }
 
-    public static void setCurrentFile(File currentFile) {
+    public static void documentSaved(File file) {
+        canvas().documentSaved();
+        setCurrentFile(file);
+    }
+
+    private static void setCurrentFile(File currentFile) {
         kicks.currentFile = currentFile;
-        kicks.statusPanel.setMessage(currentFile == null ? "" : currentFile.getAbsolutePath());
+        kicks.statusPanel.setMessage(currentFile == null ? " " : currentFile.getAbsolutePath());
     }
 
     @Override
@@ -153,42 +159,49 @@ public class KicksApp extends GuiApp {
 
             @Override
             public void windowClosing(WindowEvent e) {
-                if (!canvas.isDocumentChanged()) {
+                if (checkSaveChangesToCurrentDocument()) {
                     frame.dispose();
-                    return;
-                }
-                String message = Messages.get(KicksApp.class, "window.closing.message");
-                String title = Messages.get(KicksApp.class, "window.closing.title");
-                Object[] options = new Object[]
-                        {
-                                Messages.get(KicksApp.class, "window.closing.save"),
-                                Messages.get(KicksApp.class, "window.closing.dont.save"),
-                                Messages.get(KicksApp.class, "window.closing.cancel")
-                        };
-                int ret = JOptionPane.showOptionDialog(frame, message, title, JOptionPane.YES_NO_CANCEL_OPTION,
-                        JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
-                switch (ret) {
-                    case 0: // save then exit (unless user cancels during save)
-                        if (ActionManager.getAction(Save.class).save()) {
-                            frame.dispose();
-                        }
-                        break;
-                    case 1: // close without saving
-                        frame.dispose();
-                        break;
-                    case JOptionPane.CLOSED_OPTION: // dialog was closed
-                    case 2: // cancel
-                    default:
-                        // Don't exit
-                        break;
                 }
             }
         };
     }
 
+    public static boolean checkSaveChangesToCurrentDocument() {
+        if (!canvas().isDocumentChanged()) {
+            return true;
+        }
+        String message = Messages.get(KicksApp.class, "save.changes.message");
+        String title = Messages.get(KicksApp.class, "save.changes.title");
+        Object[] options = new Object[]
+                {
+                        Messages.get(KicksApp.class, "save.changes.save"),
+                        Messages.get(KicksApp.class, "save.changes.dont.save"),
+                        Messages.get(KicksApp.class, "save.changes.cancel")
+                };
+        int ret = JOptionPane.showOptionDialog(frame(), message, title, JOptionPane.YES_NO_CANCEL_OPTION,
+                JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+        boolean complete = false;
+        switch (ret) {
+            case 0: // save then exit (unless user cancels during save)
+                if (ActionManager.getAction(Save.class).save()) {
+                    complete = true;
+                }
+                break;
+            case 1: // close without saving
+                complete = true;
+                break;
+            case JOptionPane.CLOSED_OPTION: // dialog was closed
+            case 2: // cancel
+            default:
+                // Don't exit
+                break;
+        }
+        return complete;
+    }
+
     @Override
     protected JComponent createMainPanel() {
-        // All chores use this root pane by default
+        // All tasks use this root pane by default
         Task.getConfig().setRootPane(frame);
 
         //main actions
@@ -307,12 +320,24 @@ public class KicksApp extends GuiApp {
             getLogger().log(Level.SEVERE, "Cannot read file: {1}", file.getAbsolutePath());
             return;
         }
-        Open action = ActionManager.getAction(Open.class);
         try {
-            action.openDocumentFromFile(file);
+            openDocumentFromFile(file);
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private void openDocumentFromFile(File file) throws Exception {
+        setDocument(file, documentStore().load(file));
+    }
+
+    public static void setDocument(File file, KicksDocument document) {
+        canvas().setDocument(document);
+        setCurrentFile(file);
+    }
+
+    public static void newDocument() {
+        setDocument(null, new KicksDocument());
     }
 
     private static class MainActionProvider implements ActionProvider {
@@ -321,9 +346,11 @@ public class KicksApp extends GuiApp {
         private final List<Action> helpActions = new ArrayList<>();
 
         public MainActionProvider() {
+            fileActions.add(ActionManager.getAction(New.class));
             fileActions.add(ActionManager.getAction(Open.class));
             fileActions.add(ActionManager.getAction(Save.class));
-            fileActions.add(ActionManager.getAction(SaveAsPDF.class));
+            fileActions.add(ActionManager.getAction(SaveAs.class));
+            fileActions.add(ActionManager.getAction(ExportAsPDF.class));
             fileActions.add(ActionManager.getAction(Print.class));
             fileActions.add(ActionManager.getAction(SettingsAction.class));
             fileActions.add(ActionManager.getAction(Quit.class));
@@ -346,9 +373,11 @@ public class KicksApp extends GuiApp {
         public List<Action> getToolBarActions(String menuName) {
             List<Action> list = new ArrayList<>();
             if ("menu.file".equals(menuName)) {
+                list.add(ActionManager.getAction(New.class));
                 list.add(ActionManager.getAction(Open.class));
                 list.add(ActionManager.getAction(Save.class));
-                list.add(ActionManager.getAction(SaveAsPDF.class));
+                list.add(ActionManager.getAction(SaveAs.class));
+                list.add(ActionManager.getAction(ExportAsPDF.class));
                 list.add(ActionManager.getAction(Print.class));
             }
             return list;

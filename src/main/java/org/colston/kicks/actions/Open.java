@@ -10,10 +10,7 @@ import org.colston.utils.Utils;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
-import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
 
 public class Open extends AbstractAction {
     public static final String ACTION_COMMAND = "action.open";
@@ -31,6 +28,9 @@ public class Open extends AbstractAction {
 
     @Override
     public void actionPerformed(ActionEvent e) {
+        if (!KicksApp.checkSaveChangesToCurrentDocument()) {
+            return;
+        }
         File f = Utils.chooseFile(KicksApp.frame(), Messages.get(Open.class, "open.file.choose.title"),
                 Messages.get(Open.class, "open.file.choose.submit.button"),
                 null, Utils.FILE_FILTER, false, null);
@@ -41,38 +41,14 @@ public class Open extends AbstractAction {
 
             @Override
             protected KicksDocument doInBackground() throws Exception {
-                return loadDocument(f);
+                return KicksApp.documentStore().load(f);
             }
 
             @Override
             protected void updateUI() {
-                setDocument(f, get());
+                KicksApp.setDocument(f, get());
             }
         };
         tw.execute(new Message(Open.class, "open.progress.message"));
-    }
-
-    /**
-     * Loads a document from the file and sets it on the canvas.
-     * <p>
-     * <em>NOTE: This is not event thread safe!</em>  This should only be called <em>off</em> the event thread
-     * and only if you know what the consequences are.<br><br>
-     * It is only intended to load a document from a file at program initialisation.
-     * @param file file to load the document from
-     * @throws Exception error during load
-     */
-    public void openDocumentFromFile(File file) throws Exception {
-        setDocument(file, loadDocument(file));
-    }
-
-    private KicksDocument loadDocument(File file) throws Exception {
-        try (InputStream is = new BufferedInputStream(new FileInputStream(file))) {
-            return KicksApp.documentStore().load(is);
-        }
-    }
-
-    private void setDocument(File file, KicksDocument document) {
-        KicksApp.canvas().setDocument(document);
-        KicksApp.setCurrentFile(file);
     }
 }

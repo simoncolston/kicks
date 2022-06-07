@@ -7,6 +7,7 @@ import org.colston.sclib.i18n.Messages;
 import org.colston.utils.SpringUtilities;
 
 import javax.swing.*;
+import javax.swing.border.Border;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 
@@ -33,6 +34,7 @@ public class SettingsAction extends AbstractAction {
             JPanel panel = new JPanel(new SpringLayout());
             dialog.add(panel, BorderLayout.CENTER);
 
+            panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
             panel.add(new JLabel(Messages.get(SettingsAction.class, "settings.default.ime.charset.prompt")));
 
             charSubsetCombo = new JComboBox<>(charSubsets);
@@ -57,7 +59,7 @@ public class SettingsAction extends AbstractAction {
             });
 
             dialog.getRootPane().setDefaultButton(b);
-            dialog.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+            dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
             dialog.pack();
             dialog.setLocationRelativeTo(KicksApp.frame());
         }
@@ -74,22 +76,15 @@ public class SettingsAction extends AbstractAction {
 
     private static class CharacterSubsetRenderer extends DefaultListCellRenderer {
 
-        /*
-         * (non-Javadoc)
-         *
-         * @see
-         * javax.swing.DefaultListCellRenderer#getListCellRendererComponent(javax.swing.
-         * JList, java.lang.Object, int, boolean, boolean)
-         */
         @Override
         public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected,
                                                       boolean cellHasFocus) {
 
-            if (!(value instanceof Character.Subset[])) {
+            if (!(value instanceof Character.Subset[] v)) {
                 return null;
             }
-            Character.Subset[] v = (Character.Subset[]) value;
-            return super.getListCellRendererComponent(list, v[0], index, isSelected, cellHasFocus);
+            String s = Messages.get(SettingsAction.class, "settings.ime." + v[0]);
+            return super.getListCellRendererComponent(list, s, index, isSelected, cellHasFocus);
         }
     }
 }

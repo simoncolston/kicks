@@ -2,6 +2,7 @@ package org.colston.kicks.actions;
 
 import org.colston.gui.actions.ActionManager;
 import org.colston.kicks.KicksApp;
+import org.colston.kicks.document.KicksDocument;
 import org.colston.sclib.gui.task.Task;
 import org.colston.sclib.i18n.Message;
 import org.colston.sclib.i18n.Messages;
@@ -30,9 +31,25 @@ public class Save extends AbstractAction {
         putValue(ActionManager.LARGE_ICON_NAME_KEY, LARGE_ICON_NAME);
     }
 
+    /**
+     * Save the current document but do not update the UI when finished.
+     * @return <code>true</code> if not aborted by user
+     */
     public boolean save() {
+        return doSave(false, null);
+    }
+
+    public boolean saveAs() {return doSave(true, () -> KicksApp.documentSaved(file));}
+    /**
+     * Save the current document and update run the runnable on the event thread.
+     * This is to allow the use of {@link #save()} elsewhere without the usual post-processing for a normal save action.
+     * @param alwaysAskForFile if <code>true</code> always ask for file name (for Save As...)
+     * @param runnable event thread action
+     * @return <code>true</code> if not aborted by user
+     */
+    private boolean doSave(boolean alwaysAskForFile, Runnable runnable) {
         file = KicksApp.getCurrentFile();
-        if (file == null) {
+        if (alwaysAskForFile || file == null) {
             file = Utils.chooseFile(KicksApp.frame(),
                     Messages.get(Save.class, "save.file.choose.title"),
                     Messages.get(Save.class, "save.file.choose.submit.button"),
@@ -41,21 +58,23 @@ public class Save extends AbstractAction {
                 return false;
             }
         }
+        // take the reference to the document on the event thread!
+        KicksDocument doc = KicksApp.canvas().getDocument();
         Task<Object> tw = new Task<>() {
             @Override
             protected Object doInBackground() throws Exception {
                 try (OutputStream is = new BufferedOutputStream(new FileOutputStream(file))) {
-                    KicksApp.documentStore().save(KicksApp.canvas().getDocument(), is);
+                    KicksApp.documentStore().save(doc, is);
                 }
                 return null;
             }
 
             @Override
             protected void updateUI() {
-                KicksApp.canvas().documentSaved();
-                KicksApp.setCurrentFile(file);
+                if (runnable != null) {
+                    runnable.run();
+                }
             }
-
         };
         tw.execute(new Message(getClass(), "save.progress.message"));
         return true;
@@ -63,6 +82,6 @@ public class Save extends AbstractAction {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        save();
+        doSave(false, () -> KicksApp.documentSaved(file));
     }
 }

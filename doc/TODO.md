@@ -8,7 +8,7 @@ TODO
   - [x] **1** Move 'Lyric' action to the canvas (and not use a dialog!)
   - [x] **1** Combine Title and Tuning into one dialogue box
   - [x] **1** Prompt to save if document modified - when quitting
-  - [ ] **1** Prompt to save if document modified - when opening document
+  - [x] **1** Prompt to save if document modified - when opening document
   - [ ]   2   New document action
   - [ ]   2   Save As... action
   

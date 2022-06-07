@@ -36,7 +36,7 @@ public class Print extends AbstractAction {
         printJob.setPrintable(KicksApp.canvas().getPrintable());
 
         // create a meaningful job name
-        File pdfDestination = SaveAsPDF.createPDFDestination();
+        File pdfDestination = ExportAsPDF.createPDFDestination();
         String jobName = pdfDestination.getName();
         jobName = jobName.substring(0, jobName.lastIndexOf(Utils.PDF_FILE_EXT));
         printJob.setJobName(jobName);

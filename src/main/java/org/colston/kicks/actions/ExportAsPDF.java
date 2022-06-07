@@ -19,18 +19,18 @@ import java.awt.event.ActionEvent;
 import java.awt.print.Printable;
 import java.io.File;
 
-public class SaveAsPDF extends AbstractAction {
-    public static final String ACTION_COMMAND = "action.saveaspdf";
+public class ExportAsPDF extends AbstractAction {
+    public static final String ACTION_COMMAND = "action.export.pdf";
 
-    private static final String MESSAGE_RESOURCE_PREFIX = "saveaspdf";
-    private static final String SMALL_ICON_NAME = "SaveAs16.gif";
-    private static final String LARGE_ICON_NAME = "SaveAs24.gif";
+    private static final String MESSAGE_RESOURCE_PREFIX = "export.pdf";
+    private static final String SMALL_ICON_NAME = "Export16.gif";
+    private static final String LARGE_ICON_NAME = "Export24.gif";
 
     private static final int MARGIN = 20;
 
     private File destination = null;
 
-    public SaveAsPDF() {
+    public ExportAsPDF() {
         putValue(ACTION_COMMAND_KEY, ACTION_COMMAND);
         putValue(ActionManager.MESSAGE_RESOURCE_PREFIX_KEY, MESSAGE_RESOURCE_PREFIX);
         putValue(ActionManager.SMALL_ICON_NAME_KEY, SMALL_ICON_NAME);
@@ -40,18 +40,17 @@ public class SaveAsPDF extends AbstractAction {
     @Override
     public void actionPerformed(ActionEvent e) {
         destination = Utils.chooseFile(KicksApp.frame(),
-                Messages.get(this.getClass(), "saveaspdf.file.choose.title"),
-                Messages.get(this.getClass(), "saveaspdf.file.choose.submit.button"),
+                Messages.get(this.getClass(), "export.pdf.file.choose.title"),
+                Messages.get(this.getClass(), "export.pdf.file.choose.submit.button"),
                 createPDFDestination(), Utils.PDF_FILE_FILTER, true, Utils.PDF_FILE_EXT);
         if (destination == null) {
             return;
         }
 
+        Printable printable = KicksApp.canvas().getPrintable();
         Task<Object> task = new Task<>() {
-
             @Override
             protected Object doInBackground() throws Exception {
-                Printable printable = KicksApp.canvas().getPrintable();
                 DocFlavor flavor = DocFlavor.SERVICE_FORMATTED.PRINTABLE;
                 PrintRequestAttributeSet aset = new HashPrintRequestAttributeSet();
                 aset.add(MediaSizeName.ISO_A4);
