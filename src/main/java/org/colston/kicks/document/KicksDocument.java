@@ -146,10 +146,9 @@ public class KicksDocument {
     public void setUtou(int index, int offset, Utou newValue) {
         key.index = index;
         key.offset = offset;
-        int listIndex = Collections.binarySearch(notes, key, comparator);
-        if (listIndex >= 0) {
+        Note n = findPreviousNote(index, offset);
+        if (n != null) {
             UndoableEdit edit;
-            Note n = notes.get(listIndex);
             if (n.getUtou() == newValue) {
                 n.setUtou(Utou.NONE);
                 edit = new SetEdit<>(index, offset, n, newValue, Utou.NONE,
@@ -168,14 +167,13 @@ public class KicksDocument {
     public void setFlat(int index, int offset) {
         key.index = index;
         key.offset = offset;
-        int listIndex = Collections.binarySearch(notes, key, comparator);
-        if (listIndex >= 0) {
-            Note n = notes.get(listIndex);
+        Note n = findPreviousNote(index, offset);
+        if (n != null) {
             Accidental oldValue = n.getAccidental();
             Accidental newValue = oldValue == Accidental.FLAT ? Accidental.NONE : Accidental.FLAT;
             n.setAccidental(newValue);
             SetEdit<Note, Accidental> edit = new SetEdit<>(index, offset, n, oldValue, newValue,
-                    Note::setAccidental, Messages.get(getClass(), "undo.set.utou"));
+                    Note::setAccidental, Messages.get(getClass(), "undo.set.flat"));
             fireUndoableEditHappened(new UndoableEditEvent(this, edit));
             fireDocumentUpdated();
         }

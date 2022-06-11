@@ -363,7 +363,7 @@ class CanvasPanel extends JPanel implements Printable {
     }
 
     private void drawNote(Graphics2D g2, Note n, FontMetrics fm) {
-        char[] ch = NoteValues.get(n.getString(), n.getPlacement()).toCharArray();
+        char[] ch = CanvasResources.getNoteText(n.getString(), n.getPlacement()).toCharArray();
         int x = x(n.getIndex());
         int y = y(n.getIndex(), n.getOffset(), fm) - 1;
         int chw;

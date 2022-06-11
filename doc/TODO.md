@@ -9,8 +9,8 @@ TODO
   - [x] **1** Combine Title and Tuning into one dialogue box
   - [x] **1** Prompt to save if document modified - when quitting
   - [x] **1** Prompt to save if document modified - when opening document
-  - [ ]   2   New document action
-  - [ ]   2   Save As... action
+  - [x]   2   New document action
+  - [x]   2   Save As... action
   
 ##### Document
   - [x] **1** Extended notes: see `_test.xml`

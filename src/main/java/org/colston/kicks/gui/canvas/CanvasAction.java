@@ -40,4 +40,23 @@ class CanvasAction extends ComponentAction {
             }
         }
     }
+
+    static CanvasAction create(String actionCommand, KeyStroke[] keyStrokes) {
+        return new CanvasAction(null, keyStrokes, actionCommand);
+    }
+
+    CanvasAction handler(BiConsumer<CanvasControl, ActionEvent> handler) {
+        this.handler = handler;
+        return this;
+    }
+
+    CanvasAction smallIconResourceName(String name) {
+        putValue(ActionManager.SMALL_ICON_NAME_KEY, name);
+        return this;
+    }
+
+    CanvasAction largeIconResourceName(String name) {
+        putValue(ActionManager.LARGE_ICON_NAME_KEY, name);
+        return this;
+    }
 }

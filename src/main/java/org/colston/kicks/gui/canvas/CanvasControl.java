@@ -200,7 +200,7 @@ class CanvasControl implements Canvas {
 
     void addRest() {
         Note n = new Note(canvasPanel.getCursorIndex(), canvasPanel.getCursorOffset(),
-                NoteValues.REST_STRING, NoteValues.REST_PLACEMENT);
+                CanvasResources.REST_STRING, CanvasResources.REST_PLACEMENT);
         getDocument().addNote(n);
         canvasPanel.doAutoCursor();
     }
@@ -214,9 +214,8 @@ class CanvasControl implements Canvas {
         model.getDocument().setFlat(canvasPanel.getCursorIndex(), canvasPanel.getCursorOffset());
     }
 
-    void setUtou(boolean isKaki) {
-        model.getDocument().setUtou(canvasPanel.getCursorIndex(), canvasPanel.getCursorOffset(),
-                isKaki ? Utou.KAKI : Utou.UCHI);
+    void setUtou(Utou utou) {
+        model.getDocument().setUtou(canvasPanel.getCursorIndex(), canvasPanel.getCursorOffset(), utou);
     }
 
     void setChord() {

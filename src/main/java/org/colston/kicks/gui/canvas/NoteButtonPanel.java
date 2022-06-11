@@ -31,7 +31,7 @@ public class NoteButtonPanel extends JPanel {
                 continue;
             }
             JButton b = new JButton(na);
-            b.setIcon(NoteValues.getImage(na.getString(), na.getPlacement()));
+            b.setIcon(CanvasResources.getNoteIcon(na.getString(), na.getPlacement()));
             b.setMargin(new Insets(2, 2, 2, 2));
             b.setFocusable(false);
 

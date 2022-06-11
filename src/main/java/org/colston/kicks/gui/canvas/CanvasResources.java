@@ -8,7 +8,7 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
-public class NoteValues {
+public class CanvasResources {
     private static final String[][] VALUES =
             {
                     {"◯", "", "", "", "", "", "", "", ""},
@@ -21,21 +21,27 @@ public class NoteValues {
     public static final int REST_STRING = 0;
     public static final int REST_PLACEMENT = 0;
 
-    public static String get(int string, int placement) {
+    public static String getNoteText(int string, int placement) {
         return VALUES[string][placement];
     }
 
-    public static Icon getImage(int string, int placement) {
+    public static Icon getNoteIcon(int string, int placement) {
         String resourceName = String.format("note_%d_%d.png", string, placement);
+        return getIcon(resourceName);
+    }
+
+    public static Icon getIcon(String resourceName) {
         Icon image = images.get(resourceName);
         if (image == null) {
-            URL url = NoteValues.class.getResource(resourceName);
-            try {
-                BufferedImage bi = ImageIO.read(url);
-                image = new ImageIcon(bi);
-                images.put(resourceName, image);
-            } catch (IOException e) {
-                e.printStackTrace();
+            URL url = CanvasResources.class.getResource(resourceName);
+            if (url != null) {
+                try {
+                    BufferedImage bi = ImageIO.read(url);
+                    image = new ImageIcon(bi);
+                    images.put(resourceName, image);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         }
         return image;
