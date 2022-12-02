@@ -24,41 +24,36 @@ public final class CanvasFactory {
         CanvasPanel canvas = new CanvasPanel(model, text);
         canvas.addFocusListener(new CanvasPanelFocusListener());
 
-        JPanel container = new JPanel();
-        container.setBackground(Color.GRAY);
-        container.setLayout(new BoxLayout(container, BoxLayout.Y_AXIS));
-        container.add(Box.createVerticalStrut(10));
-        container.add(canvas);
-        container.add(Box.createVerticalStrut(10));
+        JPanel canvasContainer = new JPanel();
+        canvasContainer.setBackground(Color.GRAY);
+        canvasContainer.setLayout(new BoxLayout(canvasContainer, BoxLayout.Y_AXIS));
+        canvasContainer.add(Box.createVerticalStrut(10));
+        canvasContainer.add(canvas);
+        canvasContainer.add(Box.createVerticalStrut(10));
+
+        NoteButtonPanel nbp = new NoteButtonPanel();
+        nbp.setAlignmentY(Component.TOP_ALIGNMENT);
+
+        JPanel editButtonPanel = createEditButtonPanel();
+        editButtonPanel.setAlignmentY(Component.TOP_ALIGNMENT);
+
+        JPanel cursorControlPanel = createCursorControlPanel();
+        cursorControlPanel.setAlignmentY(Component.TOP_ALIGNMENT);
 
         JPanel inputComponent = new JPanel();
         inputComponent.setLayout(new BoxLayout(inputComponent, BoxLayout.X_AXIS));
         inputComponent.setBackground(Color.GRAY);
         inputComponent.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        NoteButtonPanel nbp = new NoteButtonPanel();
-        nbp.setAlignmentY(Component.TOP_ALIGNMENT);
-
 
         inputComponent.add(Box.createHorizontalGlue());
-        JPanel editButtonPanel = createEditButtonPanel();
-        editButtonPanel.setAlignmentY(Component.TOP_ALIGNMENT);
-
         inputComponent.add(editButtonPanel);
-
         inputComponent.add(Box.createHorizontalStrut(10));
-
         inputComponent.add(nbp);
-
         inputComponent.add(Box.createHorizontalStrut(10));
-
-        JPanel cursorControlPanel = createCursorControlPanel();
-        cursorControlPanel.setAlignmentY(Component.TOP_ALIGNMENT);
-
         inputComponent.add(cursorControlPanel);
-
         inputComponent.add(Box.createHorizontalGlue());
 
-        CanvasControl control = new CanvasControl(container, canvas, model, inputComponent);
+        CanvasControl control = new CanvasControl(canvasContainer, canvas, model, inputComponent);
         control.setDocument(new KicksDocument());
 
         /*
@@ -202,7 +197,7 @@ public final class CanvasFactory {
         panel.add(p);
         cursorStepPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
         panel.add(cursorStepPanel);
-        panel.add(Box.createVerticalStrut(20));
+        panel.add(Box.createRigidArea(new Dimension(20, 20))); // Vertical strut expands horizontally!
 
         return panel;
     }
