@@ -23,8 +23,8 @@ public class ExportAsPDF extends AbstractAction {
     public static final String ACTION_COMMAND = "action.export.pdf";
 
     private static final String MESSAGE_RESOURCE_PREFIX = "export.pdf";
-    private static final String SMALL_ICON_NAME = "Export16.gif";
-    private static final String LARGE_ICON_NAME = "Export24.gif";
+    private static final String SMALL_ICON_NAME = "Export24.png";
+    private static final String LARGE_ICON_NAME = "Export24.png";
 
     private static final int MARGIN = 20;
 

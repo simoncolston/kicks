@@ -20,8 +20,8 @@ public class Print extends AbstractAction {
     public static final String ACTION_COMMAND = "action.print";
 
     private static final String MESSAGE_RESOURCE_PREFIX = "print";
-    private static final String SMALL_ICON_NAME = "Print16.gif";
-    private static final String LARGE_ICON_NAME = "Print24.gif";
+    private static final String SMALL_ICON_NAME = "Print24.png";
+    private static final String LARGE_ICON_NAME = "Print24.png";
 
     public Print() {
         putValue(ACTION_COMMAND_KEY, ACTION_COMMAND);

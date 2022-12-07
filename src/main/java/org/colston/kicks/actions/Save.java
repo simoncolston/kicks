@@ -19,8 +19,8 @@ public class Save extends AbstractAction {
     public static final String ACTION_COMMAND = "action.save";
 
     private static final String MESSAGE_RESOURCE_PREFIX = "save";
-    private static final String SMALL_ICON_NAME = "Save16.gif";
-    private static final String LARGE_ICON_NAME = "Save24.gif";
+    private static final String SMALL_ICON_NAME = "Save24.png";
+    private static final String LARGE_ICON_NAME = "Save24.png";
 
     private File file;
 
@@ -39,7 +39,7 @@ public class Save extends AbstractAction {
         return doSave(false, null);
     }
 
-    public boolean saveAs() {return doSave(true, () -> KicksApp.documentSaved(file));}
+    public void saveAs() {doSave(true, () -> KicksApp.documentSaved(file));}
     /**
      * Save the current document and update run the runnable on the event thread.
      * This is to allow the use of {@link #save()} elsewhere without the usual post-processing for a normal save action.

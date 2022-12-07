@@ -29,13 +29,13 @@ TODO
   - [x] **1** Use JAXB for saving/loading document to XML
 
 #### View
-  - [ ]   2   Zoom
+  - [x]   2   Zoom
   - [ ]   3   Show cursor coordinates
 
 #### Help
   - [ ]   5   Add help (using JavaHelp - is that still a thing?)
   - [x] **1** About box (taking version from the manifest file)
-  - [ ] **1** Keyboard shortcuts
+  - [x] **1** Keyboard shortcuts
 
 ##### Selection
   - [x] **1** Mouse to move cursor on canvas

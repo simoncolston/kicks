@@ -87,8 +87,8 @@ class CanvasPanel extends JPanel implements Printable {
      * Configurables
      */
     private final Dimension dimension = new Dimension();
-    private int borderWidth;
-    private final double scale;
+    private final int borderWidth = DEFAULT_BORDER_WIDTH;
+    private double scale;
 
     /*
      * Cursor
@@ -109,10 +109,9 @@ class CanvasPanel extends JPanel implements Printable {
         super(null);
         this.model = model;
 
-        int res = Toolkit.getDefaultToolkit().getScreenResolution();
-        scale = (1.0f * res / 72f);
+        zoomReset();
         setBackground(BACKGROUND_COLOUR);
-        setBorderWidth(DEFAULT_BORDER_WIDTH);
+        setDimensions();
         setFocusable(true);
         addMouseListener(new ML());
 
@@ -121,8 +120,7 @@ class CanvasPanel extends JPanel implements Printable {
         add(text);
     }
 
-    private void setBorderWidth(int bw) {
-        borderWidth = bw;
+    private void setDimensions() {
         dimension.width = (int) (scale * (CANVAS_WIDTH + 2 * borderWidth));
         dimension.height = (int) (scale * (CANVAS_HEIGHT + 2 * borderWidth));
         setPreferredSize(dimension);
@@ -134,12 +132,31 @@ class CanvasPanel extends JPanel implements Printable {
         initialiseCursor();
         cursorOnNote = true;
         text.setVisible(false);
-        documentUpdated();
+        redraw();
     }
 
-    void documentUpdated() {
+    void redraw() {
         revalidate();
         repaint();
+    }
+
+    void zoomIn() {
+        scale = scale * 10.0 / 9.0; // divide by multiple of 3
+        setDimensions();
+        redraw();
+    }
+
+    void zoomOut() {
+        scale = scale * 9.0 / 10.0;
+        setDimensions();
+        redraw();
+    }
+
+    void zoomReset() {
+        int res = Toolkit.getDefaultToolkit().getScreenResolution();
+        scale = (1.0f * res / 72f);
+        setDimensions();
+        redraw();
     }
 
     private void doPaint(Graphics2D g2, boolean print) {
@@ -673,6 +690,11 @@ class CanvasPanel extends JPanel implements Printable {
              */
             int x = (int) Math.ceil(e.getX() / scale - borderWidth);
             int y = (int) Math.ceil(e.getY() / scale - borderWidth);
+
+            if (y < 0 || y > CANVAS_HEIGHT) {
+                e.consume();
+                return;
+            }
 
             x = CANVAS_WIDTH - x;
             //Which column?

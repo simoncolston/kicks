@@ -25,7 +25,7 @@ class CanvasControl implements Canvas {
         @Override
         public void documentUpdated() {
             updateUndoActions();
-            canvasPanel.documentUpdated();
+            canvasPanel.redraw();
         }
 
         @Override
@@ -132,6 +132,21 @@ class CanvasControl implements Canvas {
     public void redo() {
         undo.redo();
         updateUndoActions();
+    }
+
+    @Override
+    public void zoomIn() {
+        canvasPanel.zoomIn();
+    }
+
+    @Override
+    public void zoomOut() {
+        canvasPanel.zoomOut();
+    }
+
+    @Override
+    public void zoomReset() {
+        canvasPanel.zoomReset();
     }
 
     private void updateUndoActions() {

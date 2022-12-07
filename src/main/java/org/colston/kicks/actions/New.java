@@ -10,8 +10,8 @@ public class New extends AbstractAction {
     public static final String ACTION_COMMAND = "action.new";
 
     private static final String MESSAGE_RESOURCE_PREFIX = "new";
-    private static final String SMALL_ICON_NAME = "New16.gif";
-    private static final String LARGE_ICON_NAME = "New24.gif";
+    private static final String SMALL_ICON_NAME = "New24.png";
+    private static final String LARGE_ICON_NAME = "New24.png";
 
     public New() {
         putValue(ACTION_COMMAND_KEY, ACTION_COMMAND);

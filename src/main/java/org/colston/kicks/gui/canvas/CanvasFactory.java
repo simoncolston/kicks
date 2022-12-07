@@ -1,5 +1,6 @@
 package org.colston.kicks.gui.canvas;
 
+import org.colston.kicks.KicksApp;
 import org.colston.kicks.Settings;
 import org.colston.kicks.document.KicksDocument;
 import org.colston.kicks.gui.util.JapaneseTextFocusListener;
@@ -42,7 +43,7 @@ public final class CanvasFactory {
 
         JPanel inputComponent = new JPanel();
         inputComponent.setLayout(new BoxLayout(inputComponent, BoxLayout.X_AXIS));
-        inputComponent.setBackground(Color.GRAY);
+        inputComponent.setBackground(KicksApp.PANEL_COLOUR);
         inputComponent.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
         inputComponent.add(Box.createHorizontalGlue());
@@ -246,6 +247,8 @@ public final class CanvasFactory {
         // setting this one to selected and the ButtonGroup handles the others in the group
         ca.setListener(e -> button.setSelected(true));
         button.setFocusable(false);
+        button.setIcon(CanvasResources.getIcon("RadioButtonUnchecked18.png"));
+        button.setSelectedIcon(CanvasResources.getIcon("RadioButtonChecked18.png"));
         return button;
     }
 

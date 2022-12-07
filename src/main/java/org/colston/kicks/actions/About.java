@@ -17,8 +17,8 @@ public class About extends AbstractAction {
     public static final String ACTION_COMMAND = "action.about";
 
     private static final String MESSAGE_RESOURCE_PREFIX = "about";
-    private static final String SMALL_ICON_NAME = "About16.gif";
-    private static final String LARGE_ICON_NAME = "About24.gif";
+    private static final String SMALL_ICON_NAME = "About24.png";
+    private static final String LARGE_ICON_NAME = "About24.png";
 
     public About() {
         putValue(ACTION_COMMAND_KEY, ACTION_COMMAND);

@@ -32,6 +32,7 @@ import java.util.logging.Logger;
 public class KicksApp extends GuiApp {
 
     public static final String APPLICATION_NAME = "kicks";
+    public static final Color PANEL_COLOUR = new Color(53, 119, 171);
     private static final Logger logger = Logger.getLogger(KicksApp.class.getName());
     private static final String[] ICON_RESOURCES = {
             "icon96.png",
@@ -231,6 +232,7 @@ public class KicksApp extends GuiApp {
         boolean added = addButtons(toolBar, "menu.file", false);
         added = addButtons(toolBar, "menu.edit", added);
         addButtons(toolBar, "menu.document", added);
+        addButtons(toolBar, "menu.view", added);
         return toolBar;
     }
 
@@ -343,6 +345,7 @@ public class KicksApp extends GuiApp {
     private static class MainActionProvider implements ActionProvider {
 
         private final List<Action> fileActions = new ArrayList<>();
+        private final List<Action> viewActions = new ArrayList<>();
         private final List<Action> helpActions = new ArrayList<>();
 
         public MainActionProvider() {
@@ -355,30 +358,40 @@ public class KicksApp extends GuiApp {
             fileActions.add(ActionManager.getAction(SettingsAction.class));
             fileActions.add(ActionManager.getAction(Quit.class));
 
+            viewActions.add(ActionManager.getAction(ZoomOut.class));
+            viewActions.add(ActionManager.getAction(ZoomReset.class));
+            viewActions.add(ActionManager.getAction(ZoomIn.class));
+
             helpActions.add(ActionManager.getAction(KeyboardShortcuts.class));
             helpActions.add(ActionManager.getAction(About.class));
         }
 
         @Override
         public List<Action> getMenuActions(String menuName) {
-            if ("menu.file".equals(menuName)) {
-                return fileActions;
-            } else if ("menu.help".equals(menuName)) {
-                return helpActions;
-            }
-            return null;
+            return switch (menuName) {
+                case "menu.file" -> fileActions;
+                case "menu.help" -> helpActions;
+                default -> null;
+            };
         }
 
         @Override
         public List<Action> getToolBarActions(String menuName) {
             List<Action> list = new ArrayList<>();
-            if ("menu.file".equals(menuName)) {
-                list.add(ActionManager.getAction(New.class));
-                list.add(ActionManager.getAction(Open.class));
-                list.add(ActionManager.getAction(Save.class));
-                list.add(ActionManager.getAction(SaveAs.class));
-                list.add(ActionManager.getAction(ExportAsPDF.class));
-                list.add(ActionManager.getAction(Print.class));
+            switch (menuName) {
+                case "menu.file" -> {
+                    list.add(ActionManager.getAction(New.class));
+                    list.add(ActionManager.getAction(Open.class));
+                    list.add(ActionManager.getAction(Save.class));
+                    list.add(ActionManager.getAction(SaveAs.class));
+                    list.add(ActionManager.getAction(ExportAsPDF.class));
+                    list.add(ActionManager.getAction(Print.class));
+                }
+                case "menu.view" -> {
+                    list.add(ActionManager.getAction(ZoomOut.class));
+                    list.add(ActionManager.getAction(ZoomReset.class));
+                    list.add(ActionManager.getAction(ZoomIn.class));
+                }
             }
             return list;
         }
@@ -386,6 +399,7 @@ public class KicksApp extends GuiApp {
         @Override
         public Collection<? extends Action> getAllActions() {
             List<Action> actions = new ArrayList<>(fileActions);
+            actions.addAll(viewActions);
             actions.addAll(helpActions);
             return actions;
         }

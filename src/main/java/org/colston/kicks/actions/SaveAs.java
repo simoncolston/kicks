@@ -10,8 +10,8 @@ public class SaveAs extends AbstractAction {
     public static final String ACTION_COMMAND = "action.save.as";
 
     private static final String MESSAGE_RESOURCE_PREFIX = "save.as";
-    private static final String SMALL_ICON_NAME = "SaveAs16.gif";
-    private static final String LARGE_ICON_NAME = "SaveAs24.gif";
+    private static final String SMALL_ICON_NAME = "SaveAs24.png";
+    private static final String LARGE_ICON_NAME = "SaveAs24.png";
 
     public SaveAs() {
         putValue(ACTION_COMMAND_KEY, ACTION_COMMAND);

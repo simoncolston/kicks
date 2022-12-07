@@ -202,13 +202,13 @@ final class CanvasActions {
         map.put("canvas.cursor.left",
                 CanvasAction.create("canvas.cursor.left", new KeyStroke[]{KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, 0)})
                         .handler((c, e) -> c.moveCursorLeft())
-                        .smallIconResourceName("Back16.gif")
-                        .largeIconResourceName("Back24.gif"));
+                        .smallIconResourceName("Left24.png")
+                        .largeIconResourceName("Left24.png"));
         map.put("canvas.cursor.right",
                 CanvasAction.create("canvas.cursor.right", new KeyStroke[]{KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, 0)})
                         .handler((c, e) -> c.moveCursorRight())
-                        .smallIconResourceName("Forward16.gif")
-                        .largeIconResourceName("Forward24.gif"));
+                        .smallIconResourceName("Right24.png")
+                        .largeIconResourceName("Right24.png"));
         map.put("canvas.cursor.up",
                 CanvasAction.create("canvas.cursor.up",
                                 new KeyStroke[]
@@ -217,8 +217,8 @@ final class CanvasActions {
                                         KeyStroke.getKeyStroke(KeyEvent.VK_UP, InputEvent.ALT_DOWN_MASK)
                                 })
                         .handler((c, e) -> c.moveCursorUp(e.getModifiers()))
-                        .smallIconResourceName("Up16.gif")
-                        .largeIconResourceName("Up24.gif"));
+                        .smallIconResourceName("Up24.png")
+                        .largeIconResourceName("Up24.png"));
         map.put("canvas.cursor.down",
                 CanvasAction.create("canvas.cursor.down",
                                 new KeyStroke[]
@@ -227,8 +227,8 @@ final class CanvasActions {
                                         KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, InputEvent.ALT_DOWN_MASK)
                                 })
                         .handler((c, e) -> c.moveCursorDown(e.getModifiers()))
-                        .smallIconResourceName("Down16.gif")
-                        .largeIconResourceName("Down24.gif"));
+                        .smallIconResourceName("Down24.png")
+                        .largeIconResourceName("Down24.png"));
         map.put("canvas.cursor.auto.off", new CanvasAction((c, e) -> c.setAutoCursor(Canvas.AutoCursor.OFF),
                 new KeyStroke[]{KeyStroke.getKeyStroke(KeyEvent.VK_F6, InputEvent.CTRL_DOWN_MASK)},
                 "canvas.cursor.auto.off"));

@@ -32,6 +32,12 @@ public interface Canvas {
 
     void redo();
 
+    void zoomIn();
+
+    void zoomOut();
+
+    void zoomReset();
+
     enum AutoCursor {
         OFF, HALF, ONE
     }
