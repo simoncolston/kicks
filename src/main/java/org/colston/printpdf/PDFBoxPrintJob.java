@@ -89,7 +89,7 @@ public class PDFBoxPrintJob implements DocPrintJob {
             data = doc.getPrintData();
         } catch (IOException e) {
 //			TODO notifyEvent(PrintJobEvent.JOB_FAILED);
-            throw new PrintException("Print data not available: " + e.toString());
+            throw new PrintException("Print data not available: " + e);
         }
         if (data == null) {
 //			TODO notifyEvent(PrintJobEvent.JOB_FAILED);
@@ -194,21 +194,10 @@ public class PDFBoxPrintJob implements DocPrintJob {
 //						TODO notifyEvent(PrintJobEvent.JOB_FAILED);
                     throw new PrintException(e);
                 }
-                // check write access
-                SecurityManager security = System.getSecurityManager();
-                if (security != null) {
-                    try {
-                        security.checkWrite(outputFile.getPath());
-                    } catch (SecurityException se) {
-//							TODO notifyEvent(PrintJobEvent.JOB_FAILED);
-                        throw new PrintException(se);
-                    }
-                }
             } else if (category == JobName.class) {
                 jobName = ((JobName) attr).getValue();
             } else if (category == Media.class) {
-                if (attr instanceof MediaSizeName) {
-                    MediaSizeName mn = (MediaSizeName) attr;
+                if (attr instanceof MediaSizeName mn) {
                     MediaSize ms = MediaSize.getMediaSizeForName(mn);
                     if (ms != null) {
                         mediaSize = ms;

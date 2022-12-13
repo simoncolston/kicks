@@ -5,7 +5,7 @@ import org.colston.kicks.KicksApp;
 import org.colston.kicks.document.KicksDocument;
 import org.colston.kicks.document.Tuning;
 import org.colston.kicks.gui.util.JapaneseTextFocusListener;
-import org.colston.sclib.i18n.Messages;
+import org.colston.lib.i18n.Messages;
 import org.colston.utils.SpringUtilities;
 
 import javax.swing.*;

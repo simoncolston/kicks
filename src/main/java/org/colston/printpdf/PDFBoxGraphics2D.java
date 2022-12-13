@@ -58,6 +58,7 @@ public class PDFBoxGraphics2D extends Graphics2D implements Cloneable {
         this.shared.fontStore = fontStore;
     }
 
+    @SuppressWarnings("CloneDoesntDeclareCloneNotSupportedException")
     @Override
     protected PDFBoxGraphics2D clone() {
         try {
@@ -208,22 +209,18 @@ public class PDFBoxGraphics2D extends Graphics2D implements Cloneable {
             while (!pi.isDone()) {
                 int type = pi.currentSegment(coords);
                 switch (type) {
-                    case PathIterator.SEG_MOVETO:
+                    case PathIterator.SEG_MOVETO -> {
                         startx = coords[0];
                         starty = coords[1];
                         shared.cstream.moveTo(startx, -starty);
-                        break;
-                    case PathIterator.SEG_LINETO:
-                        shared.cstream.lineTo(coords[0], -coords[1]);
-                        break;
-                    case PathIterator.SEG_CLOSE:
-                        shared.cstream.lineTo(startx, -starty);
-                        break;
-                    case PathIterator.SEG_CUBICTO:
-                    case PathIterator.SEG_QUADTO:
-                    default:
+                    }
+                    case PathIterator.SEG_LINETO -> shared.cstream.lineTo(coords[0], -coords[1]);
+                    case PathIterator.SEG_CLOSE -> shared.cstream.lineTo(startx, -starty);
+                    case PathIterator.SEG_CUBICTO, PathIterator.SEG_QUADTO -> {
                         //TODO: not supported yet
-                        break;
+                    }
+                    default -> {
+                    }
                 }
                 pi.next();
             }

@@ -91,7 +91,7 @@ public class PDFBoxPrintService implements PrintService {
     }
 
     @Override
-    public boolean isAttributeValueSupported(Attribute attrval, DocFlavor flavor, AttributeSet attributes) {
+    public boolean isAttributeValueSupported(Attribute attribute, DocFlavor flavor, AttributeSet attributes) {
         // TODO Auto-generated method stub
         return false;
     }

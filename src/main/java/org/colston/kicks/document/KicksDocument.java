@@ -1,7 +1,7 @@
 package org.colston.kicks.document;
 
 import jakarta.xml.bind.annotation.*;
-import org.colston.sclib.i18n.Messages;
+import org.colston.lib.i18n.Messages;
 
 import javax.swing.event.EventListenerList;
 import javax.swing.event.UndoableEditEvent;

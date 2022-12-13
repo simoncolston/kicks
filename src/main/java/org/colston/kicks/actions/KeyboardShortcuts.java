@@ -4,7 +4,7 @@ import org.colston.gui.actions.ActionManager;
 import org.colston.gui.actions.ActionProvider;
 import org.colston.gui.actions.ActionProviders;
 import org.colston.kicks.KicksApp;
-import org.colston.sclib.i18n.Messages;
+import org.colston.lib.i18n.Messages;
 import org.colston.utils.Utils;
 
 import javax.swing.*;

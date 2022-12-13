@@ -8,9 +8,9 @@ import org.colston.kicks.document.KicksDocument;
 import org.colston.kicks.document.persistence.DocumentStore;
 import org.colston.kicks.gui.canvas.Canvas;
 import org.colston.kicks.gui.canvas.CanvasFactory;
-import org.colston.sclib.gui.GuiApp;
-import org.colston.sclib.gui.task.Task;
-import org.colston.sclib.i18n.Messages;
+import org.colston.lib.gui.GuiApp;
+import org.colston.lib.gui.task.Task;
+import org.colston.lib.i18n.Messages;
 import org.colston.utils.Utils;
 
 import javax.imageio.ImageIO;

@@ -2,7 +2,7 @@ package org.colston.kicks.actions;
 
 import org.colston.gui.actions.ActionManager;
 import org.colston.kicks.KicksApp;
-import org.colston.sclib.i18n.Messages;
+import org.colston.lib.i18n.Messages;
 
 import javax.swing.*;
 import java.awt.*;

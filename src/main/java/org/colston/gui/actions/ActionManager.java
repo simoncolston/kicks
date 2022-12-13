@@ -4,7 +4,7 @@
  */
 package org.colston.gui.actions;
 
-import org.colston.sclib.i18n.Messages;
+import org.colston.lib.i18n.Messages;
 
 import javax.swing.*;
 import java.net.URL;

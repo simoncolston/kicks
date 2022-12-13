@@ -2,8 +2,8 @@ package org.colston.kicks.actions;
 
 import org.colston.gui.actions.ActionManager;
 import org.colston.kicks.KicksApp;
-import org.colston.sclib.gui.task.Task;
-import org.colston.sclib.i18n.Message;
+import org.colston.lib.gui.task.Task;
+import org.colston.lib.i18n.Message;
 import org.colston.utils.Utils;
 
 import javax.print.attribute.HashPrintRequestAttributeSet;
