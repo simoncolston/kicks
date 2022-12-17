@@ -6,6 +6,7 @@ import org.colston.kicks.actions.Title;
 import org.colston.kicks.document.*;
 
 import javax.swing.*;
+import javax.swing.event.EventListenerList;
 import javax.swing.text.JTextComponent;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
@@ -34,7 +35,7 @@ class CanvasPanel extends JPanel implements Printable {
 
     private static final int COLUMNS_PER_PAGE = 10;
     private static final int CELLS_PER_COL = 12;
-    private static final int CELL_TICKS = 12;
+    static final int CELL_TICKS = 12;
 
     //TODO: Rebase everything as eleven columns
 
@@ -103,6 +104,7 @@ class CanvasPanel extends JPanel implements Printable {
      * The model.
      */
     private final CanvasModel model;
+    private final EventListenerList listeners = new EventListenerList();
 
     public CanvasPanel(CanvasModel model, JTextComponent text) {
         // remove default layout manager - use absolute positioning for text field
@@ -118,6 +120,16 @@ class CanvasPanel extends JPanel implements Printable {
         this.text = text;
         text.setFont(lyricFont);
         add(text);
+    }
+
+    void addListener(CanvasPanelListener listener) {
+        listeners.add(CanvasPanelListener.class, listener);
+    }
+
+    private void fireCursorChanged() {
+        for (CanvasPanelListener l : listeners.getListeners(CanvasPanelListener.class)) {
+            l.cursorChanged(cursorIndex, cursorOffset);
+        }
     }
 
     private void setDimensions() {
@@ -550,6 +562,8 @@ class CanvasPanel extends JPanel implements Printable {
 
         revalidate();
         repaint();
+
+        fireCursorChanged();
     }
 
     int getCursorIndex() {

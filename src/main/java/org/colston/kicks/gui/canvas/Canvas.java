@@ -38,6 +38,10 @@ public interface Canvas {
 
     void zoomReset();
 
+    void setNoteSizeNormal();
+
+    void setNoteSizeSmall();
+
     enum AutoCursor {
         OFF, HALF, ONE
     }

@@ -209,6 +209,22 @@ public class KicksDocument {
         }
     }
 
+    public void setNoteSize(int index, int offset, boolean value) {
+        key.index = index;
+        key.offset = offset;
+        int off = Collections.binarySearch(notes, key, comparator);
+        if (off >= 0) {
+            Note n = notes.get(off);
+            boolean oldValue = n.isSmall();
+            if (value != oldValue) {
+                n.setSmall(value);
+                SetEdit<Note, Boolean> edit = new SetEdit<>(index, offset, n, oldValue, !oldValue,
+                        Note::setSmall, Messages.get(getClass(), "undo.set.note.size"));
+                fireUndoableEditHappened(new UndoableEditEvent(this, edit));
+                fireDocumentUpdated();
+            }
+        }
+    }
     public void addLyric(Lyric lyric) {
         int listIndex = Collections.binarySearch(lyrics, lyric, comparator);
         UndoableEdit edit;
@@ -293,6 +309,16 @@ public class KicksDocument {
             // listIndex = -(insertion point) - 1, so add 2 to get the previous note
             return notes.get(Math.abs(listIndex + 2));
         }
+    }
+
+    public Note getNote(int index, int offset) {
+        if (notes.isEmpty()) {
+            return null;
+        }
+        key.index = index;
+        key.offset = offset;
+        int listIndex = Collections.binarySearch(notes, key, comparator);
+        return listIndex >= 0 ? notes.get(listIndex) : null;
     }
 
     @Override

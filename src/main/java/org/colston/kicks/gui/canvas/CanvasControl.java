@@ -46,11 +46,11 @@ class CanvasControl implements Canvas {
     private final JComponent container;
     private final CanvasPanel canvasPanel;
     private final CanvasModel model;
-    private final JComponent inputComponent;
+    private final InputComponent inputComponent;
     private final UndoManager undo = new UndoManager();
     private KicksDocument savedDocument = null;
 
-    CanvasControl(JPanel container, CanvasPanel canvasPanel, CanvasModel model, JComponent inputComponent) {
+    CanvasControl(JPanel container, CanvasPanel canvasPanel, CanvasModel model, InputComponent inputComponent) {
         this.container = container;
         this.canvasPanel = canvasPanel;
         this.model = model;
@@ -184,6 +184,9 @@ class CanvasControl implements Canvas {
         Note n = new Note(canvasPanel.getCursorIndex(), canvasPanel.getCursorOffset(), string, placement);
         getDocument().addNote(n);
         if (isSmall) {
+            // override the input component setting (probably because user pressed Shift key)
+            n.setSmall(true);
+        } else if (inputComponent.isSmallNoteSelected()) {
             n.setSmall(true);
         }
         canvasPanel.doAutoCursor();
@@ -248,6 +251,16 @@ class CanvasControl implements Canvas {
         } else {
             model.getDocument().removeLyric(canvasPanel.getCursorIndex(), canvasPanel.getCursorOffset());
         }
+    }
+
+    @Override
+    public void setNoteSizeNormal() {
+        model.getDocument().setNoteSize(canvasPanel.getCursorIndex(), canvasPanel.getCursorOffset(), false);
+    }
+
+    @Override
+    public void setNoteSizeSmall() {
+        model.getDocument().setNoteSize(canvasPanel.getCursorIndex(), canvasPanel.getCursorOffset(), true);
     }
 
     /**

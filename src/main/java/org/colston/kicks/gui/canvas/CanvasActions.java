@@ -191,6 +191,10 @@ final class CanvasActions {
                 new KeyStroke[]{KeyStroke.getKeyStroke(KeyEvent.VK_MINUS, 0),}, "canvas.utou.uchi"));
         map.put("canvas.utou.kaki", new CanvasAction((c, e) -> c.setUtou(Utou.KAKI),
                 new KeyStroke[]{KeyStroke.getKeyStroke(KeyEvent.VK_EQUALS, 0),}, "canvas.utou.kaki"));
+        map.put("canvas.note.size.normal", new CanvasAction((c, e) -> c.setNoteSizeNormal(),
+                new KeyStroke[]{KeyStroke.getKeyStroke(KeyEvent.VK_9, 0)}, "canvas.note.size.normal"));
+        map.put("canvas.note.size.small", new CanvasAction((c, e) -> c.setNoteSizeSmall(),
+                new KeyStroke[]{KeyStroke.getKeyStroke(KeyEvent.VK_8, 0)}, "canvas.note.size.small"));
 
         // Edit commands
         map.put("canvas.delete", new CanvasAction((c, e) -> c.delete(),
