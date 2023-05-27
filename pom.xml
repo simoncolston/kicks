@@ -83,7 +83,7 @@
 					<toolchains>
 						<jdk>
 							<version>${kicks.java.version}</version>
-							<vendor>openjdk</vendor>
+							<vendor>oracle</vendor>
 						</jdk>
 					</toolchains>
 				</configuration>
