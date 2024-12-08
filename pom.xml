@@ -20,7 +20,7 @@
 
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-		<kicks.java.version>17</kicks.java.version>
+		<kicks.java.version>21</kicks.java.version>
 		<maven.compiler.release>${kicks.java.version}</maven.compiler.release>
 		<maven.compiler.source>${kicks.java.version}</maven.compiler.source>
 		<maven.compiler.target>${kicks.java.version}</maven.compiler.target>
