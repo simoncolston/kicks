@@ -19,6 +19,7 @@ public class SettingsAction extends AbstractAction {
     private JDialog dialog;
     private JComboBox<Character.Subset[]> charSubsetCombo;
     private final Character.Subset[][] charSubsets = new Character.Subset[][]{Settings.HIRAGANA, Settings.KATAKANA};
+    private JCheckBox openPdfCheckBox;
 
     public SettingsAction() {
         putValue(ACTION_COMMAND_KEY, ACTION_COMMAND);
@@ -35,24 +36,33 @@ public class SettingsAction extends AbstractAction {
             dialog.add(panel, BorderLayout.CENTER);
 
             panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+            panel.add(new JLabel(Messages.get(SettingsAction.class, "settings.open.pdf.after.create.prompt")));
+            openPdfCheckBox = new JCheckBox();
+            panel.add(openPdfCheckBox);
+
             panel.add(new JLabel(Messages.get(SettingsAction.class, "settings.default.ime.charset.prompt")));
-
             charSubsetCombo = new JComboBox<>(charSubsets);
-            panel.add(charSubsetCombo, BorderLayout.NORTH);
-
+            panel.add(charSubsetCombo);
             charSubsetCombo.setRenderer(new CharacterSubsetRenderer());
 
-            SpringUtilities.makeCompactGrid(panel, 1, 2, 5, 5, 5, 5);
+            SpringUtilities.makeCompactGrid(panel, 2, 2, 5, 5, 5, 5);
 
             JPanel buttons = new JPanel(new FlowLayout(FlowLayout.RIGHT));
             dialog.add(buttons, BorderLayout.SOUTH);
 
             buttons.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
 
-            JButton b = new JButton(Messages.get(SettingsAction.class, "settings.submit.button"));
+            JButton b = new JButton(Messages.get(SettingsAction.class, "settings.cancel.button"));
             buttons.add(b);
-
             b.addActionListener(e -> {
+                dialog.setVisible(false);
+                dialog.dispose();
+            });
+            b = new JButton(Messages.get(SettingsAction.class, "settings.submit.button"));
+            buttons.add(b);
+            b.addActionListener(e -> {
+                KicksApp.settings().setOpenPdfAfterExport(openPdfCheckBox.isSelected());
                 KicksApp.settings().setCharacterSubset((Character.Subset[]) charSubsetCombo.getSelectedItem());
                 dialog.setVisible(false);
                 dialog.dispose();
@@ -71,6 +81,7 @@ public class SettingsAction extends AbstractAction {
     public void actionPerformed(ActionEvent e) {
         JDialog d = getDialog();
         charSubsetCombo.setSelectedItem(KicksApp.settings().getCharacterSubset());
+        openPdfCheckBox.setSelected(KicksApp.settings().isOpenPdfAfterExport());
         d.setVisible(true);
     }
 

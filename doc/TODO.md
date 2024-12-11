@@ -65,4 +65,5 @@ TODO
 
 ##### Build
   - [x] **1** Upgrade to Java 17
+  - [x] **1** Upgrade to Java 21
   - [ ] **1** Create executable

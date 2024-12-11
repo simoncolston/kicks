@@ -59,7 +59,7 @@ public class ExportAsPDF extends AbstractAction {
                 aset.add(new Destination(destination.toURI()));
 
                 String jobName = destination.getName();
-                jobName = jobName.substring(0, jobName.lastIndexOf(".pdf"));
+                jobName = jobName.substring(0, jobName.lastIndexOf(Utils.PDF_FILE_EXT));
                 aset.add(new JobName(jobName, null));
 
                 //TODO:  The whole 'lookup print service' thing - looks fun!
@@ -82,6 +82,10 @@ public class ExportAsPDF extends AbstractAction {
 
                 printJob.print(doc, aset);
 
+                // open the pdf
+                if (Desktop.isDesktopSupported() && KicksApp.settings().isOpenPdfAfterExport()) {
+                    Desktop.getDesktop().open(destination);
+                }
                 return null;
             }
 
