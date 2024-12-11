@@ -174,10 +174,10 @@ public class InputComponent extends JPanel {
         JRadioButton button = createRadioButton("canvas.cursor.auto.off", false);
         buttonGroup.add(button);
         autoCursorButtonPanel.add(button);
-        button = createRadioButton("canvas.cursor.auto.half", false);
+        button = createRadioButton("canvas.cursor.auto.half", true);
         buttonGroup.add(button);
         autoCursorButtonPanel.add(button);
-        button = createRadioButton("canvas.cursor.auto.one", true);
+        button = createRadioButton("canvas.cursor.auto.one", false);
         buttonGroup.add(button);
         autoCursorButtonPanel.add(button);
 

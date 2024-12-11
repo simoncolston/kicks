@@ -98,7 +98,7 @@ class CanvasPanel extends JPanel implements Printable {
     private int cursorOffset = CELL_TICKS / 2; // offset within a cell (0 - CELL_TICKS)
     private boolean cursorOnNote = true;       // flag indicating whether cursor on the notes or the lyrics
     private boolean cursorHighlight = false;   // flag indicating temporarily in mode for highlighting
-    private Canvas.AutoCursor autoCursor = Canvas.AutoCursor.ONE; // where to move the cursor after input
+    private Canvas.AutoCursor autoCursor = Canvas.AutoCursor.HALF; // where to move the cursor after input
 
     /*
      * The model.
