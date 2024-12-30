@@ -1,6 +1,7 @@
 package org.colston.kicks.gui.canvas;
 
 import org.colston.kicks.KicksApp;
+import org.colston.kicks.document.Locatable;
 import org.colston.kicks.document.Note;
 import org.colston.lib.i18n.Messages;
 
@@ -65,7 +66,7 @@ public class InputComponent extends JPanel {
                 if (note.isSmall()) {
                     button = smallNoteRadioButton;
                 }
-            } else if (offset == 0 || offset == CanvasPanel.CELL_TICKS) {
+            } else if (offset == 0 || offset == Locatable.CELL_TICKS) {
                 button = smallNoteRadioButton;
             }
             button.setSelected(true);

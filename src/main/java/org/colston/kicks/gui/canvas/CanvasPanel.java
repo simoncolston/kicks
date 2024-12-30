@@ -35,7 +35,6 @@ class CanvasPanel extends JPanel implements Printable {
 
     private static final int COLUMNS_PER_PAGE = 10;
     private static final int CELLS_PER_COL = 12;
-    static final int CELL_TICKS = 12;
 
     //TODO: Rebase everything as eleven columns
 
@@ -60,6 +59,7 @@ class CanvasPanel extends JPanel implements Printable {
     private static final Color BACKGROUND_COLOUR = Color.WHITE;
     //TODO: check the visibility of this
     static final Color CURSOR_COLOUR = Color.BLUE;
+    private static final Color SELECTION_COLOUR = UIManager.getDefaults().getColor("List.selectionBackground");
 
     /*
      * Fonts
@@ -95,10 +95,15 @@ class CanvasPanel extends JPanel implements Printable {
      * Cursor
      */
     private int cursorIndex = 0;               // cell index from top right corner
-    private int cursorOffset = CELL_TICKS / 2; // offset within a cell (0 - CELL_TICKS)
+    private int cursorOffset = Locatable.CELL_TICKS / 2; // offset within a cell (0 - CELL_TICKS)
     private boolean cursorOnNote = true;       // flag indicating whether cursor on the notes or the lyrics
     private boolean cursorHighlight = false;   // flag indicating temporarily in mode for highlighting
     private Canvas.AutoCursor autoCursor = Canvas.AutoCursor.HALF; // where to move the cursor after input
+
+    /*
+     * Selection
+     */
+    private final LocatableRange selection = new LocatableRange();
 
     /*
      * The model.
@@ -172,6 +177,11 @@ class CanvasPanel extends JPanel implements Printable {
     }
 
     private void doPaint(Graphics2D g2, boolean print) {
+
+        if (!print) {
+            drawSelection(g2);
+        }
+
         // draw the background
         int x = CANVAS_WIDTH - TITLE_WIDTH;
         int y = 0;
@@ -288,12 +298,12 @@ class CanvasPanel extends JPanel implements Printable {
         }
         if (chordStart != null) {
             //draw the unfinished chord to the last note
-            Note end = doc.getNotes().get(doc.getNotes().size() - 1);
+            Note end = doc.getNotes().getLast();
             drawNoteJoiningLine(g2, print, chordStart, end, X_OFFSET_CHORD, lfm, sfm);
         }
         if (slurStart != null) {
             //draw the unfinished slur to the last note
-            Note end = doc.getNotes().get(doc.getNotes().size() - 1);
+            Note end = doc.getNotes().getLast();
             drawNoteJoiningLine(g2, print, slurStart, end, X_OFFSET_SLUR, lfm, sfm);
         }
 
@@ -310,13 +320,45 @@ class CanvasPanel extends JPanel implements Printable {
         for (Lyric l : doc.getLyrics()) {
             char[] ch = l.getValue().toCharArray();
             for (int i = 0; i < ch.length; i++) {
+                cursorStartHighlight(g2, print, l, false, null);
                 drawLyric(g2, ch, i, l.getIndex(), l.getOffset(), fm);
+                cursorEndHighlight(g2, null);
+
             }
         }
     }
 
+    private void drawSelection(Graphics2D g2) {
+        if (selection.isEmpty()) {
+            return;
+        }
+        g2.setColor(SELECTION_COLOUR);
+        Locatable low = selection.getLow();
+        Locatable high = selection.getHigh();
+        SimpleLocatable start = new SimpleLocatable(low);
+        SimpleLocatable end = new SimpleLocatable();
+        boolean finished = false;
+        while (!finished) {
+            int col = start.getIndex() / CELLS_PER_COL;
+            end.setIndex(col * CELLS_PER_COL + CELLS_PER_COL - 1);
+            end.setOffset(Locatable.CELL_TICKS);
+            int x = x(start.getIndex());
+            int y = y(start.getIndex(), start.getOffset());
+            int height;
+            if (!end.isEqualTo(high) && selection.contains(end)) {
+                height = CANVAS_HEIGHT - y;
+                start.setIndex(end.getIndex() + 1);
+                start.setOffset(0);
+            } else {
+                height = y(high.getIndex(), high.getOffset()) - y;
+                finished = true;
+            }
+            g2.fillRect(x, y, COLUMN_WIDTH / 2, height);
+        }
+    }
+
     private void cursorStartHighlight(Graphics2D g2, boolean print, Locatable locatable, boolean noteSide, Font f) {
-        if (print || !isUnderCursor(locatable, noteSide)) {
+        if (print || (!isUnderCursor(locatable, noteSide) && !selection.contains(locatable))) {
             return;
         }
         if (f != null) {
@@ -478,7 +520,7 @@ class CanvasPanel extends JPanel implements Printable {
     private int y(int index, int offset) {
         int cell = index % CELLS_PER_COL;
         int y = CELL_HEIGHT * cell;
-        y += (offset * CELL_HEIGHT) / CELL_TICKS;
+        y += (offset * CELL_HEIGHT) / Locatable.CELL_TICKS;
         return y;
     }
 
@@ -490,7 +532,6 @@ class CanvasPanel extends JPanel implements Printable {
 
         g2.scale(scale, scale);
         if (borderWidth > 0) {
-            //noinspection SuspiciousNameCombination
             g2.translate(borderWidth, borderWidth);
         }
 
@@ -530,9 +571,10 @@ class CanvasPanel extends JPanel implements Printable {
     }
 
     private boolean moveCursor(int ticks) {
-        int cursorTicks = cursorIndex * CELL_TICKS + cursorOffset;
+        int cursorTicks = cursorIndex * Locatable.CELL_TICKS + cursorOffset;
         cursorTicks += ticks;
-        if (cursorTicks < 0 || cursorTicks > CELLS_PER_COL * COLUMNS_PER_PAGE * CELL_TICKS) {
+        if (cursorTicks < 0 || cursorTicks > CELLS_PER_COL * COLUMNS_PER_PAGE * Locatable.CELL_TICKS) {
+            // cursor would move out of bounds so don't move cursor
             return false;
         }
         setCursor(cursorTicks);
@@ -540,12 +582,38 @@ class CanvasPanel extends JPanel implements Printable {
     }
 
     private void setCursor(int ticks) {
-        int index = ticks / CELL_TICKS;
-        int offset = ticks % CELL_TICKS;
+        int index = ticks / Locatable.CELL_TICKS;
+        int offset = ticks % Locatable.CELL_TICKS;
+
+        /*
+         * cursorOffset 12 and 0 are the same location EXCEPT on the split for a new column. For this case we favour the
+         * end of the cell rather than the start.
+         * TODO: Give user choice of start or end of cell at new column boundaries.
+         */
+        if (offset == 0 && index > 0) {
+            index--;
+            offset = Locatable.CELL_TICKS;
+        }
+
+        handleSelection(index,  offset);
+
         setCursor(index, offset);
     }
 
+    void setCursor(int index, int offset, boolean onNote) {
+        setCursorOnNote(onNote);
+        setCursor(index, offset);
+    }
+
+    private void setCursorOnNote(boolean newValue) {
+        cursorOnNote = newValue;
+        handleText();
+        revalidate();
+        repaint();
+    }
+
     void setCursor(int index, int offset) {
+
         cursorIndex = index;
         cursorOffset = offset;
         /*
@@ -555,7 +623,7 @@ class CanvasPanel extends JPanel implements Printable {
          */
         if (cursorOffset == 0 && cursorIndex > 0) {
             cursorIndex--;
-            cursorOffset = CELL_TICKS;
+            cursorOffset = Locatable.CELL_TICKS;
         }
 
         handleText();
@@ -566,6 +634,14 @@ class CanvasPanel extends JPanel implements Printable {
         fireCursorChanged();
     }
 
+    private void handleSelection(int index, int offset) {
+        if (selection.isEmpty()) {
+            selection.set(cursorIndex, cursorOffset, index, offset);
+        } else {
+            selection.adjust(index, offset);
+        }
+    }
+
     int getCursorIndex() {
         return cursorIndex;
     }
@@ -574,20 +650,8 @@ class CanvasPanel extends JPanel implements Printable {
         return cursorOffset;
     }
 
-    void setCursor(int index, int offset, boolean onNote) {
-        setCursorOnNote(onNote);
-        setCursor(index, offset);
-    }
-
     void initialiseCursor() {
-        setCursor(0, CELL_TICKS / 2);
-    }
-
-    private void setCursorOnNote(boolean newValue) {
-        cursorOnNote = newValue;
-        handleText();
-        revalidate();
-        repaint();
+        setCursor(0, Locatable.CELL_TICKS / 2);
     }
 
     boolean isCursorOnNote() {
@@ -595,7 +659,7 @@ class CanvasPanel extends JPanel implements Printable {
     }
 
     private void handleText() {
-        if (cursorOnNote) {
+        if (cursorOnNote || !selection.isEmpty()) {
             text.setVisible(false);
         } else {
             int size = COLUMN_WIDTH / 2;
@@ -633,9 +697,9 @@ class CanvasPanel extends JPanel implements Printable {
     private int calcAutoCursorTicksDown() {
         return switch (autoCursor) {
             case OFF -> 1;
-            case HALF -> CELL_TICKS / 2 - cursorOffset % (CELL_TICKS / 2);
-            case ONE -> (CELL_TICKS / 2) * (((cursorOffset % 12) / (CELL_TICKS / 2)) + 1)
-                    - cursorOffset % (CELL_TICKS / 2);
+            case HALF -> Locatable.CELL_TICKS / 2 - cursorOffset % (Locatable.CELL_TICKS / 2);
+            case ONE -> (Locatable.CELL_TICKS / 2) * (((cursorOffset % 12) / (Locatable.CELL_TICKS / 2)) + 1)
+                    - cursorOffset % (Locatable.CELL_TICKS / 2);
         };
     }
 
@@ -646,16 +710,16 @@ class CanvasPanel extends JPanel implements Printable {
     private int calcAutoCursorTicksUp() {
         return switch (autoCursor) {
             case OFF -> -1;
-            case HALF -> -((cursorOffset - 1) % (CELL_TICKS / 2) + 1);
-            case ONE -> ((CELL_TICKS / 2) * (((cursorOffset % 12) / (CELL_TICKS / 2)) + 1)
-                    - cursorOffset % (CELL_TICKS / 2)) % CELL_TICKS - CELL_TICKS;
+            case HALF -> -((cursorOffset - 1) % (Locatable.CELL_TICKS / 2) + 1);
+            case ONE -> ((Locatable.CELL_TICKS / 2) * (((cursorOffset % 12) / (Locatable.CELL_TICKS / 2)) + 1)
+                    - cursorOffset % (Locatable.CELL_TICKS / 2)) % Locatable.CELL_TICKS - Locatable.CELL_TICKS;
         };
     }
 
     public void moveCursorLeft() {
         if (!cursorOnNote) {
             setCursorOnNote(true);
-        } else if (moveCursor(CELLS_PER_COL * CELL_TICKS)) {
+        } else if (moveCursor(CELLS_PER_COL * Locatable.CELL_TICKS)) {
             setCursorOnNote(!cursorOnNote);
         }
     }
@@ -663,7 +727,7 @@ class CanvasPanel extends JPanel implements Printable {
     public void moveCursorRight() {
         if (cursorOnNote) {
             setCursorOnNote(false);
-        } else if (moveCursor(-CELLS_PER_COL * CELL_TICKS)) {
+        } else if (moveCursor(-CELLS_PER_COL * Locatable.CELL_TICKS)) {
             setCursorOnNote(!cursorOnNote);
         }
     }
@@ -743,7 +807,7 @@ class CanvasPanel extends JPanel implements Printable {
 
             int cells = y / CELL_HEIGHT;
             int index = col * CELLS_PER_COL + cells;
-            int offset = (y % CELL_HEIGHT) / (CELL_HEIGHT / CELL_TICKS);
+            int offset = (y % CELL_HEIGHT) / (CELL_HEIGHT / Locatable.CELL_TICKS);
             setCursor(index, offset, onNote);
         }
     }
