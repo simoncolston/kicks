@@ -570,18 +570,18 @@ class CanvasPanel extends JPanel implements Printable {
         return Printable.PAGE_EXISTS;
     }
 
-    private boolean moveCursor(int ticks) {
+    private boolean moveCursor(int ticks, boolean selecting) {
         int cursorTicks = cursorIndex * Locatable.CELL_TICKS + cursorOffset;
         cursorTicks += ticks;
         if (cursorTicks < 0 || cursorTicks > CELLS_PER_COL * COLUMNS_PER_PAGE * Locatable.CELL_TICKS) {
             // cursor would move out of bounds so don't move cursor
             return false;
         }
-        setCursor(cursorTicks);
+        setCursor(cursorTicks, selecting);
         return true;
     }
 
-    private void setCursor(int ticks) {
+    private void setCursor(int ticks, boolean selecting) {
         int index = ticks / Locatable.CELL_TICKS;
         int offset = ticks % Locatable.CELL_TICKS;
 
@@ -595,12 +595,19 @@ class CanvasPanel extends JPanel implements Printable {
             offset = Locatable.CELL_TICKS;
         }
 
-        handleSelection(index,  offset);
+        handleSelection(index,  offset, selecting);
 
         setCursor(index, offset);
     }
 
-    void setCursor(int index, int offset, boolean onNote) {
+    /**
+     * Set the cursor, also indicating whether it is on the note-side or the lyric-side of the column.
+     * @param index cursor index
+     * @param offset cursor offset
+     * @param onNote true if the cursor should be on the note-side, false if lyric-side
+     */
+    void setCursorWithOnNote(int index, int offset, boolean onNote) {
+        handleSelection(index, offset, false); // clear the selection
         setCursorOnNote(onNote);
         setCursor(index, offset);
     }
@@ -634,7 +641,11 @@ class CanvasPanel extends JPanel implements Printable {
         fireCursorChanged();
     }
 
-    private void handleSelection(int index, int offset) {
+    private void handleSelection(int index, int offset, boolean selecting) {
+        if (!selecting) {
+            selection.clear();
+            return;
+        }
         if (selection.isEmpty()) {
             selection.set(cursorIndex, cursorOffset, index, offset);
         } else {
@@ -687,7 +698,7 @@ class CanvasPanel extends JPanel implements Printable {
      * Move on to the next cell midpoint or boundary, if enabled.
      */
     void doAutoCursor() {
-        moveCursor(calcAutoCursorTicksDown());
+        moveCursor(calcAutoCursorTicksDown(), false);
     }
 
     /**
@@ -716,43 +727,43 @@ class CanvasPanel extends JPanel implements Printable {
         };
     }
 
-    public void moveCursorLeft() {
+    public void moveCursorLeft(boolean selecting) {
         if (!cursorOnNote) {
             setCursorOnNote(true);
-        } else if (moveCursor(CELLS_PER_COL * Locatable.CELL_TICKS)) {
+        } else if (moveCursor(CELLS_PER_COL * Locatable.CELL_TICKS, selecting)) {
             setCursorOnNote(!cursorOnNote);
         }
     }
 
-    public void moveCursorRight() {
+    public void moveCursorRight(boolean selecting) {
         if (cursorOnNote) {
             setCursorOnNote(false);
-        } else if (moveCursor(-CELLS_PER_COL * Locatable.CELL_TICKS)) {
+        } else if (moveCursor(-CELLS_PER_COL * Locatable.CELL_TICKS, selecting)) {
             setCursorOnNote(!cursorOnNote);
         }
     }
 
-    public void moveCursorUpMinAmount() {
-        moveCursor(-1);
+    public void moveCursorUpMinAmount(boolean selecting) {
+        moveCursor(-1, selecting);
     }
 
-    public void moveCursorUp() {
+    public void moveCursorUp(boolean selecting) {
         if (autoCursor == Canvas.AutoCursor.OFF) {
-            moveCursor(-1);
+            moveCursor(-1, selecting);
         } else {
-            moveCursor(calcAutoCursorTicksUp());
+            moveCursor(calcAutoCursorTicksUp(), selecting);
         }
     }
 
-    public void moveCursorDownMinAmount() {
-        moveCursor(1);
+    public void moveCursorDownMinAmount(boolean selecting) {
+        moveCursor(1, selecting);
     }
 
-    public void moveCursorDown() {
+    public void moveCursorDown(boolean selecting) {
         if (autoCursor == Canvas.AutoCursor.OFF) {
-            moveCursor(1);
+            moveCursor(1, selecting);
         } else {
-            moveCursor(calcAutoCursorTicksDown());
+            moveCursor(calcAutoCursorTicksDown(), selecting);
         }
     }
 
@@ -808,7 +819,7 @@ class CanvasPanel extends JPanel implements Printable {
             int cells = y / CELL_HEIGHT;
             int index = col * CELLS_PER_COL + cells;
             int offset = (y % CELL_HEIGHT) / (CELL_HEIGHT / Locatable.CELL_TICKS);
-            setCursor(index, offset, onNote);
+            setCursorWithOnNote(index, offset, onNote);
         }
     }
 }

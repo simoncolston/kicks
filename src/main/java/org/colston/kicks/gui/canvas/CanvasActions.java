@@ -204,13 +204,23 @@ final class CanvasActions {
 
         // Cursor movement and control
         map.put("canvas.cursor.left",
-                CanvasAction.create("canvas.cursor.left", new KeyStroke[]{KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, 0)})
-                        .handler((c, e) -> c.moveCursorLeft())
+                CanvasAction.create("canvas.cursor.left",
+                                new KeyStroke[]
+                                        {
+                                                KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, 0),
+                                                KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, InputEvent.SHIFT_DOWN_MASK)
+                                        })
+                        .handler((c, e) -> c.moveCursorLeft(e.getModifiers()))
                         .smallIconResourceName("Left24.png")
                         .largeIconResourceName("Left24.png"));
         map.put("canvas.cursor.right",
-                CanvasAction.create("canvas.cursor.right", new KeyStroke[]{KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, 0)})
-                        .handler((c, e) -> c.moveCursorRight())
+                CanvasAction.create("canvas.cursor.right",
+                                new KeyStroke[]
+                                    {
+                                            KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, 0),
+                                            KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, InputEvent.SHIFT_DOWN_MASK)
+                                    })
+                        .handler((c, e) -> c.moveCursorRight(e.getModifiers()))
                         .smallIconResourceName("Right24.png")
                         .largeIconResourceName("Right24.png"));
         map.put("canvas.cursor.up",
@@ -218,6 +228,9 @@ final class CanvasActions {
                                 new KeyStroke[]
                                 {
                                         KeyStroke.getKeyStroke(KeyEvent.VK_UP, 0),
+                                        KeyStroke.getKeyStroke(KeyEvent.VK_UP, InputEvent.SHIFT_DOWN_MASK),
+                                        KeyStroke.getKeyStroke(KeyEvent.VK_UP,
+                                                InputEvent.SHIFT_DOWN_MASK | InputEvent.ALT_DOWN_MASK),
                                         KeyStroke.getKeyStroke(KeyEvent.VK_UP, InputEvent.ALT_DOWN_MASK)
                                 })
                         .handler((c, e) -> c.moveCursorUp(e.getModifiers()))
@@ -228,6 +241,9 @@ final class CanvasActions {
                                 new KeyStroke[]
                                 {
                                         KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, 0),
+                                        KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, InputEvent.SHIFT_DOWN_MASK),
+                                        KeyStroke.getKeyStroke(KeyEvent.VK_DOWN,
+                                                InputEvent.SHIFT_DOWN_MASK | InputEvent.ALT_DOWN_MASK),
                                         KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, InputEvent.ALT_DOWN_MASK)
                                 })
                         .handler((c, e) -> c.moveCursorDown(e.getModifiers()))

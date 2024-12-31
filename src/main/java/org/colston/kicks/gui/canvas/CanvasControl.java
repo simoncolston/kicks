@@ -30,7 +30,7 @@ class CanvasControl implements Canvas {
 
         @Override
         public void locationUpdated(int index, int offset) {
-            canvasPanel.setCursor(index, offset, true);
+            canvasPanel.setCursorWithOnNote(index, offset, true);
         }
     };
 
@@ -192,27 +192,31 @@ class CanvasControl implements Canvas {
         canvasPanel.doAutoCursor();
     }
 
-    void moveCursorLeft() {
-        canvasPanel.moveCursorLeft();
+    void moveCursorLeft(int modifiers) {
+        boolean selecting = (modifiers & ActionEvent.SHIFT_MASK) > 0;
+        canvasPanel.moveCursorLeft(selecting);
     }
 
-    void moveCursorRight() {
-        canvasPanel.moveCursorRight();
+    void moveCursorRight(int modifiers) {
+        boolean selecting = (modifiers & ActionEvent.SHIFT_MASK) > 0;
+        canvasPanel.moveCursorRight(selecting);
     }
 
     void moveCursorUp(int modifiers) {
+        boolean selecting = (modifiers & ActionEvent.SHIFT_MASK) > 0;
         if ((modifiers & ActionEvent.ALT_MASK) > 0) {
-            canvasPanel.moveCursorUpMinAmount();
+            canvasPanel.moveCursorUpMinAmount(selecting);
         } else {
-            canvasPanel.moveCursorUp();
+            canvasPanel.moveCursorUp(selecting);
         }
     }
 
     void moveCursorDown(int modifiers) {
+        boolean selecting = (modifiers & ActionEvent.SHIFT_MASK) > 0;
         if ((modifiers & ActionEvent.ALT_MASK) > 0) {
-            canvasPanel.moveCursorDownMinAmount();
+            canvasPanel.moveCursorDownMinAmount(selecting);
         } else {
-            canvasPanel.moveCursorDown();
+            canvasPanel.moveCursorDown(selecting);
         }
     }
 
