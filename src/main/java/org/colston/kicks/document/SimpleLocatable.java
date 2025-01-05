@@ -10,6 +10,11 @@ public class SimpleLocatable implements Locatable {
     public SimpleLocatable() {
     }
 
+    public SimpleLocatable(int index, int offset) {
+        this.index = index;
+        this.offset = offset;
+    }
+
     public SimpleLocatable(Locatable locatable) {
         this.index = locatable.getIndex();
         this.offset = locatable.getOffset();

@@ -2,6 +2,7 @@ package org.colston.kicks.gui.canvas;
 
 import org.colston.gui.actions.ActionProvider;
 import org.colston.kicks.document.KicksDocument;
+import org.colston.kicks.document.KicksDocumentEditor;
 
 import javax.swing.*;
 import java.awt.*;
@@ -21,6 +22,8 @@ public interface Canvas {
     Printable getPrintable();
 
     KicksDocument getDocument();
+
+    KicksDocumentEditor getEditor();
 
     void setDocument(KicksDocument doc);
 

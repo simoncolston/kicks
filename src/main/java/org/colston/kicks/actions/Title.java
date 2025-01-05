@@ -54,8 +54,8 @@ public class Title extends AbstractAction {
         buttonPanel.add(Box.createHorizontalGlue());
         JButton b = new JButton(Messages.get(Title.class, "title.dialog.ok"));
         b.addActionListener(actionEvent -> {
-            KicksApp.canvas().getDocument().setTitle(titleText.getText());
-            KicksApp.canvas().getDocument().setTuning((Tuning) tuningCombo.getSelectedItem());
+            KicksApp.canvas().getEditor().setTitle(titleText.getText());
+            KicksApp.canvas().getEditor().setTuning((Tuning) tuningCombo.getSelectedItem());
             dialog.setVisible(false);
         });
         buttonPanel.add(b);
