@@ -4,6 +4,7 @@ import org.colston.gui.actions.ActionManager;
 import org.colston.kicks.KicksApp;
 import org.colston.kicks.actions.Title;
 import org.colston.kicks.document.*;
+import org.colston.lib.i18n.Messages;
 
 import javax.swing.*;
 import javax.swing.event.EventListenerList;
@@ -31,13 +32,11 @@ class CanvasPanel extends JPanel implements Printable {
     private static final int COLUMN_WIDTH = 56;
     private static final int COLUMN_SPACE = 9;
     private static final int CELL_HEIGHT = 36;
-    private static final int DEFAULT_BORDER_WIDTH = 20;
+    private static final int BORDER_WIDTH = 20;
 
     private static final int COLUMNS_PER_PAGE = 10;
     private static final int CELLS_PER_COL = 12;
     static final int CELL_TICKS = 12;
-
-    //TODO: Rebase everything as eleven columns
 
     //NOTE: This is now the same as 11 columns, so we could replace any column with a title
     //CANVAS_WIDTH = 706;
@@ -88,7 +87,6 @@ class CanvasPanel extends JPanel implements Printable {
      * Configurables
      */
     private final Dimension dimension = new Dimension();
-    private final int borderWidth = DEFAULT_BORDER_WIDTH;
     private double scale;
 
     /*
@@ -105,6 +103,11 @@ class CanvasPanel extends JPanel implements Printable {
      */
     private final CanvasModel model;
     private final EventListenerList listeners = new EventListenerList();
+
+    /*
+     * Text Constants
+     */
+    private static final String TRANSCRIPTION_FROM = Messages.message(CanvasPanel.class, "canvas.panel.transcription.from");
 
     public CanvasPanel(CanvasModel model, JTextComponent text) {
         // remove default layout manager - use absolute positioning for text field
@@ -133,8 +136,8 @@ class CanvasPanel extends JPanel implements Printable {
     }
 
     private void setDimensions() {
-        dimension.width = (int) (scale * (CANVAS_WIDTH + 2 * borderWidth));
-        dimension.height = (int) (scale * (CANVAS_HEIGHT + 2 * borderWidth));
+        dimension.width = (int) (scale * (CANVAS_WIDTH + 2 * BORDER_WIDTH));
+        dimension.height = (int) (scale * (CANVAS_HEIGHT + 2 * BORDER_WIDTH));
         setPreferredSize(dimension);
         setMinimumSize(dimension);
         setMaximumSize(dimension);
@@ -171,7 +174,28 @@ class CanvasPanel extends JPanel implements Printable {
         redraw();
     }
 
+    private void drawProperties(Graphics2D g2) {
+        String transcription = model.getDocument().getTranscription();
+        if (transcription == null || transcription.isBlank()) {
+            return;
+        }
+        g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+        g2.setFont(sfont);
+        g2.setColor(BORDER_BOX_COLOUR);
+
+        g2.drawString(TRANSCRIPTION_FROM + " " + transcription, BORDER_WIDTH, sfont.getSize() + 4);
+
+        g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
+    }
+
     private void doPaint(Graphics2D g2, boolean print) {
+
+        // draw properties
+        drawProperties(g2);
+
+        // create a border
+        g2.translate(BORDER_WIDTH, BORDER_WIDTH);
+
         // draw the background
         int x = CANVAS_WIDTH - TITLE_WIDTH;
         int y = 0;
@@ -489,10 +513,6 @@ class CanvasPanel extends JPanel implements Printable {
         Graphics2D g2 = (Graphics2D) g.create();
 
         g2.scale(scale, scale);
-        if (borderWidth > 0) {
-            //noinspection SuspiciousNameCombination
-            g2.translate(borderWidth, borderWidth);
-        }
 
         doPaint(g2, false);
 
@@ -602,8 +622,8 @@ class CanvasPanel extends JPanel implements Printable {
             int x = x(cursorIndex) + 7 * COLUMN_WIDTH / 8;
             int y = y(cursorIndex, cursorOffset) - size / 3;
             // convert to screen coordinates
-            x = (int) ((x + borderWidth) * scale);
-            y = (int) ((y + borderWidth) * scale);
+            x = (int) ((x + BORDER_WIDTH) * scale);
+            y = (int) ((y + BORDER_WIDTH) * scale);
             text.setBounds(x, y, size, size);
 
             Lyric l = model.getDocument().getLyric(cursorIndex, cursorOffset);
@@ -702,8 +722,8 @@ class CanvasPanel extends JPanel implements Printable {
             /*
              * Allow for the transformations - scaling and translation for the border
              */
-            int x = (int) Math.ceil(e.getX() / scale - borderWidth);
-            int y = (int) Math.ceil(e.getY() / scale - borderWidth);
+            int x = (int) Math.ceil(e.getX() / scale - BORDER_WIDTH);
+            int y = (int) Math.ceil(e.getY() / scale - BORDER_WIDTH);
 
             if (y < 0 || y > CANVAS_HEIGHT) {
                 e.consume();

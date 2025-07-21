@@ -113,6 +113,18 @@ public class KicksDocument {
         fireDocumentUpdated();
     }
 
+    public String getTranscription() {
+        return properties.getTranscription();
+    }
+
+    public void setTranscription(String transcription) {
+        UndoableEdit edit = new SetEdit<>(properties, properties.getTranscription(), transcription,
+                Properties::setTranscription, Messages.get(getClass(), "undo.set.transcription"));
+        properties.setTranscription(transcription);
+        fireUndoableEditHappened(new UndoableEditEvent(this, edit));
+        fireDocumentUpdated();
+    }
+
     public void addNote(Note note) {
         UndoableEdit edit;
         int listIndex = Collections.binarySearch(notes, note, comparator);

@@ -34,6 +34,7 @@ public class Title extends AbstractAction {
         JComboBox<Tuning> tuningCombo = new JComboBox<>(tunings);
         tuningCombo.setSelectedItem((doc.getTuning() != null) ? doc.getTuning() : Tuning.HONCHOUSHI);
         tuningCombo.setRenderer(new TuningListCellRenderer());
+        JTextField transcriptionText = new JTextField(doc.getProperties().getTranscription(), 30);
 
         JPanel inputPanel = new JPanel(new SpringLayout());
         inputPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
@@ -46,7 +47,13 @@ public class Title extends AbstractAction {
         inputPanel.add(label);
         label.setLabelFor(tuningCombo);
         inputPanel.add(tuningCombo);
-        SpringUtilities.makeCompactGrid(inputPanel, 2, 2, 5, 5, 5, 5);
+
+        label = new JLabel(Messages.get(Title.class, "title.dialog.transcription.prompt"));
+        inputPanel.add(label);
+        label.setLabelFor(transcriptionText);
+        inputPanel.add(transcriptionText);
+
+        SpringUtilities.makeCompactGrid(inputPanel, 3, 2, 5, 5, 5, 5);
 
         JPanel buttonPanel = new JPanel();
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
@@ -54,8 +61,10 @@ public class Title extends AbstractAction {
         buttonPanel.add(Box.createHorizontalGlue());
         JButton b = new JButton(Messages.get(Title.class, "title.dialog.ok"));
         b.addActionListener(actionEvent -> {
+            // TODO: These should really be one edit!
             KicksApp.canvas().getDocument().setTitle(titleText.getText());
             KicksApp.canvas().getDocument().setTuning((Tuning) tuningCombo.getSelectedItem());
+            KicksApp.canvas().getDocument().setTranscription(transcriptionText.getText());
             dialog.setVisible(false);
         });
         buttonPanel.add(b);
