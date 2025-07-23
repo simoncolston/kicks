@@ -58,6 +58,7 @@ class KicksDocumentTest {
         doc.getProperties().setName("asadoya");
         doc.getProperties().setDescription("This is a song about a beautiful girl");
         doc.getProperties().setVersion("V1");
+        doc.getProperties().setTranscription("China Sadao");
 
         Song song = new Song(0);
         doc.getSongs().add(song);

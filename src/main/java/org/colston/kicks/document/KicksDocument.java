@@ -106,6 +106,10 @@ public class KicksDocument {
         return songs.getFirst().getTuning();
     }
 
+    public String getTranscription() {
+        return properties.getTranscription();
+    }
+
     @Override
     public int hashCode() {
         final int prime = 31;

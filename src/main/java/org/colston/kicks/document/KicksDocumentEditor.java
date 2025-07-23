@@ -49,6 +49,15 @@ public class KicksDocumentEditor {
         fireDocumentUpdated();
     }
 
+    public void setTranscription(String transcription) {
+        Properties properties = doc.getProperties();
+        UndoableEdit edit = new SetEdit<>(properties, properties.getTranscription(), transcription, Properties::setTranscription,
+                Messages.get(getClass(), "undo.set.transcription"));
+        properties.setTranscription(transcription);
+        fireUndoableEditHappened(new UndoableEditEvent(this, edit));
+        fireDocumentUpdated();
+    }
+
     public void addNote(Note note) {
         List<Note> notes = doc.getNotes();
         UndoableEdit edit;
