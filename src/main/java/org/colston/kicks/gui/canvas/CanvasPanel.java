@@ -149,6 +149,7 @@ class CanvasPanel extends JPanel implements Printable {
     }
 
     void documentSet() {
+        selection.clear();
         initialiseCursor();
         cursorOnNote = true;
         text.setVisible(false);
@@ -195,15 +196,15 @@ class CanvasPanel extends JPanel implements Printable {
 
     private void doPaint(Graphics2D g2, boolean print) {
 
-        if (!print) {
-            drawSelection(g2);
-        }
-
         // draw properties
         drawProperties(g2);
 
         // create a border
         g2.translate(BORDER_WIDTH, BORDER_WIDTH);
+
+        if (!print) {
+            drawSelection(g2);
+        }
 
         // draw the background
         int x = CANVAS_WIDTH - TITLE_WIDTH;
