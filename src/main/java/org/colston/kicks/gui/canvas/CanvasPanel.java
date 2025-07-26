@@ -17,6 +17,7 @@ import java.awt.geom.AffineTransform;
 import java.awt.print.PageFormat;
 import java.awt.print.Printable;
 import java.awt.print.PrinterException;
+import java.util.Collection;
 
 /**
  * Canvas for drawing a page of the kunkunshi.
@@ -790,6 +791,10 @@ class CanvasPanel extends JPanel implements Printable {
 
     void setAutoCursor(Canvas.AutoCursor autoCursor) {
         this.autoCursor = autoCursor;
+    }
+
+    LocatableRange getSelection() {
+        return selection;
     }
 
     class ML extends MouseAdapter implements MouseListener {

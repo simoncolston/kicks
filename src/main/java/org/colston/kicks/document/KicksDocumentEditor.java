@@ -239,6 +239,20 @@ public class KicksDocumentEditor {
         }
     }
 
+    public void remove(LocatableRange range) {
+        List<Note> notes = doc.getNotes();
+        Locatable start = range.getLow();
+        key.index = start.getIndex();
+        key.offset = start.getOffset();
+        int startIndex = Collections.binarySearch(notes, key, comparator);
+        Locatable end = range.getHigh();
+        key.index = end.getIndex();
+        key.offset = end.getOffset();
+        int endIndex = Collections.binarySearch(notes, key, comparator);
+//        notes.subList(startIndex, endIndex);
+        System.out.println("Remove range: " + range + ", startIndex=" + startIndex + ", endIndex=" + endIndex);
+    }
+
     public Note findPreviousNote(int index, int offset) {
         List<Note> notes = doc.getNotes();
         if (notes.isEmpty()) {

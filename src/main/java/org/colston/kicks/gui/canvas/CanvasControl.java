@@ -251,7 +251,9 @@ class CanvasControl implements Canvas {
     }
 
     void delete() {
-        if (canvasPanel.isCursorOnNote()) {
+        if (!canvasPanel.getSelection().isEmpty()) {
+            model.getEditor().remove(canvasPanel.getSelection());
+        } else if (canvasPanel.isCursorOnNote()) {
             model.getEditor().removeNote(canvasPanel.getCursorIndex(), canvasPanel.getCursorOffset());
             model.getEditor().removeRepeat(canvasPanel.getCursorIndex(), canvasPanel.getCursorOffset());
         } else {
