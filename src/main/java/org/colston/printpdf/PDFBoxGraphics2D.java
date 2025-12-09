@@ -20,10 +20,13 @@ import java.text.AttributedCharacterIterator;
 import java.util.Map;
 
 public class PDFBoxGraphics2D extends Graphics2D implements Cloneable {
+    /**
+     * When we switch modes the previous mode is completed. e.g. the text will be written.
+     */
     private enum Mode {
-        NONE,
-        TEXT,
-        STROKE
+        NONE,   // neutral state
+        TEXT,   // multiple text commands are executed in this mode
+        STROKE  // multiple stroke commands are executed in this mode
     }
 
     /*
@@ -69,7 +72,7 @@ public class PDFBoxGraphics2D extends Graphics2D implements Cloneable {
         } catch (CloneNotSupportedException e) {
             e.printStackTrace();
         }
-        return null;
+        return this;
     }
 
 
@@ -105,6 +108,7 @@ public class PDFBoxGraphics2D extends Graphics2D implements Cloneable {
                     break;
                 case STROKE:
                     shared.cstream.stroke();
+                    break;
                 case NONE:
                     break;
             }
@@ -116,8 +120,8 @@ public class PDFBoxGraphics2D extends Graphics2D implements Cloneable {
                         setFont(shared.fontStore.getDefaultFont());
                     }
                     break;
-                case STROKE:
-                case NONE:
+                case STROKE,
+                     NONE:
                     break;
             }
         } catch (IOException e) {
@@ -225,6 +229,7 @@ public class PDFBoxGraphics2D extends Graphics2D implements Cloneable {
                 pi.next();
             }
             shared.cstream.fill();
+            shared.cstream.closePath();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -302,6 +307,7 @@ public class PDFBoxGraphics2D extends Graphics2D implements Cloneable {
     }
 
     private void applyTransform(Matrix m) {
+        checkMode(Mode.NONE);
         try {
             shared.cstream.transform(m);
             transform = transform == null ? m : Matrix.concatenate(transform, m);
