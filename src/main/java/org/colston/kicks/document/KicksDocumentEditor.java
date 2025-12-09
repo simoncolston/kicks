@@ -248,8 +248,14 @@ public class KicksDocumentEditor {
         Locatable end = range.getHigh();
         key.index = end.getIndex();
         key.offset = end.getOffset();
-        int endIndex = Collections.binarySearch(notes, key, comparator);
-//        notes.subList(startIndex, endIndex);
+        int endIndex = findPreviousNoteListIndex(end.getIndex(), end.getOffset());
+        List<Note> subList = notes.subList(startIndex, endIndex + 1);
+        if (subList.isEmpty()) {
+            return;
+        }
+        subList.clear();
+        range.clear();
+        fireDocumentUpdated();
         System.out.println("Remove range: " + range + ", startIndex=" + startIndex + ", endIndex=" + endIndex);
     }
 
@@ -258,18 +264,23 @@ public class KicksDocumentEditor {
         if (notes.isEmpty()) {
             return null;
         }
+        int listIndex = findPreviousNoteListIndex(index, offset);
+        return listIndex == -1 ? null : notes.get(listIndex);
+    }
+
+    private int findPreviousNoteListIndex(int index, int offset) {
         key.index = index;
         key.offset = offset;
-        int listIndex = Collections.binarySearch(notes, key, comparator);
+        int listIndex = Collections.binarySearch(doc.getNotes(), key, comparator);
         if (listIndex == -1) {
             // reached the start of the document
-            return null;
+            return -1;
         } else if (listIndex >= 0) {
             // return the note at this index and offset
-            return notes.get(listIndex);
+            return listIndex;
         } else {
             // listIndex = -(insertion point) - 1, so add 2 to get the previous note
-            return notes.get(Math.abs(listIndex + 2));
+            return Math.abs(listIndex + 2);
         }
     }
 

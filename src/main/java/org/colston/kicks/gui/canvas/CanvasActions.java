@@ -4,14 +4,12 @@ import org.colston.gui.actions.ActionManager;
 import org.colston.kicks.document.Utou;
 
 import javax.swing.*;
-import java.awt.event.ActionEvent;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * Create and manipulate the actions required by the canvas.
@@ -275,6 +273,9 @@ final class CanvasActions {
         actions = Collections.unmodifiableMap(map);
     }
 
+    private CanvasActions() {
+    }
+
     static void initialise(CanvasControl control) {
         actions.values().forEach(ca -> {
             ActionManager.initialiseResources(ca);
@@ -297,7 +298,7 @@ final class CanvasActions {
     @SuppressWarnings("SameParameterValue")
     static List<CanvasAction> getActionsWithPrefix(String prefix) {
         return actions.values().stream().filter(
-                e -> e.getActionCommand().startsWith(prefix)).collect(Collectors.toList());
+                e -> e.getActionCommand().startsWith(prefix)).toList();
     }
 
     static CanvasAction getAction(String name) {
