@@ -25,10 +25,12 @@ import java.net.URI;
 import java.util.Objects;
 
 public class PDFBoxPrintJob implements DocPrintJob {
+    static final MediaSize DEFAULT_MEDIA_SIZE = MediaSize.ISO.A4;
+
     private final PDFBoxPrintService service;
 
     private String jobName = "Print PDF";
-    private MediaSize mediaSize = MediaSize.ISO.A4;
+    private MediaSize mediaSize = DEFAULT_MEDIA_SIZE;
     private MediaPrintableArea mediaPrintableArea = null;
     private OrientationRequested orientation = OrientationRequested.PORTRAIT;
     private File outputFile = null;
@@ -48,7 +50,6 @@ public class PDFBoxPrintJob implements DocPrintJob {
 
     @Override
     public PrintJobAttributeSet getAttributes() {
-        // TODO Auto-generated method stub
         return null;
     }
 
@@ -99,7 +100,14 @@ public class PDFBoxPrintJob implements DocPrintJob {
         //Decode the attributes: priority goes: doc > request (> job?)
         //Start by consolidating them... then, decode the one's we need
         PrintRequestAttributeSet aset = consolidateAttributes(doc.getAttributes(), pras);
-        decodeAttributes(doc, aset);
+        decodeAttributes(aset);
+
+        //Validation
+        //MUST have an output file name
+        if (outputFile == null) {
+//			TODO notifyEvent(PrintJobEvent.JOB_FAILED);
+            throw new PrintException("Must specify a file in the Destination attribute");
+        }
 
         try {
             String className = flavour.getRepresentationClassName();
@@ -178,30 +186,18 @@ public class PDFBoxPrintJob implements DocPrintJob {
         }
     }
 
-    private void decodeAttributes(Doc doc, PrintRequestAttributeSet aset) throws PrintException {
-        Attribute[] attrs = aset.toArray();
+    private void decodeAttributes(PrintRequestAttributeSet requestAttributeSet) throws PrintException {
+        Attribute[] attrs = requestAttributeSet.toArray();
         for (Attribute attr : attrs) {
             Class<?> category = attr.getCategory();
             if (category == Destination.class) {
-                URI uri = ((Destination) attr).getURI();
-                if (uri == null || !"file".equals(uri.getScheme())) {
-//					TODO notifyEvent(PrintJobEvent.JOB_FAILED);
-                    throw new PrintException("Destination attribute is not a 'file:' URI");
-                }
-                try {
-                    outputFile = new File(uri);
-                } catch (Exception e) {
-//						TODO notifyEvent(PrintJobEvent.JOB_FAILED);
-                    throw new PrintException(e);
-                }
+                setOutputFile(attr);
             } else if (category == JobName.class) {
                 jobName = ((JobName) attr).getValue();
             } else if (category == Media.class) {
                 if (attr instanceof MediaSizeName mn) {
                     MediaSize ms = MediaSize.getMediaSizeForName(mn);
-                    if (ms != null) {
-                        mediaSize = ms;
-                    }
+                    mediaSize = ms == null ? DEFAULT_MEDIA_SIZE : ms;
                 }
             } else if (category == MediaPrintableArea.class) {
                 mediaPrintableArea = (MediaPrintableArea) attr;
@@ -211,12 +207,19 @@ public class PDFBoxPrintJob implements DocPrintJob {
                 addedFonts = (PDFBoxPrintFontMap) attr;
             }
         }
+    }
 
-        //Validation
-        //MUST have an output file name
-        if (outputFile == null) {
-//			TODO notifyEvent(PrintJobEvent.JOB_FAILED);
-            throw new PrintException("Must specify a file in the Destination attribute");
+    private void setOutputFile(Attribute attr) throws PrintException {
+        URI uri = ((Destination) attr).getURI();
+        if (uri == null || !"file".equals(uri.getScheme())) {
+//					TODO notifyEvent(PrintJobEvent.JOB_FAILED);
+            throw new PrintException("Destination attribute is not a 'file:' URI");
+        }
+        try {
+            outputFile = new File(uri);
+        } catch (Exception e) {
+//						TODO notifyEvent(PrintJobEvent.JOB_FAILED);
+            throw new PrintException(e);
         }
     }
 

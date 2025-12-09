@@ -7,6 +7,8 @@ import java.awt.*;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.apache.pdfbox.pdmodel.font.Standard14Fonts.FontName;
+
 public final class PDFBoxFontStore {
     private static final Font DEFAULT_FONT = new Font(Font.DIALOG, Font.PLAIN, 12);
 
@@ -23,28 +25,28 @@ public final class PDFBoxFontStore {
         //Serif
         style = new HashMap<>();
         initial.put(Font.SERIF, style);
-        style.put(Font.PLAIN, PDType1Font.TIMES_ROMAN);
-        style.put(Font.BOLD, PDType1Font.TIMES_BOLD);
-        style.put(Font.ITALIC, PDType1Font.TIMES_ITALIC);
-        style.put(Font.BOLD | Font.ITALIC, PDType1Font.TIMES_BOLD_ITALIC);
+        style.put(Font.PLAIN, new PDType1Font(FontName.TIMES_ROMAN));
+        style.put(Font.BOLD, new PDType1Font(FontName.TIMES_BOLD));
+        style.put(Font.ITALIC, new PDType1Font(FontName.TIMES_ITALIC));
+        style.put(Font.BOLD | Font.ITALIC, new PDType1Font(FontName.TIMES_BOLD_ITALIC));
 
         //SansSerif
         style = new HashMap<>();
         initial.put(Font.SANS_SERIF, style);
         initial.put(Font.DIALOG, style);
         initial.put(Font.DIALOG_INPUT, style);
-        style.put(Font.PLAIN, PDType1Font.HELVETICA);
-        style.put(Font.BOLD, PDType1Font.HELVETICA_BOLD);
-        style.put(Font.ITALIC, PDType1Font.HELVETICA_OBLIQUE);
-        style.put(Font.BOLD | Font.ITALIC, PDType1Font.HELVETICA_BOLD_OBLIQUE);
+        style.put(Font.PLAIN, new PDType1Font(FontName.HELVETICA));
+        style.put(Font.BOLD, new PDType1Font(FontName.HELVETICA_BOLD));
+        style.put(Font.ITALIC, new PDType1Font(FontName.HELVETICA_OBLIQUE));
+        style.put(Font.BOLD | Font.ITALIC, new PDType1Font(FontName.HELVETICA_BOLD_OBLIQUE));
 
         //Monospaced
         style = new HashMap<>();
         initial.put(Font.MONOSPACED, style);
-        style.put(Font.PLAIN, PDType1Font.COURIER);
-        style.put(Font.BOLD, PDType1Font.COURIER_BOLD);
-        style.put(Font.ITALIC, PDType1Font.COURIER_OBLIQUE);
-        style.put(Font.BOLD | Font.ITALIC, PDType1Font.COURIER_BOLD_OBLIQUE);
+        style.put(Font.PLAIN, new PDType1Font(FontName.COURIER));
+        style.put(Font.BOLD, new PDType1Font(FontName.COURIER_BOLD));
+        style.put(Font.ITALIC, new PDType1Font(FontName.COURIER_OBLIQUE));
+        style.put(Font.BOLD | Font.ITALIC, new PDType1Font(FontName.COURIER_BOLD_OBLIQUE));
 
         return new PDFBoxFontStore(initial);
     }
