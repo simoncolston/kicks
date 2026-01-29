@@ -64,12 +64,12 @@ class CanvasPanel extends JPanel implements Printable {
      * Fonts
      */
     private final Font titleFont = new Font(KicksApp.FONT_NAME, Font.PLAIN, 26);
-    private final Font font = new Font(KicksApp.FONT_NAME, Font.PLAIN, 16);
-    private final Font fontBold = new Font(KicksApp.FONT_NAME, Font.BOLD, 16);
-    private final Font sfont = new Font(KicksApp.FONT_NAME, Font.PLAIN, 12);
-    private final Font sfontBold = new Font(KicksApp.FONT_NAME, Font.BOLD, 12);
-    private final Font lyricFont = new Font(KicksApp.FONT_NAME, Font.PLAIN, 11);
-    private final Font flatFont = new Font(KicksApp.FONT_NAME, Font.PLAIN, 8);
+    private final Font font = new Font(KicksApp.FONT_NAME, Font.PLAIN, 18);
+    private final Font fontBold = new Font(KicksApp.FONT_NAME, Font.BOLD, 18);
+    private final Font sfont = new Font(KicksApp.FONT_NAME, Font.PLAIN, 14);
+    private final Font sfontBold = new Font(KicksApp.FONT_NAME, Font.BOLD, 14);
+    private final Font lyricFont = new Font(KicksApp.FONT_NAME, Font.PLAIN, 12);
+    private final Font flatFont = new Font(KicksApp.FONT_NAME, Font.PLAIN, 9);
 
     /*
      * Strokes
@@ -411,7 +411,7 @@ class CanvasPanel extends JPanel implements Printable {
         x += (COLUMN_WIDTH / 4 - cw) / 2;
         x += choff * cw / 3;
         int y = y(index, offset, fm);
-        y += ((int) Math.ceil(fm.getFont().getSize() * 0.6f)) * choff;
+        y += ((int) Math.ceil(fm.getFont().getSize() * 0.5f)) * choff;
         g2.drawChars(ch, choff, 1, x, y);
     }
 
@@ -436,7 +436,7 @@ class CanvasPanel extends JPanel implements Printable {
             x += ((COLUMN_WIDTH / 2) - chw) / 2;
             y = y(n.getIndex(), n.getOffset()) + 1;      //+1 here to squash them together vertically
             g2.drawChars(ch, 0, 1, x + 1, y);
-            y += (font.getSize() / 2);                   //-1 here to squash them together vertically (if necessary)
+            y += (font.getSize() / 2) - 1;                   //-1 here to squash them together vertically (if necessary)
             g2.drawChars(ch, 1, 1, x + 1, y);
 
             g2.setFont(currentFont);
@@ -447,7 +447,7 @@ class CanvasPanel extends JPanel implements Printable {
             int chw1 = fm.charWidth(ch[1]) - 3;
             chw = chw0 + chw1;
             x += ((COLUMN_WIDTH / 2) - chw) / 2;
-            g2.drawChars(ch, 0, 1, x - 2, y);
+            g2.drawChars(ch, 0, 1, x - 1, y);
             g2.drawChars(ch, 1, 1, x + chw0 - 1, y);
 
             //to add a little more padding to the 'utou' for double characters
