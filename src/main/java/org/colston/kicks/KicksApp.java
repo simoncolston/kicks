@@ -44,8 +44,10 @@ public class KicksApp extends GuiApp {
     };
     private static final String SPLASH_FILE_NAME = "splash.png";
 
-    public static final String FONT_NAME = "HanaMinA Regular";
-    public static final String FONT_RESOURCE_NAME = "HanaMinA.ttf";
+    public static final String FONT_NAME = "EPSON 教科書体Ｍ";
+    public static final String FONT_RESOURCE_NAME = "EPKYOUKA.TTF";
+//    public static final String FONT_NAME = "HanaMinA Regular";
+//    public static final String FONT_RESOURCE_NAME = "HanaMinA.ttf";
 //    public static final String FONT_NAME = "Harano Aji Mincho";
 //    public static final String FONT_RESOURCE_NAME = "HaranoAjiMincho-Regular.otf";
 
