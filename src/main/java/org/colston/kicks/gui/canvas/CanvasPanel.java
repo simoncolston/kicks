@@ -506,7 +506,7 @@ class CanvasPanel extends JPanel implements Printable {
 
         // move to top right of note
         x += chw + 1;
-        y -= fm.getFont().getSize() + 1;
+        y -= fm.getFont().getSize() - 2; // -1 to move it down towards the note
 
         switch (n.getUtou()) {
             case KAKI -> {
@@ -527,6 +527,7 @@ class CanvasPanel extends JPanel implements Printable {
                 g2.setStroke(stroke);
             }
             case NONE -> {
+                // do nothing
             }
         }
     }
