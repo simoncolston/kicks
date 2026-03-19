@@ -17,7 +17,6 @@ import java.awt.geom.AffineTransform;
 import java.awt.print.PageFormat;
 import java.awt.print.Printable;
 import java.awt.print.PrinterException;
-import java.util.Collection;
 
 /**
  * Canvas for drawing a page of the kunkunshi.
@@ -102,7 +101,7 @@ class CanvasPanel extends JPanel implements Printable {
     /*
      * Selection
      */
-    private final LocatableRange selection = new LocatableRange();
+    private final SimpleLocatableRange selection = new SimpleLocatableRange();
 
     /*
      * The model.
@@ -796,6 +795,12 @@ class CanvasPanel extends JPanel implements Printable {
 
     LocatableRange getSelection() {
         return selection;
+    }
+
+    LocatableRange getAndClearSelection() {
+        LocatableRange range = new SimpleLocatableRange(selection);
+        selection.clear();
+        return range;
     }
 
     class ML extends MouseAdapter implements MouseListener {

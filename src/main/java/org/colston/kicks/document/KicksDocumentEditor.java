@@ -241,22 +241,22 @@ public class KicksDocumentEditor {
 
     public void remove(LocatableRange range) {
         List<Note> notes = doc.getNotes();
+        if (notes.isEmpty()) {
+            fireDocumentUpdated();
+            return;
+        }
         Locatable start = range.getLow();
-        key.index = start.getIndex();
-        key.offset = start.getOffset();
-        int startIndex = Collections.binarySearch(notes, key, comparator);
+        int startIndex = findListIndex(notes, start.getIndex(), start.getOffset(), false);
         Locatable end = range.getHigh();
-        key.index = end.getIndex();
-        key.offset = end.getOffset();
-        int endIndex = findPreviousNoteListIndex(end.getIndex(), end.getOffset());
+        int endIndex = findListIndex(doc.getNotes(), end.getIndex(), end.getOffset(), true);
+        System.out.println("Remove range: " + range + ", startIndex=" + startIndex + ", endIndex=" + endIndex);
         List<Note> subList = notes.subList(startIndex, endIndex + 1);
         if (subList.isEmpty()) {
+            fireDocumentUpdated();
             return;
         }
         subList.clear();
-        range.clear();
         fireDocumentUpdated();
-        System.out.println("Remove range: " + range + ", startIndex=" + startIndex + ", endIndex=" + endIndex);
     }
 
     public Note findPreviousNote(int index, int offset) {
@@ -264,23 +264,20 @@ public class KicksDocumentEditor {
         if (notes.isEmpty()) {
             return null;
         }
-        int listIndex = findPreviousNoteListIndex(index, offset);
+        int listIndex = findListIndex(notes, index, offset, true);
         return listIndex == -1 ? null : notes.get(listIndex);
     }
 
-    private int findPreviousNoteListIndex(int index, int offset) {
+    private int findListIndex(List<? extends Locatable> list, int index, int offset, boolean previous) {
         key.index = index;
         key.offset = offset;
-        int listIndex = Collections.binarySearch(doc.getNotes(), key, comparator);
-        if (listIndex == -1) {
-            // reached the start of the document
-            return -1;
-        } else if (listIndex >= 0) {
+        int listIndex = Collections.binarySearch(list, key, comparator);
+        if (listIndex >= 0) {
             // return the note at this index and offset
             return listIndex;
         } else {
-            // listIndex = -(insertion point) - 1, so add 2 to get the previous note
-            return Math.abs(listIndex + 2);
+            // listIndex = -(insertion point) - 1, so add 2 to get the previous, or 1 for next
+            return Math.abs(previous ? listIndex + 2 : listIndex + 1);
         }
     }
 
