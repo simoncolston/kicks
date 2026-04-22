@@ -56,7 +56,7 @@ public abstract class GuiApp {
         // show the GUI and get rid of the splash
         EventQueue.invokeLater(() -> {
             frame.pack();
-            long timeLeft = 3000 - (System.currentTimeMillis() - startMillis);
+            long timeLeft = 1000 - (System.currentTimeMillis() - startMillis);
             if (timeLeft > 0) {
                 //pause
                 try {

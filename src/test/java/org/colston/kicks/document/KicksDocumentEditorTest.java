@@ -12,16 +12,32 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class KicksDocumentEditorTest {
 
+    private static KicksDocument unedited;
+    private static KicksDocument editedEmpty;
     private static KicksDocument editedA;
     private static KicksDocument editedB;
+    private static KicksDocument editedC;
 
     @BeforeAll
     static void init() {
+        unedited = new KicksDocument();
+        unedited.getNotes().add(new Note(0, 6, 2, 0));
+        unedited.getNotes().add(new Note(1, 6, 2, 1));
+        unedited.getNotes().add(new Note(1, 12, 2, 1));
+        unedited.getNotes().add(new Note(2, 6, 2, 2));
+        unedited.getNotes().add(new Note(5, 6, 2, 0));
+
+        editedEmpty = new KicksDocument();
         editedA = new KicksDocument();
         editedA.getNotes().add(new Note(0, 6, 2, 0));
         editedA.getNotes().add(new Note(5, 6, 2, 0));
         editedB = new KicksDocument();
         editedB.getNotes().add(new Note(5, 6, 2, 0));
+        editedC = new KicksDocument();
+        editedC.getNotes().add(new Note(1, 6, 2, 1));
+        editedC.getNotes().add(new Note(1, 12, 2, 1));
+        editedC.getNotes().add(new Note(2, 6, 2, 2));
+        editedC.getNotes().add(new Note(5, 6, 2, 0));
     }
 
     @Test
@@ -47,10 +63,6 @@ class KicksDocumentEditorTest {
         original.getNotes().add(new Note(1, 12, 2, 1));
         original.getNotes().add(new Note(2, 6, 2, 2));
         original.getNotes().add(new Note(5, 6, 2, 0));
-        KicksDocument event = new KicksDocument();
-        event.getNotes().add(new Note(1, 6, 2, 1));
-        event.getNotes().add(new Note(1, 12, 2, 1));
-        event.getNotes().add(new Note(2, 6, 2, 2));
 
         KicksDocumentEditor editor = new KicksDocumentEditor();
         editor.setDocument(original);
@@ -66,7 +78,13 @@ class KicksDocumentEditorTest {
                 // start before first note, end on a note
                 Arguments.of(new SimpleLocatableRange(0, 5, 2, 6), editedB),
                 // start between first and second note, end on a note
-                Arguments.of(new SimpleLocatableRange(1, 5, 2, 6), editedA)
+                Arguments.of(new SimpleLocatableRange(1, 5, 2, 6), editedA),
+                // delete all
+                Arguments.of(new SimpleLocatableRange(0, 0, 6, 12), editedEmpty),
+                // delete nothing, in first square though
+                Arguments.of(new SimpleLocatableRange(0, 0, 0, 1), unedited),
+                // remove single note only
+                Arguments.of(new SimpleLocatableRange(0, 6, 0, 7), editedC)
         );
     }
 }

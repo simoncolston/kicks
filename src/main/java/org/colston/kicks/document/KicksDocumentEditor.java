@@ -8,6 +8,7 @@ import javax.swing.event.UndoableEditListener;
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
 import javax.swing.undo.UndoableEdit;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -29,6 +30,30 @@ public class KicksDocumentEditor {
 
     public void setDocument(KicksDocument document) {
         this.doc = document;
+    }
+
+    private void add(KicksDocument document) {
+        if (!document.getNotes().isEmpty()) {
+            int listIndex = Collections.binarySearch(doc.getNotes(), document.getNotes().getFirst(), comparator);
+            listIndex = -listIndex - 1;
+            doc.getNotes().addAll(listIndex, document.getNotes());
+        }
+        if (!document.getRepeats().isEmpty()) {
+            int listIndex = Collections.binarySearch(doc.getRepeats(), document.getRepeats().getFirst(), comparator);
+            listIndex = -listIndex - 1;
+            doc.getRepeats().addAll(listIndex, document.getRepeats());
+        }
+        if (!document.getLyrics().isEmpty()) {
+            int listIndex = Collections.binarySearch(doc.getLyrics(), document.getLyrics().getFirst(), comparator);
+            listIndex = -listIndex - 1;
+            doc.getLyrics().addAll(listIndex, document.getLyrics());
+        }
+    }
+
+    private void remove(KicksDocument document) {
+        doc.getNotes().removeAll(document.getNotes());
+        doc.getRepeats().removeAll(document.getRepeats());
+        doc.getLyrics().removeAll(document.getLyrics());
     }
 
     public void setTitle(String newTitle) {
@@ -240,22 +265,20 @@ public class KicksDocumentEditor {
     }
 
     public void remove(LocatableRange range) {
-        List<Note> notes = doc.getNotes();
-        if (notes.isEmpty()) {
-            fireDocumentUpdated();
-            return;
+        List<Note> removedNotes = removeFromList(doc.getNotes(), range);
+        List<Repeat> removedRepeats = removeFromList(doc.getRepeats(), range);
+        List<Lyric> removedLyrics = removeFromList(doc.getLyrics(), range);
+        if (!removedNotes.isEmpty()
+                || !removedRepeats.isEmpty()
+                || !removedLyrics.isEmpty()) {
+            KicksDocument kicksDoc = new KicksDocument();
+            kicksDoc.getNotes().addAll(removedNotes);
+            kicksDoc.getRepeats().addAll(removedRepeats);
+            kicksDoc.getLyrics().addAll(removedLyrics);
+            UndoableEdit edit = new RemoveDocumentEdit(range.getLow().getIndex(), range.getLow().getOffset(), kicksDoc,
+                    Messages.get(getClass(), "undo.remove.selection"));
+            fireUndoableEditHappened(new UndoableEditEvent(this, edit));
         }
-        Locatable start = range.getLow();
-        int startIndex = findListIndex(notes, start.getIndex(), start.getOffset(), false);
-        Locatable end = range.getHigh();
-        int endIndex = findListIndex(doc.getNotes(), end.getIndex(), end.getOffset(), true);
-        System.out.println("Remove range: " + range + ", startIndex=" + startIndex + ", endIndex=" + endIndex);
-        List<Note> subList = notes.subList(startIndex, endIndex + 1);
-        if (subList.isEmpty()) {
-            fireDocumentUpdated();
-            return;
-        }
-        subList.clear();
         fireDocumentUpdated();
     }
 
@@ -266,6 +289,23 @@ public class KicksDocumentEditor {
         }
         int listIndex = findListIndex(notes, index, offset, true);
         return listIndex == -1 ? null : notes.get(listIndex);
+    }
+
+    private <T extends Locatable> List<T> removeFromList(List<T> list, LocatableRange range) {
+        if (list.isEmpty()) {
+            return Collections.emptyList();
+        }
+        Locatable start = range.getLow();
+        int startIndex = findListIndex(list, start.getIndex(), start.getOffset(), false);
+        Locatable end = range.getHigh();
+        int endIndex = findListIndex(list, end.getIndex(), end.getOffset(), true);
+        List<T> subList = list.subList(startIndex, endIndex + 1);
+        if (subList.isEmpty()) {
+            return Collections.emptyList();
+        }
+        ArrayList<T> removed = new ArrayList<>(subList);
+        subList.clear();
+        return removed;
     }
 
     private int findListIndex(List<? extends Locatable> list, int index, int offset, boolean previous) {
@@ -393,6 +433,30 @@ public class KicksDocumentEditor {
             super.redo();
             element = list.remove(listIndex);
             fireDocumentUpdated(getIndex(), getOffset());
+        }
+    }
+
+    private class RemoveDocumentEdit extends KicksDocumentEdit {
+
+        private final KicksDocument document;
+
+        public RemoveDocumentEdit(int index, int offset, KicksDocument document, String presentationName) {
+            super(index, offset, presentationName);
+            this.document = document;
+        }
+
+        @Override
+        public void undo() throws CannotUndoException {
+            super.undo();
+            add(document);
+            fireDocumentUpdated(getIndex(), getOffset());
+        }
+
+        @Override
+        public void redo() throws CannotRedoException {
+            super.redo();
+            remove(document);
+            fireDocumentUpdated();
         }
     }
 
