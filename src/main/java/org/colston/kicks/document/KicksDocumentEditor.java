@@ -316,6 +316,10 @@ public class KicksDocumentEditor {
             // return the note at this index and offset
             return listIndex;
         } else {
+            if (previous && listIndex == -1) {
+                // corner case for not found at start of list
+                return -1;
+            }
             // listIndex = -(insertion point) - 1, so add 2 to get the previous, or 1 for next
             return Math.abs(previous ? listIndex + 2 : listIndex + 1);
         }
