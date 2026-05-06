@@ -356,7 +356,7 @@ public class KicksApp extends GuiApp {
             fileActions.add(ActionManager.getAction(Save.class));
             fileActions.add(ActionManager.getAction(SaveAs.class));
             fileActions.add(ActionManager.getAction(ExportAsPDF.class));
-            fileActions.add(ActionManager.getAction(Print.class));
+//            fileActions.add(ActionManager.getAction(Print.class));
             fileActions.add(ActionManager.getAction(SettingsAction.class));
             fileActions.add(ActionManager.getAction(Quit.class));
 
@@ -387,7 +387,7 @@ public class KicksApp extends GuiApp {
                     list.add(ActionManager.getAction(Save.class));
                     list.add(ActionManager.getAction(SaveAs.class));
                     list.add(ActionManager.getAction(ExportAsPDF.class));
-                    list.add(ActionManager.getAction(Print.class));
+//                    list.add(ActionManager.getAction(Print.class));
                 }
                 case "menu.view" -> {
                     list.add(ActionManager.getAction(ZoomOut.class));

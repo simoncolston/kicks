@@ -8,9 +8,11 @@ import javax.swing.event.UndoableEditListener;
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
 import javax.swing.undo.UndoableEdit;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 import java.util.function.BiConsumer;
 
@@ -19,6 +21,7 @@ import java.util.function.BiConsumer;
  * The listeners are added here allowing the document to be changed without having to re-register the listeners.
  */
 public class KicksDocumentEditor {
+    private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
     private final EventListenerList listeners = new EventListenerList();
     private final Comparator<Locatable> comparator = new LocatableComparator();
     private final Key key = new Key();
@@ -72,6 +75,11 @@ public class KicksDocumentEditor {
         song.setTuning(tuning);
         fireUndoableEditHappened(new UndoableEditEvent(this, edit));
         fireDocumentUpdated();
+    }
+
+    public void updateVersion() {
+        String version = dateFormat.format(new Date());
+        doc.getProperties().setVersion(version);
     }
 
     public void setTranscription(String transcription) {

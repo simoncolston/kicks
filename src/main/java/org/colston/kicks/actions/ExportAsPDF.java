@@ -47,6 +47,8 @@ public class ExportAsPDF extends AbstractAction {
             return;
         }
 
+        KicksApp.canvas().getEditor().updateVersion();
+        
         Printable printable = KicksApp.canvas().getPrintable();
         Task<Object> task = new Task<>() {
             @Override

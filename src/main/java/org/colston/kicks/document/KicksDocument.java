@@ -110,6 +110,10 @@ public class KicksDocument {
         return properties.getTranscription();
     }
 
+    public String getVersion() {
+        return properties.getVersion();
+    }
+
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -145,5 +149,4 @@ public class KicksDocument {
             return false;
         return songs.equals(other.songs);
     }
-
 }

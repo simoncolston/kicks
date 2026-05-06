@@ -112,6 +112,7 @@ class CanvasPanel extends JPanel implements Printable {
     /*
      * Text Constants
      */
+    private static final String VERSION = Messages.message(CanvasPanel.class, "canvas.panel.version");
     private static final String TRANSCRIPTION_FROM = Messages.message(CanvasPanel.class, "canvas.panel.transcription.from");
 
     public CanvasPanel(CanvasModel model, JTextComponent text) {
@@ -181,15 +182,24 @@ class CanvasPanel extends JPanel implements Printable {
     }
 
     private void drawProperties(Graphics2D g2) {
+        String version = model.getDocument().getVersion();
         String transcription = model.getDocument().getTranscription();
-        if (transcription == null || transcription.isBlank()) {
+        if ((transcription == null || transcription.isBlank())
+                && (version == null || version.isBlank())) {
             return;
         }
         g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-        g2.setFont(sfont);
+        g2.setFont(flatFont);
         g2.setColor(BORDER_BOX_COLOUR);
 
-        g2.drawString(TRANSCRIPTION_FROM + " " + transcription, BORDER_WIDTH, sfont.getSize() + 4);
+        int x = BORDER_WIDTH;
+        if (version != null && !version.isBlank()) {
+            g2.drawString(VERSION + " " + version, x, flatFont.getSize() + 2);
+            x += g2.getFontMetrics().stringWidth(VERSION + " " + version + " ");
+        }
+        if (transcription != null && !transcription.isBlank()) {
+            g2.drawString(TRANSCRIPTION_FROM + " " + transcription, x, flatFont.getSize() + 2);
+        }
 
         g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
     }
