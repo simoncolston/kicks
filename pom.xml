@@ -13,14 +13,14 @@
 	<description>Kunkunshi Editor</description>
 
 	<properties>
-		<jaxb.version>4.0.0</jaxb.version>
-		<pdfbox.version>3.0.5</pdfbox.version>
+		<jaxb.version>4.0.8</jaxb.version>
+		<pdfbox.version>3.0.7</pdfbox.version>
 
-		<junit.version>5.9.0</junit.version>
+		<junit.version>6.0.3</junit.version>
 
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-		<kicks.java.version>21</kicks.java.version>
+		<kicks.java.version>25</kicks.java.version>
 		<maven.compiler.release>${kicks.java.version}</maven.compiler.release>
 		<maven.compiler.source>${kicks.java.version}</maven.compiler.source>
 		<maven.compiler.target>${kicks.java.version}</maven.compiler.target>
