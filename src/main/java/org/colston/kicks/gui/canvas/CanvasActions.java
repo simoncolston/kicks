@@ -195,8 +195,6 @@ final class CanvasActions {
                 new KeyStroke[]{KeyStroke.getKeyStroke(KeyEvent.VK_8, 0)}, "canvas.note.size.small"));
 
         // Edit commands
-        map.put("canvas.delete", new CanvasAction((c, e) -> c.delete(),
-                new KeyStroke[]{KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0)}, "canvas.delete"));
         map.put("canvas.backspace", new CanvasAction((c, e) -> c.backspace(),
                 new KeyStroke[]{KeyStroke.getKeyStroke(KeyEvent.VK_BACK_SPACE, 0)}, "canvas.backspace"));
 

@@ -73,7 +73,7 @@ public class ActionManager {
             a.putValue(Action.SHORT_DESCRIPTION, Messages.get(a.getClass(), mPrefix + ".tooltip"));
             String mnemonicName = mPrefix + ".mnemonic";
             String s = Messages.get(a.getClass(), mnemonicName);
-            if (!mnemonicName.equalsIgnoreCase(s) && s.length() > 0) {
+            if (!mnemonicName.equalsIgnoreCase(s) && !s.isEmpty()) {
                 // The mnemonic was found and is not zero length
                 a.putValue(Action.MNEMONIC_KEY, s.codePointAt(0));
             }

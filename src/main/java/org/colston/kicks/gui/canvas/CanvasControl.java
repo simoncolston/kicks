@@ -3,6 +3,7 @@ package org.colston.kicks.gui.canvas;
 import org.colston.gui.actions.ActionManager;
 import org.colston.gui.actions.ActionProvider;
 import org.colston.kicks.KicksApp;
+import org.colston.kicks.actions.Delete;
 import org.colston.kicks.actions.Redo;
 import org.colston.kicks.actions.Title;
 import org.colston.kicks.actions.Undo;
@@ -250,7 +251,8 @@ class CanvasControl implements Canvas {
         model.getEditor().setSlur(canvasPanel.getCursorIndex(), canvasPanel.getCursorOffset());
     }
 
-    void delete() {
+    @Override
+    public void delete() {
         if (!canvasPanel.getSelection().isEmpty()) {
             model.getEditor().remove(canvasPanel.getAndClearSelection());
         } else if (canvasPanel.isCursorOnNote()) {
@@ -298,6 +300,7 @@ class CanvasControl implements Canvas {
         private final List<Action> documentActions = new ArrayList<>();
 
         public CanvasActionProvider() {
+            editActions.add(ActionManager.getAction(Delete.class));
             editActions.add(ActionManager.getAction(Undo.class));
             editActions.add(ActionManager.getAction(Redo.class));
             documentActions.add(ActionManager.getAction(Title.class));

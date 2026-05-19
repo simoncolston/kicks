@@ -31,6 +31,8 @@ public interface Canvas {
 
     void documentSaved();
 
+    void delete();
+
     void undo();
 
     void redo();
