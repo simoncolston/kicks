@@ -38,6 +38,12 @@ public class Lyric implements Locatable {
     }
 
     @Override
+    public void move(int indexDelta, int offsetDelta) {
+        this.index += indexDelta;
+        this.offset += offsetDelta;
+    }
+
+    @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;

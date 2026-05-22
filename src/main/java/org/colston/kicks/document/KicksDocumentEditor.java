@@ -272,10 +272,83 @@ public class KicksDocumentEditor {
         }
     }
 
+    public KicksDocument copy(LocatableRange range) {
+        List<Note> notes = retrieveFromList(doc.getNotes(), range, false);
+        List<Repeat> repeats = retrieveFromList(doc.getRepeats(), range, false);
+        List<Lyric> lyrics = retrieveFromList(doc.getLyrics(), range, false);
+        if (notes.isEmpty() && repeats.isEmpty() && lyrics.isEmpty()) {
+            return null;
+        }
+        KicksDocument kicksDoc = new KicksDocument();
+        kicksDoc.getNotes().addAll(notes);
+        kicksDoc.getRepeats().addAll(repeats);
+        kicksDoc.getLyrics().addAll(lyrics);
+        return kicksDoc;
+    }
+
+    public void paste(int cursorIndex, int cursorOffset, KicksDocument doc) {
+        moveDocumentToNewLocation(cursorIndex, cursorOffset, doc);
+        Locatable lowest = findLowest(null, doc.getNotes());
+        lowest = findLowest(lowest, doc.getRepeats());
+        lowest = findLowest(lowest, doc.getLyrics());
+        Locatable highest = findHighest(null, doc.getNotes());
+        highest = findHighest(highest, doc.getRepeats());
+        highest = findHighest(highest, doc.getLyrics());
+        KicksDocument removed = removeRange(new SimpleLocatableRange(lowest.getIndex(), lowest.getOffset(), highest.getIndex(), highest.getOffset()));
+        add(doc);
+        UndoableEdit edit = new PasteDocumentEdit(cursorIndex, cursorOffset, doc, removed,
+                Messages.get(getClass(), "undo.paste"));
+        fireUndoableEditHappened(new UndoableEditEvent(this, edit));
+        fireDocumentUpdated();
+    }
+
+    private void moveDocumentToNewLocation(int index, int offset, KicksDocument doc) {
+        Locatable lowest = findLowest(null, doc.getNotes());
+        lowest = findLowest(lowest, doc.getRepeats());
+        lowest = findLowest(lowest, doc.getLyrics());
+        int indexDelta = index - lowest.getIndex();
+        int offsetDelta = offset - lowest.getOffset();
+        moveLocatables(indexDelta, offsetDelta, doc.getNotes());
+        moveLocatables(indexDelta, offsetDelta, doc.getRepeats());
+        moveLocatables(indexDelta, offsetDelta, doc.getLyrics());
+    }
+
+    private <T extends Locatable> void moveLocatables(int indexDelta, int offsetDelta, List<T> locatables) {
+        for (Locatable locatable : locatables) {
+            locatable.move(indexDelta, offsetDelta);
+        }
+    }
+
+    private <T extends Locatable> Locatable findLowest(Locatable lowest, List<T> locatables) {
+        if (locatables.isEmpty()) {
+            return lowest;
+        }
+        Locatable current = locatables.getFirst();
+        return lowest == null || lowest.isGreaterThan(current) ? current : lowest;
+    }
+
+    private <T extends Locatable> Locatable findHighest(Locatable highest, List<T> locatables) {
+        if (locatables.isEmpty()) {
+            return highest;
+        }
+        Locatable current = locatables.getLast();
+        return highest == null || highest.isLessThan(current) ? current : highest;
+    }
+
     public void remove(LocatableRange range) {
-        List<Note> removedNotes = removeFromList(doc.getNotes(), range);
-        List<Repeat> removedRepeats = removeFromList(doc.getRepeats(), range);
-        List<Lyric> removedLyrics = removeFromList(doc.getLyrics(), range);
+        KicksDocument kicksDoc = removeRange(range);
+        if (kicksDoc != null) {
+            UndoableEdit edit = new RemoveDocumentEdit(range.getLow().getIndex(), range.getLow().getOffset(), kicksDoc,
+                    Messages.get(getClass(), "undo.remove.selection"));
+            fireUndoableEditHappened(new UndoableEditEvent(this, edit));
+        }
+        fireDocumentUpdated();
+    }
+
+    public KicksDocument removeRange(LocatableRange range) {
+        List<Note> removedNotes = retrieveFromList(doc.getNotes(), range, true);
+        List<Repeat> removedRepeats = retrieveFromList(doc.getRepeats(), range, true);
+        List<Lyric> removedLyrics = retrieveFromList(doc.getLyrics(), range, true);
         if (!removedNotes.isEmpty()
                 || !removedRepeats.isEmpty()
                 || !removedLyrics.isEmpty()) {
@@ -283,11 +356,9 @@ public class KicksDocumentEditor {
             kicksDoc.getNotes().addAll(removedNotes);
             kicksDoc.getRepeats().addAll(removedRepeats);
             kicksDoc.getLyrics().addAll(removedLyrics);
-            UndoableEdit edit = new RemoveDocumentEdit(range.getLow().getIndex(), range.getLow().getOffset(), kicksDoc,
-                    Messages.get(getClass(), "undo.remove.selection"));
-            fireUndoableEditHappened(new UndoableEditEvent(this, edit));
+            return kicksDoc;
         }
-        fireDocumentUpdated();
+        return null;
     }
 
     public Note findPreviousNote(int index, int offset) {
@@ -299,7 +370,7 @@ public class KicksDocumentEditor {
         return listIndex == -1 ? null : notes.get(listIndex);
     }
 
-    private <T extends Locatable> List<T> removeFromList(List<T> list, LocatableRange range) {
+    private <T extends Locatable> List<T> retrieveFromList(List<T> list, LocatableRange range, boolean remove) {
         if (list.isEmpty()) {
             return Collections.emptyList();
         }
@@ -312,7 +383,9 @@ public class KicksDocumentEditor {
             return Collections.emptyList();
         }
         ArrayList<T> removed = new ArrayList<>(subList);
-        subList.clear();
+        if (remove) {
+            subList.clear();
+        }
         return removed;
     }
 
@@ -517,6 +590,39 @@ public class KicksDocumentEditor {
             }
         }
     }
+
+    private class PasteDocumentEdit extends KicksDocumentEdit {
+
+        private final KicksDocument added;
+        private final KicksDocument removed;
+
+        public PasteDocumentEdit(int index, int offset, KicksDocument added, KicksDocument removed, String presentationName) {
+            super(index, offset, presentationName);
+            this.added = added;
+            this.removed = removed;
+        }
+
+        @Override
+        public void undo() throws CannotUndoException {
+            super.undo();
+            remove(added);
+            if (removed != null) {
+                add(removed);
+            }
+            fireDocumentUpdated(getIndex(), getOffset());
+        }
+
+        @Override
+        public void redo() throws CannotRedoException {
+            super.redo();
+            if (removed != null) {
+                remove(removed);
+            }
+            add(added);
+            fireDocumentUpdated();
+        }
+    }
+
 
     private static class Key implements Locatable {
         private int index;

@@ -7,6 +7,10 @@ public interface Locatable {
 
     int getOffset();
 
+    default void move(int indexDelta, int offsetDelta) {
+        throw new UnsupportedOperationException();
+    }
+
     default int getTicks() {
         return calculateTicks(getIndex(), getOffset());
     }
@@ -25,5 +29,9 @@ public interface Locatable {
 
     default boolean isEqualTo(Locatable l) {
         return getIndex() == l.getIndex() && getOffset() == l.getOffset();
+    }
+
+    default String asString() {
+        return "Locatable (index: " + getIndex() + ", offset: " + getOffset() + ")";
     }
 }

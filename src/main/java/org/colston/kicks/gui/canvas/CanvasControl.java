@@ -3,7 +3,9 @@ package org.colston.kicks.gui.canvas;
 import org.colston.gui.actions.ActionManager;
 import org.colston.gui.actions.ActionProvider;
 import org.colston.kicks.KicksApp;
+import org.colston.kicks.actions.Copy;
 import org.colston.kicks.actions.Delete;
+import org.colston.kicks.actions.Paste;
 import org.colston.kicks.actions.Redo;
 import org.colston.kicks.actions.Title;
 import org.colston.kicks.actions.Undo;
@@ -20,8 +22,14 @@ import javax.swing.*;
 import javax.swing.event.UndoableEditListener;
 import javax.swing.undo.UndoManager;
 import java.awt.*;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.StringSelection;
+import java.awt.datatransfer.Transferable;
 import java.awt.event.ActionEvent;
 import java.awt.print.Printable;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -252,6 +260,59 @@ class CanvasControl implements Canvas {
     }
 
     @Override
+    public void copy() {
+        if (canvasPanel.getSelection().isEmpty()) {
+            return;
+        }
+        KicksDocument copy = model.getEditor().copy(canvasPanel.getSelection());
+        if (copy == null) {
+            return;
+        }
+        try (ByteArrayOutputStream is = new ByteArrayOutputStream()) {
+            // convert to xml
+            KicksApp.documentStore().save(copy, is);
+            // stash in clipboard
+            Clipboard cb = Toolkit.getDefaultToolkit().getSystemClipboard();
+            StringSelection data = new StringSelection(is.toString());
+            cb.setContents(data, null);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void paste() {
+        String data = copyFromClipboard();
+        if (data == null) {
+            return;
+        }
+        try (ByteArrayInputStream is = new ByteArrayInputStream(data.getBytes())) {
+            KicksDocument doc = KicksApp.documentStore().load(is);
+            model.getEditor().paste(canvasPanel.getCursorIndex(), canvasPanel.getCursorOffset(), doc);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private String copyFromClipboard() {
+        Clipboard cb = Toolkit.getDefaultToolkit().getSystemClipboard();
+        Transferable transferable = cb.getContents(null);
+
+        if (transferable.isDataFlavorSupported(DataFlavor.stringFlavor)) {
+            String data = null;
+            try {
+                data = (String) transferable.getTransferData(DataFlavor.stringFlavor);
+            } catch (Exception e) {
+                System.out.println("Couldn't get data from the clipboard");
+                return null;
+            }
+            return data;
+        }
+        System.out.println("Couldn't get data from the clipboard");
+        return null;
+    }
+
+    @Override
     public void delete() {
         if (!canvasPanel.getSelection().isEmpty()) {
             model.getEditor().remove(canvasPanel.getAndClearSelection());
@@ -300,6 +361,8 @@ class CanvasControl implements Canvas {
         private final List<Action> documentActions = new ArrayList<>();
 
         public CanvasActionProvider() {
+            editActions.add(ActionManager.getAction(Copy.class));
+            editActions.add(ActionManager.getAction(Paste.class));
             editActions.add(ActionManager.getAction(Delete.class));
             editActions.add(ActionManager.getAction(Undo.class));
             editActions.add(ActionManager.getAction(Redo.class));

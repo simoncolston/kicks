@@ -31,6 +31,10 @@ public interface Canvas {
 
     void documentSaved();
 
+    void copy();
+
+    void paste();
+
     void delete();
 
     void undo();
