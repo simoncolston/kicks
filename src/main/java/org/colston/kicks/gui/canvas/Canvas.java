@@ -51,6 +51,8 @@ public interface Canvas {
 
     void setNoteSizeSmall();
 
+    void setFinger(int finger);
+
     enum AutoCursor {
         OFF, HALF, ONE
     }

@@ -193,6 +193,14 @@ final class CanvasActions {
                 new KeyStroke[]{KeyStroke.getKeyStroke(KeyEvent.VK_9, 0)}, "canvas.note.size.normal"));
         map.put("canvas.note.size.small", new CanvasAction((c, e) -> c.setNoteSizeSmall(),
                 new KeyStroke[]{KeyStroke.getKeyStroke(KeyEvent.VK_8, 0)}, "canvas.note.size.small"));
+        map.put("canvas.finger.1", new CanvasAction((c, e) -> c.setFinger(1),
+                new KeyStroke[]{KeyStroke.getKeyStroke(KeyEvent.VK_1, 0)}, "canvas.finger.1"));
+        map.put("canvas.finger.2", new CanvasAction((c, e) -> c.setFinger(2),
+                new KeyStroke[]{KeyStroke.getKeyStroke(KeyEvent.VK_2, 0)}, "canvas.finger.2"));
+        map.put("canvas.finger.3", new CanvasAction((c, e) -> c.setFinger(3),
+                new KeyStroke[]{KeyStroke.getKeyStroke(KeyEvent.VK_3, 0)}, "canvas.finger.3"));
+        map.put("canvas.finger.4", new CanvasAction((c, e) -> c.setFinger(4),
+                new KeyStroke[]{KeyStroke.getKeyStroke(KeyEvent.VK_4, 0)}, "canvas.finger.4"));
 
         // Edit commands
         map.put("canvas.backspace", new CanvasAction((c, e) -> c.backspace(),

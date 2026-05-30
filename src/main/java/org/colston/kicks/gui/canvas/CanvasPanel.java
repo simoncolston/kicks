@@ -70,6 +70,7 @@ class CanvasPanel extends JPanel implements Printable {
     private final Font sfontBold = new Font(KicksApp.FONT_NAME, Font.BOLD, 14);
     private final Font lyricFont = new Font(KicksApp.FONT_NAME, Font.PLAIN, 12);
     private final Font flatFont = new Font(KicksApp.FONT_NAME, Font.PLAIN, 9);
+    private final Font fingerFont = new Font(KicksApp.FONT_NAME, Font.PLAIN, 7);
 
     /*
      * Strokes
@@ -471,6 +472,16 @@ class CanvasPanel extends JPanel implements Printable {
         char[] ch = CanvasResources.getNoteText(n.getString(), n.getPlacement()).toCharArray();
         int x = x(n.getIndex());
         int y = y(n.getIndex(), n.getOffset(), fm) - 1;
+
+        if (n.getFinger() != 0) {
+            Font tfont = g2.getFont();
+            g2.setFont(fingerFont);
+            g2.drawString(CanvasResources.getNoteFingerText(n.getFinger()),
+                    x - COLUMN_SPACE + 1,
+                    y(n.getIndex(), n.getOffset(), g2.getFontMetrics()) + 1);
+            g2.setFont(tfont);
+        }
+
         int chw;
         if (ch.length == 1) {
             chw = fm.charWidth(ch[0]);

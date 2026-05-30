@@ -73,6 +73,7 @@
             <xs:element name="utou" type="utou" minOccurs="0" default="NONE"/>
             <xs:element name="chord" type="xs:boolean" minOccurs="0" default="false"/>
             <xs:element name="slur" type="xs:boolean" minOccurs="0" default="false"/>
+            <xs:element name="finger" type="xs:int" minOccurs="0" default="0"/>
         </xs:sequence>
         <xs:attributeGroup ref="locatable"/>
         <xs:attribute name="string" use="required">

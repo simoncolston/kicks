@@ -208,6 +208,26 @@ public class KicksDocumentEditor {
             }
         }
     }
+
+    public void setFinger(int index, int offset, int finger) {
+        List<Note> notes = doc.getNotes();
+        key.index = index;
+        key.offset = offset;
+        int off = Collections.binarySearch(notes, key, comparator);
+        if (off >= 0) {
+            Note n = notes.get(off);
+            int oldValue = n.getFinger();
+            int newValue = oldValue == finger ? 0 : finger; // same value deletes
+            if (newValue != oldValue) {
+                n.setFinger(newValue);
+                SetEdit<Note, Integer> edit = new SetEdit<>(index, offset, n, oldValue, newValue,
+                        Note::setFinger, Messages.get(getClass(), "undo.set.finger"));
+                fireUndoableEditHappened(new UndoableEditEvent(this, edit));
+                fireDocumentUpdated();
+            }
+        }
+    }
+
     public void addLyric(Lyric lyric) {
         List<Lyric> lyrics = doc.getLyrics();
         int listIndex = Collections.binarySearch(lyrics, lyric, comparator);

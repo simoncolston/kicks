@@ -2,6 +2,8 @@ package org.colston.kicks.document;
 
 import jakarta.xml.bind.annotation.*;
 
+import java.util.Objects;
+
 @XmlAccessorType(XmlAccessType.NONE)
 @XmlType(
         propOrder = {
@@ -9,7 +11,8 @@ import jakarta.xml.bind.annotation.*;
                 "accidental",
                 "utou",
                 "chord",
-                "slur"
+                "slur",
+                "finger"
         })
 public class Note implements Locatable {
     @XmlAttribute
@@ -31,6 +34,8 @@ public class Note implements Locatable {
     private Boolean chord = null;
     @XmlElement(defaultValue = "false")
     private Boolean slur = null;
+    @XmlElement(defaultValue = "0")
+    private Integer finger = null;
 
     @SuppressWarnings("unused")
     private Note() {
@@ -101,64 +106,32 @@ public class Note implements Locatable {
         this.slur = slur;
     }
 
+    public int getFinger() {
+        return finger == null ? 0 : finger;
+    }
+
+    public void setFinger(int finger) {
+        this.finger = finger;
+    }
+
     @Override
-    public void move(int indexDelta, int offsetDelta) {
-        this.index += indexDelta;
-        this.offset += offsetDelta;
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        Note note = (Note) o;
+        return index == note.index && offset == note.offset && string == note.string && placement == note.placement
+                && Objects.equals(small, note.small) && accidental == note.accidental && utou == note.utou
+                && Objects.equals(chord, note.chord) && Objects.equals(slur, note.slur)
+                && Objects.equals(finger, note.finger);
     }
 
     @Override
     public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((accidental == null) ? 0 : accidental.hashCode());
-        result = prime * result + ((chord == null) ? 0 : chord.hashCode());
-        result = prime * result + index;
-        result = prime * result + offset;
-        result = prime * result + placement;
-        result = prime * result + ((slur == null) ? 0 : slur.hashCode());
-        result = prime * result + ((small == null) ? 0 : small.hashCode());
-        result = prime * result + string;
-        result = prime * result + ((utou == null) ? 0 : utou.hashCode());
-        return result;
+        return Objects.hash(index, offset, string, placement, small, accidental, utou, chord, slur, finger);
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        Note other = (Note) obj;
-        if (accidental != other.accidental)
-            return false;
-        if (chord == null) {
-            if (other.chord != null)
-                return false;
-        } else if (!chord.equals(other.chord))
-            return false;
-        if (index != other.index)
-            return false;
-        if (offset != other.offset)
-            return false;
-        if (placement != other.placement)
-            return false;
-        if (slur == null) {
-            if (other.slur != null)
-                return false;
-        } else if (!slur.equals(other.slur))
-            return false;
-        if (small == null) {
-            if (other.small != null)
-                return false;
-        } else if (!small.equals(other.small))
-            return false;
-        if (string != other.string)
-            return false;
-        if (utou != other.utou)
-            return false;
-        return true;
+    public void move(int indexDelta, int offsetDelta) {
+        this.index += indexDelta;
+        this.offset += offsetDelta;
     }
 }

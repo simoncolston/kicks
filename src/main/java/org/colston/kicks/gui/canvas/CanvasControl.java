@@ -334,6 +334,11 @@ class CanvasControl implements Canvas {
         model.getEditor().setNoteSize(canvasPanel.getCursorIndex(), canvasPanel.getCursorOffset(), true);
     }
 
+    @Override
+    public void setFinger(int finger) {
+        model.getEditor().setFinger(canvasPanel.getCursorIndex(), canvasPanel.getCursorOffset(), finger);
+    }
+
     /**
      * Move to the position of the current or previous note then delete it.
      * Ignored if not in the note column.

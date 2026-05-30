@@ -75,6 +75,7 @@ class KicksDocumentTest {
         note.setUtou(Utou.KAKI);
         note.setChord(true);
         note.setSlur(true);
+        note.setFinger(1);
 
         Break brk = new Break(15, BreakType.LINE);
         doc.getBreaks().add(brk);
