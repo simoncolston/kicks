@@ -3,7 +3,16 @@ package org.colston.kicks.gui.canvas;
 import org.colston.gui.actions.ActionManager;
 import org.colston.kicks.KicksApp;
 import org.colston.kicks.actions.Title;
-import org.colston.kicks.document.*;
+import org.colston.kicks.document.Accidental;
+import org.colston.kicks.document.KicksDocument;
+import org.colston.kicks.document.Locatable;
+import org.colston.kicks.document.LocatableRange;
+import org.colston.kicks.document.Lyric;
+import org.colston.kicks.document.Note;
+import org.colston.kicks.document.Repeat;
+import org.colston.kicks.document.SimpleLocatable;
+import org.colston.kicks.document.SimpleLocatableRange;
+import org.colston.kicks.document.Tuning;
 import org.colston.lib.i18n.Messages;
 
 import javax.swing.*;
@@ -260,7 +269,14 @@ class CanvasPanel extends JPanel implements Printable {
                 y += TITLE_MARGIN + titleFont.getSize();
                 for (int i = 0; i < tchars.length; i++) {
 
+                    if (tchars[i] == 'ー') {
+                        // rotate the extension character...
+                        g2.rotate(Math.toRadians(90), x + 1 + (double) titleFont.getSize() / 2, y + 3 - (double) titleFont.getSize() / 2);
+                    }
                     g2.drawChars(tchars, i, 1, x, y);
+                    if (tchars[i] == 'ー') {
+                        g2.rotate(Math.toRadians(-90), x + 1 + (double) titleFont.getSize() / 2, y + 3 - (double) titleFont.getSize() / 2);
+                    }
                     y += titleFont.getSize();
                 }
             }
