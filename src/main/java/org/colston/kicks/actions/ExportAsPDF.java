@@ -48,42 +48,17 @@ public class ExportAsPDF extends AbstractAction {
         }
 
         KicksApp.canvas().getEditor().updateVersion();
-        
+
+        Task<Object> task = getObjectTask();
+        task.execute();
+    }
+
+    private Task<Object> getObjectTask() {
         Printable printable = KicksApp.canvas().getPrintable();
-        Task<Object> task = new Task<>() {
+        return new Task<>() {
             @Override
             protected Object doInBackground() throws Exception {
-                DocFlavor flavor = DocFlavor.SERVICE_FORMATTED.PRINTABLE;
-                PrintRequestAttributeSet aset = new HashPrintRequestAttributeSet();
-                aset.add(MediaSizeName.ISO_A4);
-                aset.add(OrientationRequested.LANDSCAPE);
-
-                aset.add(new Destination(destination.toURI()));
-
-                String jobName = destination.getName();
-                jobName = jobName.substring(0, jobName.lastIndexOf(Utils.PDF_FILE_EXT));
-                aset.add(new JobName(jobName, null));
-
-                //TODO:  The whole 'lookup print service' thing - looks fun!
-                PrintService pservice = new PDFBoxPrintService();
-
-                DocPrintJob printJob = pservice.createPrintJob();
-                Doc doc = new SimpleDoc(printable, flavor, /* daset */ null);
-
-                MediaSize mediaSize = MediaSize.getMediaSizeForName(MediaSizeName.ISO_A4);
-                float width = mediaSize.getX(Size2DSyntax.MM) - (MARGIN * 2);
-                float height = mediaSize.getY(Size2DSyntax.MM) - (MARGIN * 2);
-                MediaPrintableArea mpa = new MediaPrintableArea(MARGIN, MARGIN, width, height, MediaPrintableArea.MM);
-                aset.add(mpa);
-
-                Font font = new Font(KicksApp.FONT_NAME, Font.PLAIN, 1);
-
-                PDFBoxPrintFontMap fontMap = new PDFBoxPrintFontMap();
-                fontMap.add(font, KicksApp.class, KicksApp.FONT_RESOURCE_NAME);
-                aset.add(fontMap);
-
-                printJob.print(doc, aset);
-
+                export(printable, destination);
                 // open the pdf
                 if (Desktop.isDesktopSupported() && KicksApp.settings().isOpenPdfAfterExport()) {
                     Desktop.getDesktop().open(destination);
@@ -95,7 +70,39 @@ public class ExportAsPDF extends AbstractAction {
             protected void updateUI() {
             }
         };
-        task.execute();
+    }
+
+    public void export(Printable printable, File destination) throws PrintException {
+        DocFlavor flavor = DocFlavor.SERVICE_FORMATTED.PRINTABLE;
+        PrintRequestAttributeSet aset = new HashPrintRequestAttributeSet();
+        aset.add(MediaSizeName.ISO_A4);
+        aset.add(OrientationRequested.LANDSCAPE);
+
+        aset.add(new Destination(destination.toURI()));
+
+        String jobName = destination.getName();
+        jobName = jobName.substring(0, jobName.lastIndexOf(Utils.PDF_FILE_EXT));
+        aset.add(new JobName(jobName, null));
+
+        //TODO:  The whole 'lookup print service' thing - looks fun!
+        PrintService pservice = new PDFBoxPrintService();
+
+        DocPrintJob printJob = pservice.createPrintJob();
+        Doc doc = new SimpleDoc(printable, flavor, /* daset */ null);
+
+        MediaSize mediaSize = MediaSize.getMediaSizeForName(MediaSizeName.ISO_A4);
+        float width = mediaSize.getX(Size2DSyntax.MM) - (MARGIN * 2);
+        float height = mediaSize.getY(Size2DSyntax.MM) - (MARGIN * 2);
+        MediaPrintableArea mpa = new MediaPrintableArea(MARGIN, MARGIN, width, height, MediaPrintableArea.MM);
+        aset.add(mpa);
+
+        Font font = new Font(KicksApp.FONT_NAME, Font.PLAIN, 1);
+
+        PDFBoxPrintFontMap fontMap = new PDFBoxPrintFontMap();
+        fontMap.add(font, KicksApp.class, KicksApp.FONT_RESOURCE_NAME);
+        aset.add(fontMap);
+
+        printJob.print(doc, aset);
     }
 
     protected static File createPDFDestination() {

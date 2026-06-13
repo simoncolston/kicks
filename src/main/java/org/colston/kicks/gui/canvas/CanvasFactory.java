@@ -9,6 +9,7 @@ import java.awt.*;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.im.InputContext;
+import java.awt.print.Printable;
 
 public final class CanvasFactory {
     public static Canvas create() {
@@ -20,7 +21,7 @@ public final class CanvasFactory {
         text.enableInputMethods(true);
         text.addFocusListener(new JapaneseTextFocusListener());
 
-        CanvasPanel canvas = new CanvasPanel(model, text);
+        CanvasPanel canvas = createCanvasPanel(model, text);
         canvas.addFocusListener(new CanvasPanelFocusListener());
 
         JPanel canvasContainer = new JPanel();
@@ -48,6 +49,16 @@ public final class CanvasFactory {
         CanvasActions.enableAll();
 
         return control;
+    }
+
+    public static Printable createPrintable(KicksDocument doc) {
+        CanvasModel model = new CanvasModel();
+        model.setDocument(doc);
+        return createCanvasPanel(model, new JTextField());
+    }
+
+    private static CanvasPanel createCanvasPanel(CanvasModel model, JTextField text) {
+        return new CanvasPanel(model, text);
     }
 
     private static class CanvasPanelFocusListener implements FocusListener {

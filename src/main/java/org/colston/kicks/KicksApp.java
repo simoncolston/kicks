@@ -3,7 +3,18 @@ package org.colston.kicks;
 import org.colston.gui.actions.ActionManager;
 import org.colston.gui.actions.ActionProvider;
 import org.colston.gui.actions.ActionProviders;
-import org.colston.kicks.actions.*;
+import org.colston.kicks.actions.About;
+import org.colston.kicks.actions.ExportAsPDF;
+import org.colston.kicks.actions.KeyboardShortcuts;
+import org.colston.kicks.actions.New;
+import org.colston.kicks.actions.Open;
+import org.colston.kicks.actions.Quit;
+import org.colston.kicks.actions.Save;
+import org.colston.kicks.actions.SaveAs;
+import org.colston.kicks.actions.SettingsAction;
+import org.colston.kicks.actions.ZoomIn;
+import org.colston.kicks.actions.ZoomOut;
+import org.colston.kicks.actions.ZoomReset;
 import org.colston.kicks.document.KicksDocument;
 import org.colston.kicks.document.persistence.DocumentStore;
 import org.colston.kicks.gui.canvas.Canvas;
@@ -20,12 +31,15 @@ import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.awt.print.Printable;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -93,6 +107,27 @@ public class KicksApp extends GuiApp {
     private static void setCurrentFile(File currentFile) {
         kicks.currentFile = currentFile;
         kicks.statusPanel.setMessage(currentFile == null ? " " : currentFile.getAbsolutePath());
+    }
+
+    @Override
+    protected void cli(String[] args) throws Exception {
+        if (args.length != 5 || !"--to-pdf".equals(args[1]) || !"--output-dir".equals(args[2])) {
+            getLogger().log(Level.INFO, """
+                Usage:
+                kicks --cli --to-pdf --output-dir <output directory> <kicks filename>""");
+            return;
+        }
+        File file = new File(args[4]);
+        KicksDocument doc = loadDocument(file);
+        File outputFile = new File(args[3], file.getName());
+        outputFile = Utils.fixFileExtension(outputFile, Utils.PDF_FILE_EXT);
+
+        getLogger().log(Level.INFO, "Input file: " + file.getAbsolutePath());
+        getLogger().log(Level.INFO, "Exporting to: " + outputFile.getAbsolutePath());
+
+        Printable canvas = CanvasFactory.createPrintable(doc);
+        ExportAsPDF action = new ExportAsPDF();
+        action.export(canvas, outputFile);
     }
 
     @Override
@@ -320,19 +355,19 @@ public class KicksApp extends GuiApp {
             return;
         }
         File file = new File(args[0]);
-        if (!file.exists() || !file.canRead()) {
-            getLogger().log(Level.SEVERE, "Cannot read file: {1}", file.getAbsolutePath());
-            return;
-        }
         try {
-            openDocumentFromFile(file);
+            KicksDocument doc = loadDocument(file);
+            setDocument(file, doc);
         } catch (Exception e) {
-            e.printStackTrace();
+            getLogger().log(Level.SEVERE, "Cannot open document: " + file.getAbsolutePath(), e);
         }
     }
 
-    private void openDocumentFromFile(File file) throws Exception {
-        setDocument(file, documentStore().load(file));
+    private KicksDocument loadDocument(File file) throws Exception {
+        if (!file.exists() || !file.canRead()) {
+            throw new Exception("Cannot read file: " + file.getAbsolutePath());
+        }
+        return documentStore().load(file);
     }
 
     public static void setDocument(File file, KicksDocument document) {

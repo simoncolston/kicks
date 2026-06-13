@@ -30,6 +30,16 @@ public abstract class GuiApp {
 
     public void start(String[] args) {
 
+        if (args.length > 0 && "--cli".equals(args[0])) {
+            try {
+                startCLI(args);
+            } catch (Exception e) {
+                getLogger().log(Level.SEVERE, "Error initialising app", e);
+                System.exit(1);
+            }
+            System.exit(0);
+        }
+
         // create the frame for the splash to cover
         frame = new JFrame(getApplicationName());
 
@@ -72,6 +82,15 @@ public abstract class GuiApp {
         });
     }
 
+    private void startCLI(String[] args) throws Exception {
+        configureBasics(args);
+        cli(args);
+    }
+
+    protected void cli(String[] args) throws Exception {
+        getLogger().log(Level.INFO, "This programme does not have a CLI.");
+    }
+
     /**
      * Get the icon to display as a splash screen.
      * @return splash screen icon
@@ -79,9 +98,13 @@ public abstract class GuiApp {
     protected abstract Icon getSplashIcon();
 
     protected void configure(String[] args) throws Exception {
+        configureBasics(args);
+        configureLookAndFeel(args);
+    }
+
+    protected void configureBasics(String[] args) throws Exception {
         configureConfigDir(args);
         configureLogging(args);
-        configureLookAndFeel(args);
         configureOther(args);
     }
 
