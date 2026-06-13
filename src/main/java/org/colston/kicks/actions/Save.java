@@ -58,9 +58,18 @@ public class Save extends AbstractAction {
                 return false;
             }
         }
+        // update the version
+        KicksApp.canvas().getEditor().updateVersion();
         // take the reference to the document on the event thread!
+        Task<Object> tw = getObjectTask(runnable);
+        tw.execute(new Message(getClass(), "save.progress.message"));
+        return true;
+    }
+
+    private Task<Object> getObjectTask(Runnable runnable) {
         KicksDocument doc = KicksApp.canvas().getDocument();
-        Task<Object> tw = new Task<>() {
+
+        return new Task<>() {
             @Override
             protected Object doInBackground() throws Exception {
                 try (OutputStream is = new BufferedOutputStream(new FileOutputStream(file))) {
@@ -76,8 +85,6 @@ public class Save extends AbstractAction {
                 }
             }
         };
-        tw.execute(new Message(getClass(), "save.progress.message"));
-        return true;
     }
 
     @Override

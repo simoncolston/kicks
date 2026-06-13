@@ -47,8 +47,6 @@ public class ExportAsPDF extends AbstractAction {
             return;
         }
 
-        KicksApp.canvas().getEditor().updateVersion();
-
         Task<Object> task = getObjectTask();
         task.execute();
     }
