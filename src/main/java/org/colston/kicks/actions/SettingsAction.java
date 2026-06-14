@@ -20,6 +20,7 @@ public class SettingsAction extends AbstractAction {
     private JComboBox<Character.Subset[]> charSubsetCombo;
     private final Character.Subset[][] charSubsets = new Character.Subset[][]{Settings.HIRAGANA, Settings.KATAKANA};
     private JCheckBox openPdfCheckBox;
+    private JCheckBox romajiCheckBox;
 
     public SettingsAction() {
         putValue(ACTION_COMMAND_KEY, ACTION_COMMAND);
@@ -37,6 +38,10 @@ public class SettingsAction extends AbstractAction {
 
             panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
+            panel.add(new JLabel(Messages.get(SettingsAction.class, "settings.display.romaji.lyrics")));
+            romajiCheckBox = new JCheckBox();
+            panel.add(romajiCheckBox);
+
             panel.add(new JLabel(Messages.get(SettingsAction.class, "settings.open.pdf.after.create.prompt")));
             openPdfCheckBox = new JCheckBox();
             panel.add(openPdfCheckBox);
@@ -46,7 +51,7 @@ public class SettingsAction extends AbstractAction {
             panel.add(charSubsetCombo);
             charSubsetCombo.setRenderer(new CharacterSubsetRenderer());
 
-            SpringUtilities.makeCompactGrid(panel, 2, 2, 5, 5, 5, 5);
+            SpringUtilities.makeCompactGrid(panel, 3, 2, 5, 5, 5, 5);
 
             JPanel buttons = new JPanel(new FlowLayout(FlowLayout.RIGHT));
             dialog.add(buttons, BorderLayout.SOUTH);
@@ -62,6 +67,7 @@ public class SettingsAction extends AbstractAction {
             b = new JButton(Messages.get(SettingsAction.class, "settings.submit.button"));
             buttons.add(b);
             b.addActionListener(e -> {
+                KicksApp.settings().setRomaji(romajiCheckBox.isSelected());
                 KicksApp.settings().setOpenPdfAfterExport(openPdfCheckBox.isSelected());
                 KicksApp.settings().setCharacterSubset((Character.Subset[]) charSubsetCombo.getSelectedItem());
                 dialog.setVisible(false);
@@ -73,7 +79,7 @@ public class SettingsAction extends AbstractAction {
             dialog.pack();
             dialog.setLocationRelativeTo(KicksApp.frame());
         }
-        charSubsetCombo.requestFocusInWindow();
+        romajiCheckBox.requestFocusInWindow();
         return dialog;
     }
 
@@ -82,6 +88,7 @@ public class SettingsAction extends AbstractAction {
         JDialog d = getDialog();
         charSubsetCombo.setSelectedItem(KicksApp.settings().getCharacterSubset());
         openPdfCheckBox.setSelected(KicksApp.settings().isOpenPdfAfterExport());
+        romajiCheckBox.setSelected(KicksApp.settings().isRomaji());
         d.setVisible(true);
     }
 

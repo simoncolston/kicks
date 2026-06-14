@@ -14,6 +14,7 @@ import org.colston.kicks.document.SimpleLocatable;
 import org.colston.kicks.document.SimpleLocatableRange;
 import org.colston.kicks.document.Tuning;
 import org.colston.lib.i18n.Messages;
+import org.colston.utils.Utils;
 
 import javax.swing.*;
 import javax.swing.event.EventListenerList;
@@ -369,12 +370,16 @@ class CanvasPanel extends JPanel implements Printable {
         g2.setFont(lyricFont);
         fm = g2.getFontMetrics();
         for (Lyric l : doc.getLyrics()) {
+            if (KicksApp.settings().isRomaji()) {
+                drawRomajiLyric(g2, l.getValue(), l.getIndex(), l.getOffset(), fm);
+            } else {
             char[] ch = l.getValue().toCharArray();
             for (int i = 0; i < ch.length; i++) {
                 cursorStartHighlight(g2, print, l, false, null);
                 drawLyric(g2, ch, i, l.getIndex(), l.getOffset(), fm);
                 cursorEndHighlight(g2, null);
 
+            }
             }
         }
     }
@@ -482,6 +487,13 @@ class CanvasPanel extends JPanel implements Printable {
         int y = y(index, offset, fm);
         y += ((int) Math.ceil(fm.getFont().getSize() * 0.5f)) * choff;
         g2.drawChars(ch, choff, 1, x, y);
+    }
+
+    private void drawRomajiLyric(Graphics2D g2, String value, int index, int offset, FontMetrics fm) {
+        int x = x(index) + (COLUMN_WIDTH / 2) + 2;
+        String romaji = Utils.toRomaji(value);
+        int y = y(index, offset, fm);
+        g2.drawString(romaji, x, y);
     }
 
     private void drawNote(Graphics2D g2, Note n, FontMetrics fm) {

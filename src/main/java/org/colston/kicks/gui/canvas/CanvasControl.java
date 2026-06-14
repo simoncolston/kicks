@@ -67,6 +67,8 @@ class CanvasControl implements Canvas {
         UndoableEditListener undoListener = e -> undo.addEdit(e.getEdit());
         this.model.getEditor().addUndoableEditListener(undoListener);
 
+        KicksApp.settings().addListener(canvasPanel::redraw);
+
         this.inputComponent = inputComponent;
     }
 
