@@ -19,6 +19,8 @@ import org.colston.kicks.document.KicksDocument;
 import org.colston.kicks.document.persistence.DocumentStore;
 import org.colston.kicks.gui.canvas.Canvas;
 import org.colston.kicks.gui.canvas.CanvasFactory;
+import org.colston.lib.args.Args;
+import org.colston.lib.args.Param;
 import org.colston.lib.gui.GuiApp;
 import org.colston.lib.gui.task.Task;
 import org.colston.lib.i18n.Messages;
@@ -111,20 +113,40 @@ public class KicksApp extends GuiApp {
 
     @Override
     protected void cli(String[] args) throws Exception {
-        if (args.length != 5 || !"--to-pdf".equals(args[1]) || !"--output-dir".equals(args[2])) {
+        Args argss = Args.builder()
+                .withVargs(true)
+                .parameters(
+                        new Param("--cli", "Run on command line without GUI", true),
+                        new Param("--to-pdf", "Convert document to pdf", true),
+                        new Param("--romaji-lyrics", "Convert the lyrics to romaji", true),
+                        new Param("--filename-suffix", "Suffix to add to the output file name", false),
+                        new Param("--output-dir", "Output directory", false)
+                )
+                .parse(args);
+        if (!argss.is("--to-pdf") || !argss.is("--output-dir") || argss.getVargs().size() != 1) {
             getLogger().log(Level.INFO, """
                 Usage:
-                kicks --cli --to-pdf --output-dir <output directory> <kicks filename>""");
+                kicks --cli --to-pdf --romaji-lyrics --filename-suffix=<suffix> --output-dir=<output directory> <kicks filename>""");
             return;
         }
-        File file = new File(args[4]);
+        File file = new File(argss.getVargs().getFirst());
         KicksDocument doc = loadDocument(file);
-        File outputFile = new File(args[3], file.getName());
+        String filename = file.getName();
+        if (argss.is("--filename-suffix")) {
+            int dotIndex = filename.indexOf('.');
+            filename = filename.substring(0, dotIndex)
+                    + argss.get("--filename-suffix")
+                    + Utils.PDF_FILE_EXT;
+        }
+        File outputFile = new File(argss.get("--output-dir"), filename);
         outputFile = Utils.fixFileExtension(outputFile, Utils.PDF_FILE_EXT);
 
         getLogger().log(Level.INFO, "Input file: " + file.getAbsolutePath());
         getLogger().log(Level.INFO, "Exporting to: " + outputFile.getAbsolutePath());
 
+        if (argss.is("--romaji-lyrics")) {
+            settings().setRomaji(true);
+        }
         Printable canvas = CanvasFactory.createPrintable(doc);
         ExportAsPDF action = new ExportAsPDF();
         action.export(canvas, outputFile);
