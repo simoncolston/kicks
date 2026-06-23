@@ -27,6 +27,8 @@ TODO
   - [ ]   5   Highlight
   - [ ]   5   Import/Export Paul's JSON
   - [x] **1** Use JAXB for saving/loading document to XML
+  - [ ]   3   Vocal notes
+  - [ ]   4   Text (in callouts?)
 
 #### View
   - [x]   2   Zoom
@@ -39,12 +41,13 @@ TODO
 
 ##### Selection
   - [x] **1** Mouse to move cursor on canvas
-  - [ ] **1** Selection on canvas
+  - [x] **1** Selection on canvas
   
 ##### Edit
   - [x] **1** Delete from canvas using delete key (and remove stupid 'delete if same' logic)
-  - [ ] **1** Delete from canvas (*after* selection)
-  - [ ] **1** Cut/copy/paste
+  - [x] **1** Delete from canvas (*after* selection)
+  - [x] **1** copy/paste
+  - [ ] **1** Cut
   - [x] **1** Undo/redo
   
 ##### Printing
