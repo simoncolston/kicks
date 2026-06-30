@@ -16,6 +16,7 @@ import org.colston.kicks.actions.ZoomIn;
 import org.colston.kicks.actions.ZoomOut;
 import org.colston.kicks.actions.ZoomReset;
 import org.colston.kicks.document.KicksDocument;
+import org.colston.kicks.document.Song;
 import org.colston.kicks.document.persistence.DocumentStore;
 import org.colston.kicks.gui.canvas.Canvas;
 import org.colston.kicks.gui.canvas.CanvasFactory;
@@ -329,6 +330,7 @@ public class KicksApp extends GuiApp {
         addMenu(menuBar, "menu.file");
         addMenu(menuBar, "menu.edit");
         addMenu(menuBar, "menu.document");
+        addMenu(menuBar, "menu.view");
         addMenu(menuBar, "menu.help");
         return menuBar;
     }
@@ -398,7 +400,7 @@ public class KicksApp extends GuiApp {
     }
 
     public static void newDocument() {
-        setDocument(null, new KicksDocument());
+        setDocument(null, new KicksDocument(new Song(0)));
     }
 
     private static class MainActionProvider implements ActionProvider {
@@ -429,6 +431,7 @@ public class KicksApp extends GuiApp {
         public List<Action> getMenuActions(String menuName) {
             return switch (menuName) {
                 case "menu.file" -> fileActions;
+                case "menu.view" -> viewActions;
                 case "menu.help" -> helpActions;
                 default -> null;
             };

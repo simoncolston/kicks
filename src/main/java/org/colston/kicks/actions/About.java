@@ -29,7 +29,7 @@ public class About extends AbstractAction {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        JDialog dialog = new JDialog(KicksApp.frame(), Messages.get(Title.class, "about.dialog.title"), true);
+        JDialog dialog = new JDialog(KicksApp.frame(), Messages.get(About.class, "about.dialog.title"), true);
         JPanel content = new JPanel();
         content.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         content.setLayout(new BoxLayout(content, BoxLayout.Y_AXIS));
@@ -53,7 +53,7 @@ public class About extends AbstractAction {
                 throw new RuntimeException(ex);
             }
         }
-        JLabel description = new JLabel(Messages.get(Title.class, "about.dialog.app.description"));
+        JLabel description = new JLabel(Messages.get(About.class, "about.dialog.app.description"));
         description.setAlignmentX(Component.CENTER_ALIGNMENT);
         JLabel copyright = new JLabel("© 2009 Simon Colston");
         copyright.setAlignmentX(Component.CENTER_ALIGNMENT);

@@ -49,6 +49,7 @@ TODO
   - [x] **1** copy/paste
   - [ ] **1** Cut
   - [x] **1** Undo/redo
+  - [ ]   3   Add slur/chord from *later* note rather than *earlier* note
   
 ##### Printing
   - [x] **1** Save as PDF (using Apache PDF implemented through Java Print API) 

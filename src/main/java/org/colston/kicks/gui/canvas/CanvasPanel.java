@@ -1,8 +1,6 @@
 package org.colston.kicks.gui.canvas;
 
-import org.colston.gui.actions.ActionManager;
 import org.colston.kicks.KicksApp;
-import org.colston.kicks.actions.Title;
 import org.colston.kicks.document.Accidental;
 import org.colston.kicks.document.KicksDocument;
 import org.colston.kicks.document.Locatable;
@@ -12,6 +10,7 @@ import org.colston.kicks.document.Note;
 import org.colston.kicks.document.Repeat;
 import org.colston.kicks.document.SimpleLocatable;
 import org.colston.kicks.document.SimpleLocatableRange;
+import org.colston.kicks.document.Song;
 import org.colston.kicks.document.Tuning;
 import org.colston.lib.i18n.Messages;
 import org.colston.utils.Utils;
@@ -27,6 +26,7 @@ import java.awt.geom.AffineTransform;
 import java.awt.print.PageFormat;
 import java.awt.print.Printable;
 import java.awt.print.PrinterException;
+import java.util.Optional;
 
 /**
  * Canvas for drawing a page of the kunkunshi.
@@ -44,13 +44,12 @@ class CanvasPanel extends JPanel implements Printable {
     private static final int CELL_HEIGHT = 36;
     private static final int BORDER_WIDTH = 20;
 
-    private static final int COLUMNS_PER_PAGE = 10;
+    private static final int COLUMNS_PER_PAGE = 11;
     private static final int CELLS_PER_COL = 12;
 
     //NOTE: This is now the same as 11 columns, so we could replace any column with a title
     //CANVAS_WIDTH = 706;
-    private static final int CANVAS_WIDTH = COLUMN_WIDTH * COLUMNS_PER_PAGE + COLUMN_SPACE * (COLUMNS_PER_PAGE - 1)
-            + TITLE_WIDTH + COLUMN_SPACE;
+    private static final int CANVAS_WIDTH = COLUMN_WIDTH * COLUMNS_PER_PAGE + COLUMN_SPACE * COLUMNS_PER_PAGE;
     //CANVAS_HEIGHT = 432;
     private static final int CANVAS_HEIGHT = CELL_HEIGHT * CELLS_PER_COL;
 
@@ -103,8 +102,8 @@ class CanvasPanel extends JPanel implements Printable {
     /*
      * Cursor
      */
-    private int cursorIndex = 0;               // cell index from top right corner
-    private int cursorOffset = Locatable.CELL_TICKS / 2; // offset within a cell (0 - CELL_TICKS)
+    private int cursorIndex = CELLS_PER_COL;               // cell index from top right corner
+    private int cursorOffset = Locatable.CELL_TICKS / 2; // offset within a cell (valid values: 0 -> CELL_TICKS)
     private boolean cursorOnNote = true;       // flag indicating whether cursor on the notes or the lyrics
     private boolean cursorHighlight = false;   // flag indicating temporarily in mode for highlighting
     private Canvas.AutoCursor autoCursor = Canvas.AutoCursor.HALF; // where to move the cursor after input
@@ -193,7 +192,7 @@ class CanvasPanel extends JPanel implements Printable {
     }
 
     private void drawProperties(Graphics2D g2) {
-        String version = model.getDocument().getVersion();
+        String version = model.getDocument().getDocumentVersion();
         String transcription = model.getDocument().getTranscription();
         if ((transcription == null || transcription.isBlank())
                 && (version == null || version.isBlank())) {
@@ -227,27 +226,28 @@ class CanvasPanel extends JPanel implements Printable {
             drawSelection(g2);
         }
 
-        // draw the background
-        int x = CANVAS_WIDTH - TITLE_WIDTH;
+        KicksDocument doc = model.getDocument();
+
+        // draw the background cells
+        int x = CANVAS_WIDTH;
         int y = 0;
+        int index = 0;
 
         g2.setStroke(stroke);
         g2.setColor(BORDER_BOX_COLOUR);
         while (x > 0) {
             x -= COLUMN_SPACE + COLUMN_WIDTH;
-            g2.drawRect(x, y, COLUMN_WIDTH, CANVAS_HEIGHT);
-            while (y < CANVAS_HEIGHT) {
+            if (getTitleAtIndex(index).isEmpty()) {
+                // only draw the cells if there is not a title here
+                g2.drawRect(x, y, COLUMN_WIDTH, CANVAS_HEIGHT);
+                while (y < CANVAS_HEIGHT) {
 
-                g2.drawRect(x, y, COLUMN_WIDTH / 2, CELL_HEIGHT);
-                y += CELL_HEIGHT;
+                    g2.drawRect(x, y, COLUMN_WIDTH / 2, CELL_HEIGHT);
+                    y += CELL_HEIGHT;
+                }
             }
             y = 0;
-        }
-
-        KicksDocument doc = model.getDocument();
-        if (doc == null) {
-            // empty document
-            return;
+            index += CELLS_PER_COL;
         }
 
         g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
@@ -255,49 +255,8 @@ class CanvasPanel extends JPanel implements Printable {
         FontMetrics fm;
         g2.setColor(FOREGROUND_COLOUR);
 
-        String title = doc.getTitle();
-        if (title != null) {
-            char[] tchars = title.toCharArray();
-            if (tchars.length > 0) {
-                // draw the title
-                x = CANVAS_WIDTH - TITLE_WIDTH;
-                y = 0;
-
-                g2.setFont(titleFont);
-                fm = g2.getFontMetrics();
-
-                x += ((TITLE_WIDTH - fm.charWidth(tchars[0])) / 2);
-                y += TITLE_MARGIN + titleFont.getSize();
-                for (int i = 0; i < tchars.length; i++) {
-
-                    if (tchars[i] == 'ー') {
-                        // rotate the extension character...
-                        g2.rotate(Math.toRadians(90), x + 1 + (double) titleFont.getSize() / 2, y + 3 - (double) titleFont.getSize() / 2);
-                    }
-                    g2.drawChars(tchars, i, 1, x, y);
-                    if (tchars[i] == 'ー') {
-                        g2.rotate(Math.toRadians(-90), x + 1 + (double) titleFont.getSize() / 2, y + 3 - (double) titleFont.getSize() / 2);
-                    }
-                    y += titleFont.getSize();
-                }
-            }
-        }
-
-        Tuning tuning = doc.getTuning();
-        if (tuning != null) {
-            char[] tchars = tuning.getDisplayName().toCharArray();
-            if (tchars.length > 0) {
-                // draw the tuning
-                g2.setFont(sfont);
-                fm = g2.getFontMetrics();
-                x = CANVAS_WIDTH - TITLE_WIDTH;
-                x += ((TITLE_WIDTH - fm.charWidth(tchars[0])) / 2);
-                y = CANVAS_HEIGHT - TITLE_MARGIN - (sfont.getSize() * tchars.length);
-                for (int i = 0; i < tchars.length; i++) {
-                    g2.drawChars(tchars, i, 1, x, y);
-                    y += sfont.getSize();
-                }
-            }
+        for (Song song : doc.getSongs()) {
+            drawTitle(g2, song);
         }
 
         // draw the notes
@@ -382,6 +341,63 @@ class CanvasPanel extends JPanel implements Printable {
             }
             }
         }
+    }
+
+    private void drawTitle(Graphics2D g2, Song song) {
+        String title = song.getTitle();
+        FontMetrics fm;
+        int x;
+        int y;
+        if (title != null) {
+            char[] tchars = title.toCharArray();
+            if (tchars.length > 0) {
+                // draw the title
+                x = CANVAS_WIDTH - (COLUMN_WIDTH + COLUMN_SPACE) * ((song.getIndex() / CELLS_PER_COL) + 1);
+                y = 0;
+
+                g2.setFont(titleFont);
+                fm = g2.getFontMetrics();
+
+                x += ((COLUMN_WIDTH - fm.charWidth(tchars[0])) / 2);
+                y += TITLE_MARGIN + titleFont.getSize();
+                for (int i = 0; i < tchars.length; i++) {
+
+                    if (tchars[i] == 'ー') {
+                        // rotate the extension character...
+                        g2.rotate(Math.toRadians(90), x + 1 + (double) titleFont.getSize() / 2, y + 3 - (double) titleFont.getSize() / 2);
+                    }
+                    g2.drawChars(tchars, i, 1, x, y);
+                    if (tchars[i] == 'ー') {
+                        // stop rotating
+                        g2.rotate(Math.toRadians(-90), x + 1 + (double) titleFont.getSize() / 2, y + 3 - (double) titleFont.getSize() / 2);
+                    }
+                    y += titleFont.getSize();
+                }
+            }
+        }
+
+        Tuning tuning = song.getTuning();
+        if (tuning != null) {
+            char[] tchars = tuning.getDisplayName().toCharArray();
+            if (tchars.length > 0) {
+                // draw the tuning
+                g2.setFont(sfont);
+                fm = g2.getFontMetrics();
+                x = CANVAS_WIDTH - (COLUMN_WIDTH + COLUMN_SPACE) * ((song.getIndex() / CELLS_PER_COL) + 1);
+                x += ((COLUMN_WIDTH - fm.charWidth(tchars[0])) / 2);
+                y = CANVAS_HEIGHT - TITLE_MARGIN - (sfont.getSize() * tchars.length);
+                for (int i = 0; i < tchars.length; i++) {
+                    g2.drawChars(tchars, i, 1, x, y);
+                    y += sfont.getSize();
+                }
+            }
+        }
+    }
+
+    private Optional<Song> getTitleAtIndex(int index) {
+        return model.getDocument().getSongs().stream()
+                .filter(song -> index >= song.getIndex() && index < song.getIndex() + CELLS_PER_COL)
+                .findAny();
     }
 
     private void drawSelection(Graphics2D g2) {
@@ -554,7 +570,7 @@ class CanvasPanel extends JPanel implements Printable {
 
         // move to top right of note
         x += chw + 1;
-        y -= fm.getFont().getSize() - 2; // -1 to move it down towards the note
+        y -= fm.getFont().getSize() - 2; // -2 to move it down towards the note
 
         switch (n.getUtou()) {
             case KAKI -> {
@@ -582,7 +598,7 @@ class CanvasPanel extends JPanel implements Printable {
 
     private int x(int index) {
         int col = index / CELLS_PER_COL;
-        return CANVAS_WIDTH - TITLE_WIDTH - (COLUMN_SPACE + COLUMN_WIDTH) - (COLUMN_SPACE + COLUMN_WIDTH) * col;
+        return CANVAS_WIDTH - (COLUMN_SPACE + COLUMN_WIDTH) - (COLUMN_SPACE + COLUMN_WIDTH) * col;
     }
 
     private int y(int index, int offset, FontMetrics fm) {
@@ -644,6 +660,22 @@ class CanvasPanel extends JPanel implements Printable {
     private boolean moveCursor(int ticks, boolean selecting) {
         int cursorTicks = cursorIndex * Locatable.CELL_TICKS + cursorOffset;
         cursorTicks += ticks;
+        // find the next column that does not contain a title - need to use index rather than ticks
+        int index = cursorTicks / Locatable.CELL_TICKS;
+        int offset = cursorTicks % Locatable.CELL_TICKS;
+        if (offset == 0) {
+            index--;
+        }
+        while (getTitleAtIndex(index).isPresent()) {
+            // skip over a title by adding/subtracting a whole column of ticks
+            int sign = (int) Math.signum(ticks);
+            cursorTicks += sign * Locatable.CELL_TICKS * CELLS_PER_COL;
+            if (cursorTicks <= 0) {
+                // edge case - 0 is usually allowed, but not if there is a title there!
+                return false;
+            }
+            index += sign * CELLS_PER_COL;
+        }
         if (cursorTicks < 0 || cursorTicks > CELLS_PER_COL * COLUMNS_PER_PAGE * Locatable.CELL_TICKS) {
             // cursor would move out of bounds so don't move cursor
             return false;
@@ -680,7 +712,7 @@ class CanvasPanel extends JPanel implements Printable {
     void setCursorWithOnNote(int index, int offset, boolean onNote) {
         handleSelection(index, offset, false); // clear the selection
         setCursorOnNote(onNote);
-        setCursor(index, offset);
+        setCursor(findIndexWithoutTitle(index), offset);
     }
 
     private void setCursorOnNote(boolean newValue) {
@@ -733,7 +765,36 @@ class CanvasPanel extends JPanel implements Printable {
     }
 
     void initialiseCursor() {
-        setCursor(0, Locatable.CELL_TICKS / 2);
+        initialiseCursor(0);
+    }
+
+    public void initialiseCursor(int startIndex) {
+        // set the cursor on the first column without a title
+        setCursor(findIndexWithoutTitle(startIndex), Locatable.CELL_TICKS / 2);
+    }
+
+    private int findIndexWithoutTitle(int startIndex) {
+        for (int index = startIndex; index < CELLS_PER_COL * COLUMNS_PER_PAGE; index += CELLS_PER_COL) {
+            if (getTitleAtIndex(index).isEmpty()) {
+                return index;
+            }
+        }
+        // this should not happen ;-)
+        return -1;
+    }
+
+    /**
+     *
+     * @return the index at the top of the column that the cursor is currently in
+     * or -1 if title is not allowed in column.
+     */
+    int getCursorColumnIndex() {
+        int col = cursorIndex / CELLS_PER_COL;
+        if (col >= COLUMNS_PER_PAGE - 1) {
+            // don't allow title in last column
+            return -1;
+        }
+        return col * CELLS_PER_COL;
     }
 
     boolean isCursorOnNote() {
@@ -852,6 +913,11 @@ class CanvasPanel extends JPanel implements Printable {
         return range;
     }
 
+    private void editSongDetails(Song song) {
+        SongHeaderEditor sde = new SongHeaderEditor();
+        sde.edit(song, cursorIndex, cursorOffset);
+    }
+
     class ML extends MouseAdapter implements MouseListener {
         @Override
         public void mouseReleased(MouseEvent e) {
@@ -866,27 +932,13 @@ class CanvasPanel extends JPanel implements Printable {
                 return;
             }
 
-            x = CANVAS_WIDTH - x;
+            x = CANVAS_WIDTH - x - COLUMN_SPACE;
             //Which column?
             int col = x / (COLUMN_WIDTH + COLUMN_SPACE);
-            if (col < 0 || col > COLUMNS_PER_PAGE) {
+            if (col < 0 || col >= COLUMNS_PER_PAGE) {
                 e.consume();
                 return;
             }
-
-            /*
-             * Handle titles.
-             * TODO: This should be generic and check the document to see whether there is a title column
-             * at this place.
-             */
-            if (col == 0) {
-                //invoke title edit
-                ActionManager.getAction(Title.class).actionPerformed(null);
-                e.consume();
-                return;
-            }
-            // -1 to allow for the title column.
-            col--;
 
             // How far into the column?
             int colx = x % (COLUMN_WIDTH + COLUMN_SPACE);
@@ -900,7 +952,22 @@ class CanvasPanel extends JPanel implements Printable {
             int cells = y / CELL_HEIGHT;
             int index = col * CELLS_PER_COL + cells;
             int offset = (y % CELL_HEIGHT) / (CELL_HEIGHT / Locatable.CELL_TICKS);
+
+            /*
+             * Handle titles.
+             * TODO: This should be generic and check the document to see whether there is a title column
+             * at this place.
+             */
+            Optional<Song> song = getTitleAtIndex(index);
+            if (song.isPresent()) {
+                //invoke title edit
+                editSongDetails(song.get());
+                e.consume();
+                return;
+            }
+
             setCursorWithOnNote(index, offset, onNote);
         }
     }
+
 }

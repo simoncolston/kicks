@@ -7,7 +7,9 @@ import org.colston.kicks.actions.Copy;
 import org.colston.kicks.actions.Delete;
 import org.colston.kicks.actions.Paste;
 import org.colston.kicks.actions.Redo;
-import org.colston.kicks.actions.Title;
+import org.colston.kicks.actions.SongHeaderAdd;
+import org.colston.kicks.actions.SongHeaderDelete;
+import org.colston.kicks.actions.SongHeaderEdit;
 import org.colston.kicks.actions.Undo;
 import org.colston.kicks.document.KicksDocument;
 import org.colston.kicks.document.KicksDocumentEditor;
@@ -16,6 +18,7 @@ import org.colston.kicks.document.Locatable;
 import org.colston.kicks.document.Lyric;
 import org.colston.kicks.document.Note;
 import org.colston.kicks.document.Repeat;
+import org.colston.kicks.document.Song;
 import org.colston.kicks.document.Utou;
 
 import javax.swing.*;
@@ -34,6 +37,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 class CanvasControl implements Canvas {
 
@@ -363,6 +367,38 @@ class CanvasControl implements Canvas {
         canvasPanel.setAutoCursor(autoCursor);
     }
 
+    @Override
+    public void editSongHeader() {
+        int index = canvasPanel.getCursorIndex();
+        Optional<Song> song = model.getEditor().findSongBeforeIndex(index);
+        if (song.isEmpty()) {
+            return;
+        }
+        SongHeaderEditor sde = new SongHeaderEditor();
+        sde.edit(song.get(), canvasPanel.getCursorIndex(), canvasPanel.getCursorOffset());
+    }
+
+    @Override
+    public void addSongHeader() {
+        int index = canvasPanel.getCursorColumnIndex();
+        if (index == -1) {
+            // column not valid to receive song header
+            return;
+        }
+        SongHeaderEditor sde = new SongHeaderEditor();
+        sde.edit(new Song(index), canvasPanel.getCursorIndex(), canvasPanel.getCursorOffset());
+    }
+
+    @Override
+    public void removeSongHeader() {
+        int index = canvasPanel.getCursorIndex();
+        Optional<Song> song = model.getEditor().findSongBeforeIndex(index);
+        if (song.isEmpty()) {
+            return;
+        }
+        model.getEditor().removeSong(song.get().getIndex(), canvasPanel.getCursorIndex(), canvasPanel.getCursorOffset());
+    }
+
     private static class CanvasActionProvider implements ActionProvider {
         private final List<Action> editActions = new ArrayList<>();
         private final List<Action> documentActions = new ArrayList<>();
@@ -373,7 +409,9 @@ class CanvasControl implements Canvas {
             editActions.add(ActionManager.getAction(Delete.class));
             editActions.add(ActionManager.getAction(Undo.class));
             editActions.add(ActionManager.getAction(Redo.class));
-            documentActions.add(ActionManager.getAction(Title.class));
+            documentActions.add(ActionManager.getAction(SongHeaderAdd.class));
+            documentActions.add(ActionManager.getAction(SongHeaderEdit.class));
+            documentActions.add(ActionManager.getAction(SongHeaderDelete.class));
         }
 
         @Override

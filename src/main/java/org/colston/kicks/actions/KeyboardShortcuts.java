@@ -28,7 +28,7 @@ public class KeyboardShortcuts extends AbstractAction {
     public void actionPerformed(ActionEvent e) {
 
         JDialog dialog = new JDialog(KicksApp.frame(),
-                Messages.get(Title.class, "keyboard.shortcuts.dialog.title"), true);
+                Messages.get(KeyboardShortcuts.class, "keyboard.shortcuts.dialog.title"), true);
         JPanel content = new JPanel(new BorderLayout());
         content.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 

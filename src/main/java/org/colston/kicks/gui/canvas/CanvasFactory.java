@@ -2,6 +2,7 @@ package org.colston.kicks.gui.canvas;
 
 import org.colston.kicks.Settings;
 import org.colston.kicks.document.KicksDocument;
+import org.colston.kicks.document.Song;
 import org.colston.kicks.gui.util.JapaneseTextFocusListener;
 
 import javax.swing.*;
@@ -34,7 +35,7 @@ public final class CanvasFactory {
         InputComponent inputComponent = new InputComponent(canvas, model);
 
         CanvasControl control = new CanvasControl(canvasContainer, canvas, model, inputComponent);
-        control.setDocument(new KicksDocument());
+        control.setDocument(new KicksDocument(new Song(0)));
 
         /*
          * Initialise and set up actions on components.

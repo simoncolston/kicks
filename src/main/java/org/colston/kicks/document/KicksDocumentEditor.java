@@ -14,6 +14,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.BiConsumer;
 
 /**
@@ -24,6 +25,12 @@ public class KicksDocumentEditor {
     private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
     private final EventListenerList listeners = new EventListenerList();
     private final Comparator<Locatable> comparator = new LocatableComparator();
+    private final Comparator<Song> songComparator = new Comparator<Song>() {
+        @Override
+        public int compare(Song o1, Song o2) {
+            return o1.getIndex() - o2.getIndex();
+        }
+    };
     private final Key key = new Key();
     private KicksDocument doc;
 
@@ -36,6 +43,11 @@ public class KicksDocumentEditor {
     }
 
     private void add(KicksDocument document) {
+        if (!document.getSongs().isEmpty()) {
+            int listIndex = Collections.binarySearch(doc.getSongs(), document.getSongs().getFirst(), songComparator);
+            listIndex = -listIndex - 1;
+            doc.getSongs().addAll(listIndex, document.getSongs());
+        }
         if (!document.getNotes().isEmpty()) {
             int listIndex = Collections.binarySearch(doc.getNotes(), document.getNotes().getFirst(), comparator);
             listIndex = -listIndex - 1;
@@ -54,6 +66,7 @@ public class KicksDocumentEditor {
     }
 
     private void remove(KicksDocument document) {
+        doc.getSongs().removeAll(document.getSongs());
         doc.getNotes().removeAll(document.getNotes());
         doc.getRepeats().removeAll(document.getRepeats());
         doc.getLyrics().removeAll(document.getLyrics());
@@ -80,15 +93,6 @@ public class KicksDocumentEditor {
     public void updateVersion() {
         String version = dateFormat.format(new Date());
         doc.getProperties().setVersion(version);
-    }
-
-    public void setTranscription(String transcription) {
-        Properties properties = doc.getProperties();
-        UndoableEdit edit = new SetEdit<>(properties, properties.getTranscription(), transcription, Properties::setTranscription,
-                Messages.get(getClass(), "undo.set.transcription"));
-        properties.setTranscription(transcription);
-        fireUndoableEditHappened(new UndoableEditEvent(this, edit));
-        fireDocumentUpdated();
     }
 
     public void addNote(Note note) {
@@ -292,7 +296,46 @@ public class KicksDocumentEditor {
         }
     }
 
+    public void addSong(Song song, int cursorIndex, int cursorOffset) {
+        List<Song> songs = doc.getSongs();
+        UndoableEdit edit;
+        int listIndex = Collections.binarySearch(songs, song, songComparator);
+        if (listIndex < 0) {
+            // remove any existing stuff, and keep for undo
+            LocatableRange range = new SimpleLocatableRange(
+                    song.getIndex(), 0,
+                    song.getIndex() + doc.getProperties().getLayout().cellsPerColumn, 0);
+            KicksDocument removed = removeRange(range);
+            // add a document containing just the song
+            KicksDocument added = new KicksDocument();
+            added.getSongs().add(song);
+            add(added);
+            edit = new ReplaceDocumentEdit(cursorIndex, cursorOffset, added, removed,
+                    Messages.get(getClass(), "undo.add.song"));
+        } else {
+            Song s = songs.set(listIndex, song);
+            edit = new ReplaceEdit<>(cursorIndex, cursorOffset, songs, listIndex, s,
+                    Messages.get(getClass(), "undo.replace.song"));
+        }
+        fireUndoableEditHappened(new UndoableEditEvent(this, edit));
+        fireDocumentUpdated(cursorIndex, cursorOffset);
+    }
+
+    public void removeSong(int index, int cursorIndex, int cursorOffset) {
+        List<Song> songs = doc.getSongs();
+        Song song = new Song(index);
+        int listIndex = Collections.binarySearch(songs, song, songComparator);
+        if (listIndex >= 0) {
+            song = songs.remove(listIndex);
+            UndoableEdit edit = new RemoveEdit<>(cursorIndex, cursorOffset, songs, listIndex, song,
+                    Messages.get(getClass(), "undo.remove.song"));
+            fireUndoableEditHappened(new UndoableEditEvent(this, edit));
+            fireDocumentUpdated();
+        }
+    }
+
     public KicksDocument copy(LocatableRange range) {
+        // TODO: songs
         List<Note> notes = retrieveFromList(doc.getNotes(), range, false);
         List<Repeat> repeats = retrieveFromList(doc.getRepeats(), range, false);
         List<Lyric> lyrics = retrieveFromList(doc.getLyrics(), range, false);
@@ -316,7 +359,7 @@ public class KicksDocumentEditor {
         highest = findHighest(highest, doc.getLyrics());
         KicksDocument removed = removeRange(new SimpleLocatableRange(lowest.getIndex(), lowest.getOffset(), highest.getIndex(), highest.getOffset()));
         add(doc);
-        UndoableEdit edit = new PasteDocumentEdit(cursorIndex, cursorOffset, doc, removed,
+        UndoableEdit edit = new ReplaceDocumentEdit(cursorIndex, cursorOffset, doc, removed,
                 Messages.get(getClass(), "undo.paste"));
         fireUndoableEditHappened(new UndoableEditEvent(this, edit));
         fireDocumentUpdated();
@@ -366,6 +409,7 @@ public class KicksDocumentEditor {
     }
 
     public KicksDocument removeRange(LocatableRange range) {
+        // TODO: songs
         List<Note> removedNotes = retrieveFromList(doc.getNotes(), range, true);
         List<Repeat> removedRepeats = retrieveFromList(doc.getRepeats(), range, true);
         List<Lyric> removedLyrics = retrieveFromList(doc.getLyrics(), range, true);
@@ -379,6 +423,15 @@ public class KicksDocumentEditor {
             return kicksDoc;
         }
         return null;
+    }
+
+    public Optional<Song> findSongBeforeIndex(int index) {
+        for (Song song : doc.getSongs().reversed()) {
+            if (song.getIndex() < index) {
+                return Optional.of(song);
+            }
+        }
+        return Optional.empty();
     }
 
     public Note findPreviousNote(int index, int offset) {
@@ -541,30 +594,6 @@ public class KicksDocumentEditor {
         }
     }
 
-    private class RemoveDocumentEdit extends KicksDocumentEdit {
-
-        private final KicksDocument document;
-
-        public RemoveDocumentEdit(int index, int offset, KicksDocument document, String presentationName) {
-            super(index, offset, presentationName);
-            this.document = document;
-        }
-
-        @Override
-        public void undo() throws CannotUndoException {
-            super.undo();
-            add(document);
-            fireDocumentUpdated(getIndex(), getOffset());
-        }
-
-        @Override
-        public void redo() throws CannotRedoException {
-            super.redo();
-            remove(document);
-            fireDocumentUpdated();
-        }
-    }
-
     private class SetEdit<T, V> extends KicksDocumentEdit {
         private final T element;
         private final V oldValue;
@@ -611,12 +640,36 @@ public class KicksDocumentEditor {
         }
     }
 
-    private class PasteDocumentEdit extends KicksDocumentEdit {
+    private class RemoveDocumentEdit extends KicksDocumentEdit {
+
+        private final KicksDocument document;
+
+        public RemoveDocumentEdit(int index, int offset, KicksDocument document, String presentationName) {
+            super(index, offset, presentationName);
+            this.document = document;
+        }
+
+        @Override
+        public void undo() throws CannotUndoException {
+            super.undo();
+            add(document);
+            fireDocumentUpdated(getIndex(), getOffset());
+        }
+
+        @Override
+        public void redo() throws CannotRedoException {
+            super.redo();
+            remove(document);
+            fireDocumentUpdated();
+        }
+    }
+
+    private class ReplaceDocumentEdit extends KicksDocumentEdit {
 
         private final KicksDocument added;
         private final KicksDocument removed;
 
-        public PasteDocumentEdit(int index, int offset, KicksDocument added, KicksDocument removed, String presentationName) {
+        public ReplaceDocumentEdit(int index, int offset, KicksDocument added, KicksDocument removed, String presentationName) {
             super(index, offset, presentationName);
             this.added = added;
             this.removed = removed;
@@ -639,7 +692,7 @@ public class KicksDocumentEditor {
                 remove(removed);
             }
             add(added);
-            fireDocumentUpdated();
+            fireDocumentUpdated(getIndex(), getOffset());
         }
     }
 

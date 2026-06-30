@@ -2,8 +2,16 @@ package org.colston.kicks.document;
 
 import jakarta.xml.bind.annotation.*;
 
+import java.util.Objects;
+
 @XmlAccessorType(XmlAccessType.NONE)
-@XmlType
+@XmlType(
+        propOrder = {
+                "title",
+                "tuning",
+                "tempo",
+                "transcription"
+        })
 public class Song {
     @XmlAttribute
     private int index = 0;
@@ -13,6 +21,8 @@ public class Song {
     private Tuning tuning;
     @XmlElement
     private String tempo;
+    @XmlElement
+    private String transcription;
 
     @SuppressWarnings("unused")
     private Song() {
@@ -50,40 +60,30 @@ public class Song {
         this.tempo = tempo;
     }
 
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + index;
-        result = prime * result + ((tempo == null) ? 0 : tempo.hashCode());
-        result = prime * result + ((title == null) ? 0 : title.hashCode());
-        result = prime * result + ((tuning == null) ? 0 : tuning.hashCode());
-        return result;
+    public String getTranscription() {
+        return transcription;
+    }
+
+    public void setTranscription(String transcription) {
+        this.transcription = transcription;
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        Song other = (Song) obj;
-        if (index != other.index)
-            return false;
-        if (tempo == null) {
-            if (other.tempo != null)
-                return false;
-        } else if (!tempo.equals(other.tempo))
-            return false;
-        if (title == null) {
-            if (other.title != null)
-                return false;
-        } else if (!title.equals(other.title))
-            return false;
-        if (tuning != other.tuning)
-            return false;
-        return true;
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Song song = (Song) o;
+        return index == song.index && Objects.equals(title, song.title) && tuning == song.tuning
+                && Objects.equals(tempo, song.tempo) && Objects.equals(transcription, song.transcription);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = index;
+        result = 31 * result + Objects.hashCode(title);
+        result = 31 * result + Objects.hashCode(tuning);
+        result = 31 * result + Objects.hashCode(tempo);
+        result = 31 * result + Objects.hashCode(transcription);
+        return result;
     }
 }

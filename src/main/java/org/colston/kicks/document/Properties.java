@@ -9,15 +9,13 @@ import java.util.Objects;
                 "name",
                 "description",
                 "version",
-                "layout",
-                "transcription"
+                "layout"
         })
 public class Properties {
     private String name;
     private String description;
     private String version;
     private Layout layout = Layout.LANDSCAPE_11COL_12CELL;
-    private String transcription;
 
     public String getName() {
         return name;
@@ -51,14 +49,6 @@ public class Properties {
         this.layout = l;
     }
 
-    public String getTranscription() {
-        return transcription;
-    }
-
-    public void setTranscription(String transcription) {
-        this.transcription = transcription;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
@@ -66,12 +56,11 @@ public class Properties {
         return Objects.equals(name, that.name)
                 && Objects.equals(description, that.description)
                 && Objects.equals(version, that.version)
-                && layout == that.layout
-                && Objects.equals(transcription, that.transcription);
+                && layout == that.layout;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, description, version, layout, transcription);
+        return Objects.hash(name, description, version, layout);
     }
 }

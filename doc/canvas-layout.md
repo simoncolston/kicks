@@ -1,9 +1,9 @@
 # Canvas Layout
 
 
-    COLUMNS_PER_PAGE = 11 (Including default title)
+    COLUMNS_PER_PAGE = 11 (Columns can be cells or song header)
     CELLS_PER_COLUMN = 12
-    CELL_TICKS       =  8 (Vertical sub-divisions of cell)
+    CELL_TICKS       = 12 (Vertical sub-divisions of cell)
                                                                 
      COLUMN_WIDTH = 56               COLUMN_SPACE = 9          |
      ◄-------►                       --►|  |◄--                ▼
@@ -36,6 +36,6 @@
     ||   |   |  |   |   |       |   |   |  |   |   |  .       .
     ▼+---+---+  +---+---+  ...  +---+---+  +---+---+  +...+...+
      ◄-------------------------------------------------------►▲◄---►
-                     CANVAS_WIDTH = 697                       | BORDER_WIDTH = 20
+                     CANVAS_WIDTH = 715                       | BORDER_WIDTH = 20
                                                               ▼ 
     

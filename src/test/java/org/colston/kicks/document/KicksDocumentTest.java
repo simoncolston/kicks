@@ -58,7 +58,6 @@ class KicksDocumentTest {
         doc.getProperties().setName("asadoya");
         doc.getProperties().setDescription("This is a song about a beautiful girl");
         doc.getProperties().setVersion("V1");
-        doc.getProperties().setTranscription("China Sadao");
 
         Song song = new Song(0);
         doc.getSongs().add(song);
@@ -66,6 +65,7 @@ class KicksDocumentTest {
         song.setTitle("安里屋ユンタ");
         song.setTuning(Tuning.HONCHOUSHI);
         song.setTempo("100");
+        song.setTranscription("China Sadao");
 
         Note note = new Note(0, 8, 1, 0);
         doc.getNotes().add(note);
@@ -92,6 +92,6 @@ class KicksDocumentTest {
     }
 
     private KicksDocument createMinimalDocument() {
-        return new KicksDocument();
+        return new KicksDocument(new Song(0));
     }
 }

@@ -1,8 +1,7 @@
-package org.colston.kicks.actions;
+package org.colston.kicks.gui.canvas;
 
-import org.colston.gui.actions.ActionManager;
 import org.colston.kicks.KicksApp;
-import org.colston.kicks.document.KicksDocument;
+import org.colston.kicks.document.Song;
 import org.colston.kicks.document.Tuning;
 import org.colston.kicks.gui.util.JapaneseTextFocusListener;
 import org.colston.lib.i18n.Messages;
@@ -10,45 +9,35 @@ import org.colston.utils.SpringUtilities;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
 
-public class Title extends AbstractAction {
-    public static final String ACTION_COMMAND = "action.title";
+class SongHeaderEditor {
 
-    private static final String MESSAGE_RESOURCE_PREFIX = "title";
     private JDialog dialog;
 
-    public Title() {
-        putValue(ACTION_COMMAND_KEY, ACTION_COMMAND);
-        putValue(ActionManager.MESSAGE_RESOURCE_PREFIX_KEY, MESSAGE_RESOURCE_PREFIX);
-    }
+    void edit(Song song, int cursorIndex, int cursorOffset) {
+        dialog = new JDialog(KicksApp.frame(), Messages.get(SongHeaderEditor.class, "song.header.dialog.title"), true);
 
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        KicksDocument doc = KicksApp.canvas().getDocument();
-        dialog = new JDialog(KicksApp.frame(), Messages.get(Title.class, "title.dialog.title"), true);
-
-        JTextField titleText = new JTextField(doc.getTitle(), 30);
+        JTextField titleText = new JTextField(song.getTitle(), 30);
         titleText.addFocusListener(new JapaneseTextFocusListener());
         Tuning[] tunings = Tuning.values();
         JComboBox<Tuning> tuningCombo = new JComboBox<>(tunings);
-        tuningCombo.setSelectedItem((doc.getTuning() != null) ? doc.getTuning() : Tuning.HONCHOUSHI);
+        tuningCombo.setSelectedItem((song.getTuning() != null) ? song.getTuning() : Tuning.HONCHOUSHI);
         tuningCombo.setRenderer(new TuningListCellRenderer());
-        JTextField transcriptionText = new JTextField(doc.getProperties().getTranscription(), 30);
+        JTextField transcriptionText = new JTextField(song.getTranscription(), 30);
 
         JPanel inputPanel = new JPanel(new SpringLayout());
         inputPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        JLabel label = new JLabel(Messages.get(Title.class, "title.dialog.title.prompt"));
+        JLabel label = new JLabel(Messages.get(SongHeaderEditor.class, "song.header.dialog.title.prompt"));
         inputPanel.add(label);
         label.setLabelFor(titleText);
         inputPanel.add(titleText);
 
-        label = new JLabel(Messages.get(Title.class, "title.dialog.tuning.prompt"));
+        label = new JLabel(Messages.get(SongHeaderEditor.class, "song.header.dialog.tuning.prompt"));
         inputPanel.add(label);
         label.setLabelFor(tuningCombo);
         inputPanel.add(tuningCombo);
 
-        label = new JLabel(Messages.get(Title.class, "title.dialog.transcription.prompt"));
+        label = new JLabel(Messages.get(SongHeaderEditor.class, "song.header.dialog.transcription.prompt"));
         inputPanel.add(label);
         label.setLabelFor(transcriptionText);
         inputPanel.add(transcriptionText);
@@ -59,18 +48,19 @@ public class Title extends AbstractAction {
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
         buttonPanel.setBorder(BorderFactory.createEmptyBorder(0, 5, 5, 5));
         buttonPanel.add(Box.createHorizontalGlue());
-        JButton b = new JButton(Messages.get(Title.class, "title.dialog.ok"));
+        JButton b = new JButton(Messages.get(SongHeaderEditor.class, "song.header.dialog.ok"));
         b.addActionListener(actionEvent -> {
-            // TODO: These should really be one edit!
-            KicksApp.canvas().getEditor().setTitle(titleText.getText());
-            KicksApp.canvas().getEditor().setTuning((Tuning) tuningCombo.getSelectedItem());
-            KicksApp.canvas().getEditor().setTranscription(transcriptionText.getText());
+            Song s = new Song(song.getIndex());
+            s.setTitle(titleText.getText());
+            s.setTuning((Tuning) tuningCombo.getSelectedItem());
+            s.setTranscription(transcriptionText.getText());
+            KicksApp.canvas().getEditor().addSong(s, cursorIndex, cursorOffset);
             dialog.setVisible(false);
         });
         buttonPanel.add(b);
         dialog.getRootPane().setDefaultButton(b);
         buttonPanel.add(Box.createRigidArea(new Dimension(10, 0)));
-        b = new JButton(Messages.get(Title.class, "title.dialog.cancel"));
+        b = new JButton(Messages.get(SongHeaderEditor.class, "song.header.dialog.cancel"));
         b.addActionListener(actionEvent -> dialog.setVisible(false));
         buttonPanel.add(b);
 
@@ -83,6 +73,7 @@ public class Title extends AbstractAction {
         dialog.setLocationRelativeTo(KicksApp.frame());
 
         dialog.setVisible(true);
+
     }
 
     private static class TuningListCellRenderer extends DefaultListCellRenderer {

@@ -29,8 +29,10 @@ import java.util.List;
                 })
 public class KicksDocument {
 
+    public final static int CURRENT_VERSION = 2;
+
     @XmlAttribute(required = true)
-    private final int version = 1;
+    private final int version = CURRENT_VERSION;
 
     @XmlElement(required = true)
     private final Properties properties = new Properties();
@@ -56,7 +58,10 @@ public class KicksDocument {
     private final List<Lyric> lyrics = new ArrayList<>();
 
     public KicksDocument() {
-        songs.add(new Song(0));
+    }
+
+    public KicksDocument(Song song) {
+        songs.add(song);
     }
 
     public Properties getProperties() {
@@ -97,20 +102,12 @@ public class KicksDocument {
         return off >= 0 ? lyrics.get(off) : null;
     }
 
-    public String getTitle() {
-        Song song = songs.getFirst();
-        return song.getTitle();
-    }
-
-    public Tuning getTuning() {
-        return songs.getFirst().getTuning();
-    }
-
     public String getTranscription() {
-        return properties.getTranscription();
+        Song song = songs.getFirst();
+        return song == null ? null : song.getTranscription();
     }
 
-    public String getVersion() {
+    public String getDocumentVersion() {
         return properties.getVersion();
     }
 

@@ -53,6 +53,12 @@ public interface Canvas {
 
     void setFinger(int finger);
 
+    void editSongHeader();
+
+    void addSongHeader();
+
+    void removeSongHeader();
+
     enum AutoCursor {
         OFF, HALF, ONE
     }
