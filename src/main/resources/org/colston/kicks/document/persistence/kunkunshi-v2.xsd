@@ -17,9 +17,9 @@
                     </xs:complexType>
                 </xs:element>
 
-                <xs:element name="songs">
+                <xs:element name="songs" minOccurs="0">
                     <xs:complexType>
-                        <xs:sequence maxOccurs="unbounded">
+                        <xs:sequence minOccurs="0" maxOccurs="unbounded">
                             <xs:element name="song" type="song"/>
                         </xs:sequence>
                     </xs:complexType>

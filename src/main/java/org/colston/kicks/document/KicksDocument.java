@@ -103,8 +103,7 @@ public class KicksDocument {
     }
 
     public String getTranscription() {
-        Song song = songs.getFirst();
-        return song == null ? null : song.getTranscription();
+        return songs.isEmpty() ? null : songs.getFirst().getTranscription();
     }
 
     public String getDocumentVersion() {
