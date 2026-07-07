@@ -5,6 +5,7 @@ import org.colston.gui.actions.ActionProvider;
 import org.colston.gui.actions.ActionProviders;
 import org.colston.kicks.actions.About;
 import org.colston.kicks.actions.ExportAsPDF;
+import org.colston.kicks.actions.ImportKicksABC;
 import org.colston.kicks.actions.KeyboardShortcuts;
 import org.colston.kicks.actions.New;
 import org.colston.kicks.actions.Open;
@@ -17,6 +18,8 @@ import org.colston.kicks.actions.ZoomOut;
 import org.colston.kicks.actions.ZoomReset;
 import org.colston.kicks.document.KicksDocument;
 import org.colston.kicks.document.Song;
+import org.colston.kicks.document.importer.Importer;
+import org.colston.kicks.document.importer.ImporterFactory;
 import org.colston.kicks.document.persistence.DocumentStore;
 import org.colston.kicks.gui.canvas.Canvas;
 import org.colston.kicks.gui.canvas.CanvasFactory;
@@ -43,6 +46,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -391,7 +395,8 @@ public class KicksApp extends GuiApp {
         if (!file.exists() || !file.canRead()) {
             throw new Exception("Cannot read file: " + file.getAbsolutePath());
         }
-        return documentStore().load(file);
+        Optional<Importer> importer = ImporterFactory.getImporter(file);
+        return importer.isPresent() ? importer.get().importFile(file) : documentStore().load(file);
     }
 
     public static void setDocument(File file, KicksDocument document) {
@@ -414,6 +419,7 @@ public class KicksApp extends GuiApp {
             fileActions.add(ActionManager.getAction(Open.class));
             fileActions.add(ActionManager.getAction(Save.class));
             fileActions.add(ActionManager.getAction(SaveAs.class));
+            fileActions.add(ActionManager.getAction(ImportKicksABC.class));
             fileActions.add(ActionManager.getAction(ExportAsPDF.class));
 //            fileActions.add(ActionManager.getAction(Print.class));
             fileActions.add(ActionManager.getAction(SettingsAction.class));

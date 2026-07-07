@@ -17,7 +17,7 @@ TODO
   - [x] **1** Slurs and chords
   - [ ]   3   Repeats with different head styles
   - [ ]   3   Multiple pages  (Put canvas panels into vertical box layout)
-  - [ ]   3   Multiple songs per document ('song' element replaces a column on the canvas)
+  - [x]   3   Multiple songs per document ('song' element replaces a column on the canvas)
   - [ ]   3   'new line' element moves next note to top of next column
   - [ ]   3   'new page' element moves next note to top of next page
   - [x] **1** Change the file extension to .kicks
@@ -29,6 +29,9 @@ TODO
   - [x] **1** Use JAXB for saving/loading document to XML
   - [ ]   3   Vocal notes
   - [ ]   4   Text (in callouts?)
+  - [ ]   4   `kicksabc` script import
+  - [ ]   4   Implement `M:` (meter/rhythm) command for `kicksabc` - `simple` or `compound` rhythm
+  - [ ]   2   furigana on song title
 
 #### View
   - [x]   2   Zoom
@@ -68,6 +71,4 @@ TODO
   - [ ]   2   Settings stored using Preferences (or ~/.kicks file ?)
 
 ##### Build
-  - [x] **1** Upgrade to Java 17
-  - [x] **1** Upgrade to Java 21
   - [ ] **1** Create executable
