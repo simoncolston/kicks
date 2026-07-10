@@ -31,7 +31,7 @@ public interface Locatable {
         return getIndex() == l.getIndex() && getOffset() == l.getOffset();
     }
 
-    default String asString() {
+    default String locationAsString() {
         return "Locatable (index: " + getIndex() + ", offset: " + getOffset() + ")";
     }
 }

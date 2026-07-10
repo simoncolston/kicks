@@ -14,11 +14,7 @@ import java.util.Objects;
                 "slur",
                 "finger"
         })
-public class Note implements Locatable {
-    @XmlAttribute
-    private int index;
-    @XmlAttribute
-    private int offset;
+public class Note extends AbstractLocatable {
     @XmlAttribute
     private int string;
     @XmlAttribute
@@ -39,23 +35,13 @@ public class Note implements Locatable {
 
     @SuppressWarnings("unused")
     private Note() {
+        super();
     }
 
     public Note(int index, int offset, int string, int placement) {
-        this.index = index;
-        this.offset = offset;
+        super(index, offset);
         this.string = string;
         this.placement = placement;
-    }
-
-    @Override
-    public int getIndex() {
-        return index;
-    }
-
-    @Override
-    public int getOffset() {
-        return offset;
     }
 
     public int getString() {
@@ -115,23 +101,26 @@ public class Note implements Locatable {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) return false;
-        Note note = (Note) o;
-        return index == note.index && offset == note.offset && string == note.string && placement == note.placement
-                && Objects.equals(small, note.small) && accidental == note.accidental && utou == note.utou
-                && Objects.equals(chord, note.chord) && Objects.equals(slur, note.slur)
-                && Objects.equals(finger, note.finger);
+    public final boolean equals(Object o) {
+        if (!(o instanceof Note note)) return false;
+
+        return super.equals(o)
+                && string == note.string && placement == note.placement && Objects.equals(small, note.small)
+                && accidental == note.accidental && utou == note.utou && Objects.equals(chord, note.chord)
+                && Objects.equals(slur, note.slur) && Objects.equals(finger, note.finger);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(index, offset, string, placement, small, accidental, utou, chord, slur, finger);
-    }
-
-    @Override
-    public void move(int indexDelta, int offsetDelta) {
-        this.index += indexDelta;
-        this.offset += offsetDelta;
+        int result = super.hashCode();
+        result = 31 * result + string;
+        result = 31 * result + placement;
+        result = 31 * result + Objects.hashCode(small);
+        result = 31 * result + Objects.hashCode(accidental);
+        result = 31 * result + Objects.hashCode(utou);
+        result = 31 * result + Objects.hashCode(chord);
+        result = 31 * result + Objects.hashCode(slur);
+        result = 31 * result + Objects.hashCode(finger);
+        return result;
     }
 }

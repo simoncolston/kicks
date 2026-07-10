@@ -16,232 +16,232 @@
         </song>
     </songs>
     <notes>
-        <note index="12" offset="6" string="1" placement="0"/>
-        <note index="13" offset="6" string="1" placement="1"/>
-        <note index="14" offset="6" string="1" placement="2"/>
-        <note index="15" offset="6" string="1" placement="3">
+        <note string="1" placement="0" index="12" offset="6"/>
+        <note string="1" placement="1" index="13" offset="6"/>
+        <note string="1" placement="2" index="14" offset="6"/>
+        <note string="1" placement="3" index="15" offset="6">
             <chord>true</chord>
         </note>
-        <note index="16" offset="6" string="1" placement="4">
+        <note string="1" placement="4" index="16" offset="6">
             <chord>false</chord>
         </note>
-        <note index="17" offset="6" string="1" placement="5">
+        <note string="1" placement="5" index="17" offset="6">
             <accidental>FLAT</accidental>
         </note>
-        <note index="18" offset="6" string="1" placement="6">
+        <note string="1" placement="6" index="18" offset="6">
             <chord>true</chord>
         </note>
-        <note index="19" offset="6" string="1" placement="7"/>
-        <note index="20" offset="6" string="1" placement="8"/>
-        <note index="24" offset="6" string="2" placement="0"/>
-        <note index="25" offset="6" string="2" placement="1"/>
-        <note index="26" offset="6" string="2" placement="2"/>
-        <note index="27" offset="6" string="2" placement="3"/>
-        <note index="28" offset="6" string="2" placement="4"/>
-        <note index="29" offset="6" string="2" placement="5"/>
-        <note index="30" offset="6" string="2" placement="6"/>
-        <note index="31" offset="6" string="2" placement="7"/>
-        <note index="32" offset="6" string="2" placement="8"/>
-        <note index="33" offset="6" string="2" placement="0">
+        <note string="1" placement="7" index="19" offset="6"/>
+        <note string="1" placement="8" index="20" offset="6"/>
+        <note string="2" placement="0" index="24" offset="6"/>
+        <note string="2" placement="1" index="25" offset="6"/>
+        <note string="2" placement="2" index="26" offset="6"/>
+        <note string="2" placement="3" index="27" offset="6"/>
+        <note string="2" placement="4" index="28" offset="6"/>
+        <note string="2" placement="5" index="29" offset="6"/>
+        <note string="2" placement="6" index="30" offset="6"/>
+        <note string="2" placement="7" index="31" offset="6"/>
+        <note string="2" placement="8" index="32" offset="6"/>
+        <note string="2" placement="0" index="33" offset="6">
             <finger>1</finger>
         </note>
-        <note index="33" offset="12" string="2" placement="1">
+        <note string="2" placement="1" index="33" offset="12">
             <small>true</small>
             <finger>2</finger>
         </note>
-        <note index="34" offset="6" string="2" placement="2">
+        <note string="2" placement="2" index="34" offset="6">
             <finger>3</finger>
         </note>
-        <note index="34" offset="12" string="2" placement="3">
+        <note string="2" placement="3" index="34" offset="12">
             <small>true</small>
             <finger>4</finger>
         </note>
-        <note index="35" offset="6" string="3" placement="0">
+        <note string="3" placement="0" index="35" offset="6">
             <finger>0</finger>
         </note>
-        <note index="36" offset="6" string="3" placement="0"/>
-        <note index="37" offset="6" string="3" placement="1"/>
-        <note index="38" offset="6" string="3" placement="2">
+        <note string="3" placement="0" index="36" offset="6"/>
+        <note string="3" placement="1" index="37" offset="6"/>
+        <note string="3" placement="2" index="38" offset="6">
             <finger>1</finger>
         </note>
-        <note index="39" offset="6" string="3" placement="3"/>
-        <note index="40" offset="6" string="3" placement="4">
+        <note string="3" placement="3" index="39" offset="6"/>
+        <note string="3" placement="4" index="40" offset="6">
             <accidental>FLAT</accidental>
         </note>
-        <note index="41" offset="6" string="3" placement="5"/>
-        <note index="42" offset="6" string="3" placement="6"/>
-        <note index="43" offset="6" string="3" placement="7"/>
-        <note index="44" offset="6" string="3" placement="8"/>
-        <note index="48" offset="6" string="1" placement="0"/>
-        <note index="48" offset="12" string="1" placement="1">
+        <note string="3" placement="5" index="41" offset="6"/>
+        <note string="3" placement="6" index="42" offset="6"/>
+        <note string="3" placement="7" index="43" offset="6"/>
+        <note string="3" placement="8" index="44" offset="6"/>
+        <note string="1" placement="0" index="48" offset="6"/>
+        <note string="1" placement="1" index="48" offset="12">
             <small>true</small>
         </note>
-        <note index="49" offset="6" string="1" placement="2"/>
-        <note index="49" offset="12" string="1" placement="3">
+        <note string="1" placement="2" index="49" offset="6"/>
+        <note string="1" placement="3" index="49" offset="12">
             <small>true</small>
         </note>
-        <note index="50" offset="6" string="1" placement="4"/>
-        <note index="50" offset="12" string="1" placement="5">
-            <small>true</small>
-            <utou>KAKI</utou>
-        </note>
-        <note index="51" offset="6" string="1" placement="6">
-            <utou>KAKI</utou>
-        </note>
-        <note index="51" offset="12" string="1" placement="7">
+        <note string="1" placement="4" index="50" offset="6"/>
+        <note string="1" placement="5" index="50" offset="12">
             <small>true</small>
             <utou>KAKI</utou>
         </note>
-        <note index="52" offset="6" string="1" placement="8">
+        <note string="1" placement="6" index="51" offset="6">
             <utou>KAKI</utou>
         </note>
-        <note index="52" offset="12" string="2" placement="0">
+        <note string="1" placement="7" index="51" offset="12">
             <small>true</small>
             <utou>KAKI</utou>
         </note>
-        <note index="53" offset="6" string="2" placement="1">
+        <note string="1" placement="8" index="52" offset="6">
             <utou>KAKI</utou>
         </note>
-        <note index="53" offset="12" string="2" placement="2">
+        <note string="2" placement="0" index="52" offset="12">
+            <small>true</small>
+            <utou>KAKI</utou>
+        </note>
+        <note string="2" placement="1" index="53" offset="6">
+            <utou>KAKI</utou>
+        </note>
+        <note string="2" placement="2" index="53" offset="12">
             <small>true</small>
             <utou>UCHI</utou>
         </note>
-        <note index="54" offset="6" string="2" placement="3">
+        <note string="2" placement="3" index="54" offset="6">
             <utou>UCHI</utou>
         </note>
-        <note index="54" offset="12" string="2" placement="4">
-            <small>true</small>
-            <utou>UCHI</utou>
-        </note>
-        <note index="55" offset="6" string="2" placement="5">
-            <utou>UCHI</utou>
-        </note>
-        <note index="55" offset="12" string="2" placement="6">
+        <note string="2" placement="4" index="54" offset="12">
             <small>true</small>
             <utou>UCHI</utou>
         </note>
-        <note index="56" offset="6" string="2" placement="7"/>
-        <note index="56" offset="12" string="2" placement="8">
+        <note string="2" placement="5" index="55" offset="6">
+            <utou>UCHI</utou>
+        </note>
+        <note string="2" placement="6" index="55" offset="12">
+            <small>true</small>
+            <utou>UCHI</utou>
+        </note>
+        <note string="2" placement="7" index="56" offset="6"/>
+        <note string="2" placement="8" index="56" offset="12">
             <small>true</small>
         </note>
-        <note index="57" offset="6" string="3" placement="0"/>
-        <note index="57" offset="12" string="3" placement="1">
+        <note string="3" placement="0" index="57" offset="6"/>
+        <note string="3" placement="1" index="57" offset="12">
             <small>true</small>
         </note>
-        <note index="58" offset="6" string="3" placement="2">
+        <note string="3" placement="2" index="58" offset="6">
             <accidental>FLAT</accidental>
         </note>
-        <note index="58" offset="12" string="3" placement="3">
-            <small>true</small>
-            <accidental>FLAT</accidental>
-        </note>
-        <note index="59" offset="6" string="3" placement="4">
-            <accidental>FLAT</accidental>
-        </note>
-        <note index="59" offset="12" string="3" placement="5">
+        <note string="3" placement="3" index="58" offset="12">
             <small>true</small>
             <accidental>FLAT</accidental>
         </note>
-        <note index="72" offset="2" string="2" placement="0">
+        <note string="3" placement="4" index="59" offset="6">
+            <accidental>FLAT</accidental>
+        </note>
+        <note string="3" placement="5" index="59" offset="12">
+            <small>true</small>
+            <accidental>FLAT</accidental>
+        </note>
+        <note string="2" placement="0" index="72" offset="2">
             <small>true</small>
             <chord>true</chord>
         </note>
-        <note index="72" offset="6" string="2" placement="1">
+        <note string="2" placement="1" index="72" offset="6">
             <small>true</small>
             <chord>true</chord>
         </note>
-        <note index="72" offset="10" string="2" placement="2">
+        <note string="2" placement="2" index="72" offset="10">
             <small>true</small>
         </note>
-        <note index="74" offset="6" string="2" placement="2">
+        <note string="2" placement="2" index="74" offset="6">
             <slur>true</slur>
         </note>
-        <note index="74" offset="12" string="2" placement="4">
+        <note string="2" placement="4" index="74" offset="12">
             <small>true</small>
         </note>
-        <note index="108" offset="6" string="2" placement="0"/>
-        <note index="108" offset="12" string="2" placement="1">
+        <note string="2" placement="0" index="108" offset="6"/>
+        <note string="2" placement="1" index="108" offset="12">
             <small>true</small>
         </note>
-        <note index="109" offset="6" string="2" placement="2"/>
-        <note index="109" offset="12" string="2" placement="3">
+        <note string="2" placement="2" index="109" offset="6"/>
+        <note string="2" placement="3" index="109" offset="12">
             <small>true</small>
         </note>
-        <note index="110" offset="6" string="2" placement="0"/>
-        <note index="110" offset="12" string="2" placement="2">
+        <note string="2" placement="0" index="110" offset="6"/>
+        <note string="2" placement="2" index="110" offset="12">
             <small>true</small>
         </note>
-        <note index="111" offset="6" string="2" placement="3"/>
-        <note index="111" offset="12" string="2" placement="0">
+        <note string="2" placement="3" index="111" offset="6"/>
+        <note string="2" placement="0" index="111" offset="12">
             <small>true</small>
         </note>
-        <note index="112" offset="6" string="2" placement="3"/>
-        <note index="112" offset="12" string="2" placement="2">
+        <note string="2" placement="3" index="112" offset="6"/>
+        <note string="2" placement="2" index="112" offset="12">
             <small>true</small>
         </note>
-        <note index="113" offset="6" string="2" placement="0"/>
-        <note index="113" offset="12" string="2" placement="2">
+        <note string="2" placement="0" index="113" offset="6"/>
+        <note string="2" placement="2" index="113" offset="12">
             <small>true</small>
         </note>
-        <note index="114" offset="6" string="2" placement="3"/>
-        <note index="114" offset="12" string="2" placement="0">
+        <note string="2" placement="3" index="114" offset="6"/>
+        <note string="2" placement="0" index="114" offset="12">
             <small>true</small>
         </note>
-        <note index="115" offset="6" string="2" placement="1"/>
-        <note index="115" offset="12" string="2" placement="2">
+        <note string="2" placement="1" index="115" offset="6"/>
+        <note string="2" placement="2" index="115" offset="12">
             <small>true</small>
         </note>
-        <note index="116" offset="6" string="2" placement="3">
+        <note string="2" placement="3" index="116" offset="6">
             <finger>1</finger>
         </note>
-        <note index="116" offset="12" string="2" placement="0">
+        <note string="2" placement="0" index="116" offset="12">
             <small>true</small>
         </note>
-        <note index="117" offset="6" string="2" placement="2"/>
-        <note index="117" offset="12" string="2" placement="1">
+        <note string="2" placement="2" index="117" offset="6"/>
+        <note string="2" placement="1" index="117" offset="12">
             <small>true</small>
         </note>
-        <note index="118" offset="6" string="2" placement="3"/>
-        <note index="120" offset="6" string="2" placement="0"/>
-        <note index="120" offset="12" string="2" placement="1">
+        <note string="2" placement="3" index="118" offset="6"/>
+        <note string="2" placement="0" index="120" offset="6"/>
+        <note string="2" placement="1" index="120" offset="12">
             <small>true</small>
         </note>
-        <note index="121" offset="6" string="2" placement="2"/>
-        <note index="121" offset="12" string="2" placement="3">
+        <note string="2" placement="2" index="121" offset="6"/>
+        <note string="2" placement="3" index="121" offset="12">
             <small>true</small>
         </note>
-        <note index="122" offset="6" string="2" placement="0"/>
-        <note index="122" offset="12" string="2" placement="1">
+        <note string="2" placement="0" index="122" offset="6"/>
+        <note string="2" placement="1" index="122" offset="12">
             <small>true</small>
         </note>
-        <note index="123" offset="6" string="2" placement="2"/>
-        <note index="123" offset="12" string="2" placement="3">
+        <note string="2" placement="2" index="123" offset="6"/>
+        <note string="2" placement="3" index="123" offset="12">
             <small>true</small>
         </note>
-        <note index="124" offset="6" string="2" placement="0"/>
-        <note index="124" offset="12" string="2" placement="1">
+        <note string="2" placement="0" index="124" offset="6"/>
+        <note string="2" placement="1" index="124" offset="12">
             <small>true</small>
         </note>
-        <note index="125" offset="6" string="2" placement="2"/>
-        <note index="125" offset="12" string="2" placement="3">
+        <note string="2" placement="2" index="125" offset="6"/>
+        <note string="2" placement="3" index="125" offset="12">
             <small>true</small>
         </note>
-        <note index="126" offset="6" string="2" placement="0"/>
-        <note index="126" offset="12" string="2" placement="1">
+        <note string="2" placement="0" index="126" offset="6"/>
+        <note string="2" placement="1" index="126" offset="12">
             <small>true</small>
         </note>
-        <note index="127" offset="6" string="2" placement="2"/>
-        <note index="127" offset="12" string="2" placement="3">
+        <note string="2" placement="2" index="127" offset="6"/>
+        <note string="2" placement="3" index="127" offset="12">
             <small>true</small>
         </note>
-        <note index="128" offset="6" string="2" placement="0"/>
-        <note index="128" offset="12" string="2" placement="1">
+        <note string="2" placement="0" index="128" offset="6"/>
+        <note string="2" placement="1" index="128" offset="12">
             <small>true</small>
         </note>
-        <note index="129" offset="6" string="2" placement="2">
+        <note string="2" placement="2" index="129" offset="6">
             <finger>1</finger>
         </note>
-        <note index="129" offset="12" string="2" placement="3">
+        <note string="2" placement="3" index="129" offset="12">
             <small>true</small>
         </note>
     </notes>

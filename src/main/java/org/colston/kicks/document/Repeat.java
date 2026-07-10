@@ -2,17 +2,15 @@ package org.colston.kicks.document;
 
 import jakarta.xml.bind.annotation.*;
 
+import java.util.Objects;
+
 @XmlAccessorType(XmlAccessType.NONE)
 @XmlType(
         propOrder = {
                 "back",
                 "style"
         })
-public class Repeat implements Locatable {
-    @XmlAttribute
-    private int index;
-    @XmlAttribute
-    private int offset;
+public class Repeat extends AbstractLocatable {
 
     @XmlElement
     private Boolean back = null;
@@ -21,22 +19,12 @@ public class Repeat implements Locatable {
 
     @SuppressWarnings("unused")
     private Repeat() {
+        super();
     }
 
     public Repeat(int index, int offset, boolean back) {
-        this.index = index;
-        this.offset = offset;
+        super(offset, index);
         this.back = back;
-    }
-
-    @Override
-    public int getIndex() {
-        return index;
-    }
-
-    @Override
-    public int getOffset() {
-        return offset;
     }
 
     public boolean isBack() {
@@ -52,42 +40,18 @@ public class Repeat implements Locatable {
     }
 
     @Override
-    public void move(int indexDelta, int offsetDelta) {
-        this.index += indexDelta;
-        this.offset += offsetDelta;
+    public final boolean equals(Object o) {
+        if (!(o instanceof Repeat repeat)) return false;
+        if (!super.equals(o)) return false;
+
+        return Objects.equals(back, repeat.back) && style == repeat.style;
     }
 
     @Override
     public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((back == null) ? 0 : back.hashCode());
-        result = prime * result + index;
-        result = prime * result + offset;
-        result = prime * result + ((style == null) ? 0 : style.hashCode());
+        int result = super.hashCode();
+        result = 31 * result + Objects.hashCode(back);
+        result = 31 * result + Objects.hashCode(style);
         return result;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        Repeat other = (Repeat) obj;
-        if (back == null) {
-            if (other.back != null)
-                return false;
-        } else if (!back.equals(other.back))
-            return false;
-        if (index != other.index)
-            return false;
-        if (offset != other.offset)
-            return false;
-        if (style != other.style)
-            return false;
-        return true;
     }
 }

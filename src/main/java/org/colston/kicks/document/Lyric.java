@@ -2,35 +2,23 @@ package org.colston.kicks.document;
 
 import jakarta.xml.bind.annotation.*;
 
+import java.util.Objects;
+
 @XmlAccessorType(XmlAccessType.NONE)
 @XmlType
-public class Lyric implements Locatable {
-    @XmlAttribute
-    private int index;
-    @XmlAttribute
-    private int offset;
+public class Lyric extends AbstractLocatable {
 
     @XmlElement
     private String value;
 
     @SuppressWarnings("unused")
     private Lyric() {
+        super();
     }
 
     public Lyric(int cursorIndex, int cursorOffset, String s) {
-        this.index = cursorIndex;
-        this.offset = cursorOffset;
+        super(cursorIndex, cursorOffset);
         this.value = s;
-    }
-
-    @Override
-    public int getIndex() {
-        return index;
-    }
-
-    @Override
-    public int getOffset() {
-        return offset;
     }
 
     public String getValue() {
@@ -38,39 +26,17 @@ public class Lyric implements Locatable {
     }
 
     @Override
-    public void move(int indexDelta, int offsetDelta) {
-        this.index += indexDelta;
-        this.offset += offsetDelta;
+    public final boolean equals(Object o) {
+        if (!(o instanceof Lyric lyric)) return false;
+        if (!super.equals(o)) return false;
+
+        return Objects.equals(value, lyric.value);
     }
 
     @Override
     public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + index;
-        result = prime * result + offset;
-        result = prime * result + ((value == null) ? 0 : value.hashCode());
+        int result = super.hashCode();
+        result = 31 * result + Objects.hashCode(value);
         return result;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        Lyric other = (Lyric) obj;
-        if (index != other.index)
-            return false;
-        if (offset != other.offset)
-            return false;
-        if (value == null) {
-            if (other.value != null)
-                return false;
-        } else if (!value.equals(other.value))
-            return false;
-        return true;
     }
 }
