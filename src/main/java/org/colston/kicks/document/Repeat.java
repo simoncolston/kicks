@@ -23,7 +23,7 @@ public class Repeat extends AbstractLocatable {
     }
 
     public Repeat(int index, int offset, boolean back) {
-        super(offset, index);
+        super(index, offset);
         this.back = back;
     }
 

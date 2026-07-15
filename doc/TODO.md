@@ -32,6 +32,8 @@ TODO
   - [ ]   4   `kicksabc` script import
   - [ ]   4   Implement `M:` (meter/rhythm) command for `kicksabc` - `simple` or `compound` rhythm
   - [ ]   2   furigana on song title
+  - [ ]   3   Put romaji vertically alongside the title
+  - [ ]   1   Render small kana in the correct place
 
 #### View
   - [x]   2   Zoom

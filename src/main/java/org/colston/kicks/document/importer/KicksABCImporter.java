@@ -53,9 +53,9 @@ public class KicksABCImporter implements Importer {
         return docIndex;
     }
 
-    private void incrementIndex() {
+    private void incrementIndex(int newOffset) {
         docIndex++;
-        docOffset = 0;
+        docOffset = newOffset;
     }
 
     private void startNotesSetIndex() {
@@ -125,7 +125,13 @@ public class KicksABCImporter implements Importer {
     }
 
     private void parseNotesOrLyrics(String line) throws Exception {
+        if (line.length() < 2) {
+            raiseException("Line is too short: " + line);
+        }
         char ch = line.charAt(0);
+        if (ch == '.') {
+            ch = line.charAt(1);
+        }
         if (ch == '[' || ch == ']' || isDigit(ch)) {
             parseNotes(line);
             previousLineWasNote = true;
@@ -149,7 +155,9 @@ public class KicksABCImporter implements Importer {
                 parseLyric(abcl);
             } else {
                 // dot is an abbreviation for <12>
-                parseLyric(abcl.substring(0, dot));
+                if (dot > 0) {
+                    parseLyric(abcl.substring(0, dot));
+                }
                 parseLyric(abcl.substring(dot + 1) + "<12>");
             }
         }
@@ -161,8 +169,7 @@ public class KicksABCImporter implements Importer {
         int ch = abcl.charAt(0);
         if (ch == '*') {
             // space, so move on...
-            incrementIndex();
-            incrementIndex();
+            incrementIndex(6);
         } else  {
             int o = calcOffset(abcl, 6);
             int i = calcIndex(o);
@@ -181,7 +188,9 @@ public class KicksABCImporter implements Importer {
                 parseNote(abcn);
             } else {
                 // dot is an abbreviation for <12>
-                parseNote(abcn.substring(0, dot));
+                if (dot > 0) {
+                    parseNote(abcn.substring(0, dot));
+                }
                 parseNote(abcn.substring(dot + 1) + "<12>");
             }
             if (first) {
@@ -235,7 +244,7 @@ public class KicksABCImporter implements Importer {
                 doc.getNotes().add(n3);
             }
             // now the chord is complete we move the index on...
-            incrementIndex();
+            incrementIndex(0);
             chordNotes = null;
         } else if (isDigit(ch) && isDigit(abcn.charAt(1))) {
             // a note
@@ -305,6 +314,9 @@ public class KicksABCImporter implements Importer {
     }
 
     private void parseCommand(String line) throws Exception {
+        if (line.length() < 2) {
+            raiseException("Line is too short: " + line);
+        }
         if (line.charAt(1) != ':') {
             raiseException("Illegal header line: " + line);
         }
