@@ -37,7 +37,7 @@ class CanvasPanel extends JPanel implements Printable {
     /*
      * Dimensions
      */
-    private static final int TITLE_WIDTH = 56;
+    // deprecated: private static final int TITLE_WIDTH = 56;
     private static final int TITLE_MARGIN = 9;
     private static final int COLUMN_WIDTH = 56;
     private static final int COLUMN_SPACE = 9;
@@ -72,12 +72,12 @@ class CanvasPanel extends JPanel implements Printable {
     /*
      * Fonts
      */
-    private final Font titleFont = new Font(KicksApp.FONT_NAME, Font.PLAIN, 26);
+    private final Font titleFont = new Font(KicksApp.V_FONT_NAME, Font.PLAIN, 26);
     private final Font font = new Font(KicksApp.FONT_NAME, Font.PLAIN, 18);
     private final Font fontBold = new Font(KicksApp.FONT_NAME, Font.BOLD, 18);
     private final Font sfont = new Font(KicksApp.FONT_NAME, Font.PLAIN, 14);
     private final Font sfontBold = new Font(KicksApp.FONT_NAME, Font.BOLD, 14);
-    private final Font lyricFont = new Font(KicksApp.FONT_NAME, Font.PLAIN, 12);
+    private final Font lyricFont = new Font(KicksApp.V_FONT_NAME, Font.PLAIN, 12);
     private final Font flatFont = new Font(KicksApp.FONT_NAME, Font.PLAIN, 9);
     private final Font fingerFont = new Font(KicksApp.FONT_NAME, Font.PLAIN, 7);
 
@@ -362,15 +362,7 @@ class CanvasPanel extends JPanel implements Printable {
                 y += TITLE_MARGIN + titleFont.getSize();
                 for (int i = 0; i < tchars.length; i++) {
 
-                    if (tchars[i] == 'ー') {
-                        // rotate the extension character...
-                        g2.rotate(Math.toRadians(90), x + 1 + (double) titleFont.getSize() / 2, y + 3 - (double) titleFont.getSize() / 2);
-                    }
                     g2.drawChars(tchars, i, 1, x, y);
-                    if (tchars[i] == 'ー') {
-                        // stop rotating
-                        g2.rotate(Math.toRadians(-90), x + 1 + (double) titleFont.getSize() / 2, y + 3 - (double) titleFont.getSize() / 2);
-                    }
                     y += titleFont.getSize();
                 }
             }
@@ -499,9 +491,8 @@ class CanvasPanel extends JPanel implements Printable {
         int x = x(index) + (COLUMN_WIDTH / 2);
         int cw = fm.charWidth(ch[choff]);
         x += (COLUMN_WIDTH / 4 - cw) / 2;
-        x += choff * cw / 3;
         int y = y(index, offset, fm);
-        y += ((int) Math.ceil(fm.getFont().getSize() * 0.5f)) * choff;
+        y += ((int) Math.ceil(fm.getFont().getSize() * 0.7f)) * choff;
         g2.drawChars(ch, choff, 1, x, y);
     }
 

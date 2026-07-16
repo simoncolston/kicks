@@ -94,10 +94,11 @@ public class ExportAsPDF extends AbstractAction {
         MediaPrintableArea mpa = new MediaPrintableArea(MARGIN, MARGIN, width, height, MediaPrintableArea.MM);
         aset.add(mpa);
 
-        Font font = new Font(KicksApp.FONT_NAME, Font.PLAIN, 1);
-
         PDFBoxPrintFontMap fontMap = new PDFBoxPrintFontMap();
+        Font font = new Font(KicksApp.FONT_NAME, Font.PLAIN, 1);
         fontMap.add(font, KicksApp.class, KicksApp.FONT_RESOURCE_NAME);
+        font = new Font(KicksApp.V_FONT_NAME, Font.PLAIN, 1);
+        fontMap.add(font, KicksApp.class, KicksApp.V_FONT_RESOURCE_NAME);
         aset.add(fontMap);
 
         printJob.print(doc, aset);

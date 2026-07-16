@@ -67,10 +67,8 @@ public class KicksApp extends GuiApp {
 
     public static final String FONT_NAME = "EPSON 教科書体Ｍ";
     public static final String FONT_RESOURCE_NAME = "EPKYOUKA.TTF";
-//    public static final String FONT_NAME = "HanaMinA Regular";
-//    public static final String FONT_RESOURCE_NAME = "HanaMinA.ttf";
-//    public static final String FONT_NAME = "Harano Aji Mincho";
-//    public static final String FONT_RESOURCE_NAME = "HaranoAjiMincho-Regular.otf";
+    public static final String V_FONT_NAME = "EPSON 教科書体Ｍ V";
+    public static final String V_FONT_RESOURCE_NAME = "EPKYOUKAV.TTF";
 
     private static KicksApp kicks;
     //TODO: Make this system dependent?  Go for a "dot file" config?
@@ -185,14 +183,20 @@ public class KicksApp extends GuiApp {
 
          // Load fonts
         GraphicsEnvironment graphics = GraphicsEnvironment.getLocalGraphicsEnvironment();
-        try (BufferedInputStream bis = new BufferedInputStream(openFontResourceInputStream())) {
+        try (BufferedInputStream bis = new BufferedInputStream(openFontResourceInputStream(FONT_RESOURCE_NAME))) {
             Font f = Font.createFont(Font.TRUETYPE_FONT, bis);
+            logger.info("Font loaded: " + f.getFontName());
+            graphics.registerFont(f);
+        }
+        try (BufferedInputStream bis = new BufferedInputStream(openFontResourceInputStream(V_FONT_RESOURCE_NAME))) {
+            Font f = Font.createFont(Font.TRUETYPE_FONT, bis);
+            logger.info("Font loaded: " + f.getFontName());
             graphics.registerFont(f);
         }
     }
 
-    public static InputStream openFontResourceInputStream() {
-        return KicksApp.class.getResourceAsStream(FONT_RESOURCE_NAME);
+    public static InputStream openFontResourceInputStream(String fontResourceName) {
+        return KicksApp.class.getResourceAsStream(fontResourceName);
     }
 
     @Override
