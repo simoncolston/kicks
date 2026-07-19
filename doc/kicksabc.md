@@ -24,6 +24,7 @@ Each line is headed by a command.
 | `T`     | Title          | String                          | Required command       | `T:安里屋ユンタ`  |
 | `E`     | Romaji/English | String                          | empty                  | `E:Asadoya Yunta` |
 | `K`     | Tuning         | `honchoshi`, `sansage`, `niage` | `honchoshi`            | `K:honchoshi`     |
+| `Q`     | Tempo in BPM   | Number                          | empty                  | `Q:120`           |
 
 Command `T`
 : To put *furigana* (reading or ruby) beside kanji in the title use curly braces 

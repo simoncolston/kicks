@@ -343,6 +343,9 @@ public class KicksABCImporter implements Importer {
                         raiseException("Illegal tuning: " + tuning);
                 }
                 break;
+            case 'Q':
+                doc.getSongs().getFirst().setTempo(line.substring(2, 2 + Math.min(3, line.length() - 2)));
+                break;
             default:
                 raiseException("Illegal header line: " + line);
         }

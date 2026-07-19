@@ -82,6 +82,7 @@ class CanvasPanel extends JPanel implements Printable {
     private final Font lyricFont = new Font(KicksApp.V_FONT_NAME, Font.PLAIN, 12);
     private final Font flatFont = new Font(KicksApp.FONT_NAME, Font.PLAIN, 9);
     private final Font fingerFont = new Font(KicksApp.FONT_NAME, Font.PLAIN, 7);
+    private final Font tempoFont = new Font("SansSerif", Font.PLAIN, 9);
 
     /*
      * Strokes
@@ -459,6 +460,17 @@ class CanvasPanel extends JPanel implements Printable {
                     y += sfont.getSize();
                 }
             }
+        }
+
+        String tempo = song.getTempo();
+        if (tempo != null) {
+            tempo += " BPM";
+            g2.setFont(tempoFont);
+            FontMetrics fm = g2.getFontMetrics();
+            int x = CANVAS_WIDTH - (COLUMN_WIDTH + COLUMN_SPACE) * ((song.getIndex() / CELLS_PER_COL) + 1);
+            x += ((COLUMN_WIDTH - fm.stringWidth(tempo)) / 2);
+            int y = CANVAS_HEIGHT;
+            g2.drawString(tempo, x, y);
         }
     }
 

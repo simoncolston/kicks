@@ -25,6 +25,7 @@ class SongHeaderEditor {
         tuningCombo.setSelectedItem((song.getTuning() != null) ? song.getTuning() : Tuning.HONCHOUSHI);
         tuningCombo.setRenderer(new TuningListCellRenderer());
         JTextField transcriptionText = new JTextField(song.getTranscription(), 30);
+        JTextField tempoText = new JTextField(song.getTempo(), 3);
 
         JPanel inputPanel = new JPanel(new SpringLayout());
         inputPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
@@ -49,7 +50,12 @@ class SongHeaderEditor {
         label.setLabelFor(transcriptionText);
         inputPanel.add(transcriptionText);
 
-        SpringUtilities.makeCompactGrid(inputPanel, 4, 2, 5, 5, 5, 5);
+        label = new JLabel(Messages.get(SongHeaderEditor.class, "song.header.dialog.tempo.prompt"));
+        inputPanel.add(label);
+        label.setLabelFor(tempoText);
+        inputPanel.add(tempoText);
+
+        SpringUtilities.makeCompactGrid(inputPanel, 5, 2, 5, 5, 5, 5);
 
         JPanel buttonPanel = new JPanel();
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
@@ -62,6 +68,7 @@ class SongHeaderEditor {
             s.setTitleRomaji(titleRomajiText.getText());
             s.setTuning((Tuning) tuningCombo.getSelectedItem());
             s.setTranscription(transcriptionText.getText());
+            s.setTempo(tempoText.getText());
             KicksApp.canvas().getEditor().addSong(s, cursorIndex, cursorOffset);
             dialog.setVisible(false);
         });
