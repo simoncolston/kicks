@@ -19,6 +19,7 @@ class SongHeaderEditor {
 
         JTextField titleText = new JTextField(song.getTitle(), 30);
         titleText.addFocusListener(new JapaneseTextFocusListener());
+        JTextField titleRomajiText = new JTextField(song.getTitleRomaji(), 30);
         Tuning[] tunings = Tuning.values();
         JComboBox<Tuning> tuningCombo = new JComboBox<>(tunings);
         tuningCombo.setSelectedItem((song.getTuning() != null) ? song.getTuning() : Tuning.HONCHOUSHI);
@@ -27,10 +28,16 @@ class SongHeaderEditor {
 
         JPanel inputPanel = new JPanel(new SpringLayout());
         inputPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
         JLabel label = new JLabel(Messages.get(SongHeaderEditor.class, "song.header.dialog.title.prompt"));
         inputPanel.add(label);
         label.setLabelFor(titleText);
         inputPanel.add(titleText);
+
+        label = new JLabel(Messages.get(SongHeaderEditor.class, "song.header.dialog.title.romaji.prompt"));
+        inputPanel.add(label);
+        label.setLabelFor(titleRomajiText);
+        inputPanel.add(titleRomajiText);
 
         label = new JLabel(Messages.get(SongHeaderEditor.class, "song.header.dialog.tuning.prompt"));
         inputPanel.add(label);
@@ -42,7 +49,7 @@ class SongHeaderEditor {
         label.setLabelFor(transcriptionText);
         inputPanel.add(transcriptionText);
 
-        SpringUtilities.makeCompactGrid(inputPanel, 3, 2, 5, 5, 5, 5);
+        SpringUtilities.makeCompactGrid(inputPanel, 4, 2, 5, 5, 5, 5);
 
         JPanel buttonPanel = new JPanel();
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
@@ -52,6 +59,7 @@ class SongHeaderEditor {
         b.addActionListener(actionEvent -> {
             Song s = new Song(song.getIndex());
             s.setTitle(titleText.getText());
+            s.setTitleRomaji(titleRomajiText.getText());
             s.setTuning((Tuning) tuningCombo.getSelectedItem());
             s.setTranscription(transcriptionText.getText());
             KicksApp.canvas().getEditor().addSong(s, cursorIndex, cursorOffset);

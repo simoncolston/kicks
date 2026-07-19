@@ -8,6 +8,7 @@ import java.util.Objects;
 @XmlType(
         propOrder = {
                 "title",
+                "titleRomaji",
                 "tuning",
                 "tempo",
                 "transcription"
@@ -17,6 +18,8 @@ public class Song {
     private int index = 0;
     @XmlElement
     private String title;
+    @XmlElement
+    private String titleRomaji;
     @XmlElement
     private Tuning tuning;
     @XmlElement
@@ -68,19 +71,29 @@ public class Song {
         this.transcription = transcription;
     }
 
+    public String getTitleRomaji() {
+        return titleRomaji;
+    }
+
+    public void setTitleRomaji(String titleRomaji) {
+        this.titleRomaji = titleRomaji;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
 
         Song song = (Song) o;
-        return index == song.index && Objects.equals(title, song.title) && tuning == song.tuning
-                && Objects.equals(tempo, song.tempo) && Objects.equals(transcription, song.transcription);
+        return index == song.index && Objects.equals(title, song.title) && Objects.equals(titleRomaji, song.titleRomaji)
+                && tuning == song.tuning && Objects.equals(tempo, song.tempo)
+                && Objects.equals(transcription, song.transcription);
     }
 
     @Override
     public int hashCode() {
         int result = index;
         result = 31 * result + Objects.hashCode(title);
+        result = 31 * result + Objects.hashCode(titleRomaji);
         result = 31 * result + Objects.hashCode(tuning);
         result = 31 * result + Objects.hashCode(tempo);
         result = 31 * result + Objects.hashCode(transcription);

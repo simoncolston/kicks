@@ -118,6 +118,7 @@
     <xs:complexType name="song">
         <xs:sequence>
             <xs:element name="title" type="xs:string" minOccurs="0"/>
+            <xs:element name="titleRomaji" type="xs:string" minOccurs="0"/>
             <xs:element name="tuning" type="tuning" minOccurs="0"/>
             <xs:element name="tempo" type="xs:string" minOccurs="0"/>
             <xs:element name="transcription" type="xs:string" minOccurs="0"/>

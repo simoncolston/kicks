@@ -19,10 +19,16 @@ Starts with a header, followed by a *single* blank line, followed by multiple no
 The header contains general information about the song.
 Each line is headed by a command.
 
-| Command | Meaning      | Values                                                                               | Default if not present | Example       |
-|---------|--------------|--------------------------------------------------------------------------------------|------------------------|---------------|
-| `T`     | Title        | String                                                                               | Required command       | `T:安里屋ユンタ`    |
-| `K`     | Tuning       | `honchoshi`, `sansage`, `niage`                                                      | `honchoshi`            | `K:honchoshi` |
+| Command | Meaning        | Values                          | Default if not present | Example           |
+|---------|----------------|---------------------------------|------------------------|-------------------|
+| `T`     | Title          | String                          | Required command       | `T:安里屋ユンタ`  |
+| `E`     | Romaji/English | String                          | empty                  | `E:Asadoya Yunta` |
+| `K`     | Tuning         | `honchoshi`, `sansage`, `niage` | `honchoshi`            | `K:honchoshi`     |
+
+Command `T`
+: To put *furigana* (reading or ruby) beside kanji in the title use curly braces 
+e.g. `{安里屋}{あさどや}ユンタ`
+will render like this <ruby><rb>安里屋</rb><rt>あさどや</rt></ruby>ユンタ (but vertically!!)
 
 ## Note lines
 
@@ -105,7 +111,8 @@ Comments are a single line that starts with `%`.
 
 ```
 % This is an example of a kicksabc script
-T:安里屋ユンタ
+T:{安里屋}{あさどや}ユンタ
+E:Asadoya Yunta
 K:honchoshi
 
 [ 22 30 33 10 33 10 33 33 31 30 20 21 22 30 10 30 10 31 30 00

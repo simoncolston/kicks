@@ -324,6 +324,9 @@ public class KicksABCImporter implements Importer {
             case 'T':
                 doc.getSongs().getFirst().setTitle(line.substring(2));
                 break;
+            case 'E':
+                doc.getSongs().getLast().setTitleRomaji(line.substring(2));
+                break;
             case 'K':
                 String tuning = line.substring(2).trim();
                 switch (tuning) {

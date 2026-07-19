@@ -73,6 +73,8 @@ class CanvasPanel extends JPanel implements Printable {
      * Fonts
      */
     private final Font titleFont = new Font(KicksApp.V_FONT_NAME, Font.PLAIN, 26);
+    private final Font ftitleFont = new Font(KicksApp.V_FONT_NAME, Font.PLAIN, 12);
+    private final Font rtitleFont = new Font("SansSerif", Font.PLAIN, 14);
     private final Font font = new Font(KicksApp.FONT_NAME, Font.PLAIN, 18);
     private final Font fontBold = new Font(KicksApp.FONT_NAME, Font.BOLD, 18);
     private final Font sfont = new Font(KicksApp.FONT_NAME, Font.PLAIN, 14);
@@ -245,6 +247,9 @@ class CanvasPanel extends JPanel implements Printable {
                     g2.drawRect(x, y, COLUMN_WIDTH / 2, CELL_HEIGHT);
                     y += CELL_HEIGHT;
                 }
+//            } else {
+//                //TODO
+//                g2.drawRect(x, y, COLUMN_WIDTH, CANVAS_HEIGHT);
             }
             y = 0;
             index += CELLS_PER_COL;
@@ -345,27 +350,98 @@ class CanvasPanel extends JPanel implements Printable {
 
     private void drawTitle(Graphics2D g2, Song song) {
         String title = song.getTitle();
-        FontMetrics fm;
-        int x;
-        int y;
-        if (title != null) {
+        String romaji = song.getTitleRomaji();
+
+        //start with some analysis
+        int titleCharWidth = 0;
+        int furiganaCharWidth = 0;
+        int romajiCharWidth = 0;
+        if (title != null && !title.isBlank()) {
             char[] tchars = title.toCharArray();
-            if (tchars.length > 0) {
-                // draw the title
-                x = CANVAS_WIDTH - (COLUMN_WIDTH + COLUMN_SPACE) * ((song.getIndex() / CELLS_PER_COL) + 1);
-                y = 0;
+            g2.setFont(titleFont);
+            FontMetrics titleFontMetrics = g2.getFontMetrics();
+            titleCharWidth = titleFontMetrics.charWidth(tchars[1]);
+            if (title.indexOf('{') >= 0) {
+                g2.setFont(ftitleFont);
+                FontMetrics ftitleFontMetrics = g2.getFontMetrics();
+                furiganaCharWidth = ftitleFontMetrics.charWidth(tchars[1]);
+            }
+        }
+        if (romaji != null && !romaji.isBlank()) {
+            romajiCharWidth = rtitleFont.getSize();
+        }
 
-                g2.setFont(titleFont);
-                fm = g2.getFontMetrics();
+        if (title != null && !title.isBlank()) {
+            char[] tchars = title.toCharArray();
+            int x = CANVAS_WIDTH - (COLUMN_WIDTH + COLUMN_SPACE) * ((song.getIndex() / CELLS_PER_COL) + 1);
+            int y = 0;
 
-                x += ((COLUMN_WIDTH - fm.charWidth(tchars[0])) / 2);
-                y += TITLE_MARGIN + titleFont.getSize();
-                for (int i = 0; i < tchars.length; i++) {
-
+            g2.setFont(titleFont);
+            // centralise if there is no romaji
+            x += romajiCharWidth > 0 ? 1 : (COLUMN_WIDTH - titleCharWidth - furiganaCharWidth) / 2;
+            y += TITLE_MARGIN + titleFont.getSize();
+            for (int i = 0; i < tchars.length; i++) {
+                if (tchars[i] == '{') {
+                    // start of kanji with furigana
+                    int kstart = i + 1;
+                    int kend = kstart;
+                    int fstart = 0;
+                    int fend = 0;
+                    for (int j = kstart; j < tchars.length; j++) {
+                        if (tchars[j] == '}') {
+                            kend = j;
+                            break;
+                        }
+                    }
+                    if (tchars[kend + 1] == '{') {
+                        fstart = kend + 2;
+                        for (int j = fstart; j < tchars.length; j++) {
+                            if (tchars[j] == '}') {
+                                fend = j;
+                                break;
+                            }
+                        }
+                    }
+                    int kpad = 0;
+                    int fpad = 0;
+                    int kheight = (kend - kstart) * titleFont.getSize();
+                    int fheight = (fend - fstart) * ftitleFont.getSize();
+                    if (kheight > fheight) {
+                        fpad = (kheight - fheight) / (fend - fstart + 1);
+                    } else if (kheight < fheight) {
+                        kpad = (fheight - kheight) / (kend - kstart + 1);
+                    }
+                    int ystart = y;
+                    for (int j = kstart; j < kend; j++) {
+                        y += kpad;
+                        g2.drawChars(tchars, j, 1, x, y);
+                        y += titleFont.getSize();
+                    }
+                    int yend = y;
+                    y = ystart - titleFont.getSize() + ftitleFont.getSize();
+                    g2.setFont(ftitleFont);
+                    for (int j = fstart; j < fend; j++) {
+                        y += fpad;
+                        g2.drawChars(tchars, j, 1, x + titleCharWidth - 2, y); // -2 to cwtch up to the kanji a bit
+                        y += ftitleFont.getSize();
+                    }
+                    g2.setFont(titleFont);
+                    y = yend + kpad;
+                    i = fend;
+                } else {
                     g2.drawChars(tchars, i, 1, x, y);
                     y += titleFont.getSize();
                 }
             }
+        }
+        if (romaji != null && !romaji.isBlank()) {
+            int x = CANVAS_WIDTH - (COLUMN_WIDTH + COLUMN_SPACE) * ((song.getIndex() / CELLS_PER_COL) + 1);
+            x += COLUMN_WIDTH - romajiCharWidth;
+            int y = TITLE_MARGIN + titleFont.getSize() - rtitleFont.getSize();
+            g2.setFont(rtitleFont);
+            g2.rotate(Math.toRadians(90), x, y);
+            g2.drawString(romaji, x, y - 1);  // subtract from y to move slightly to the right
+            g2.rotate(Math.toRadians(-90), x, y);
         }
 
         Tuning tuning = song.getTuning();
@@ -374,10 +450,10 @@ class CanvasPanel extends JPanel implements Printable {
             if (tchars.length > 0) {
                 // draw the tuning
                 g2.setFont(sfont);
-                fm = g2.getFontMetrics();
-                x = CANVAS_WIDTH - (COLUMN_WIDTH + COLUMN_SPACE) * ((song.getIndex() / CELLS_PER_COL) + 1);
+                FontMetrics fm = g2.getFontMetrics();
+                int x = CANVAS_WIDTH - (COLUMN_WIDTH + COLUMN_SPACE) * ((song.getIndex() / CELLS_PER_COL) + 1);
                 x += ((COLUMN_WIDTH - fm.charWidth(tchars[0])) / 2);
-                y = CANVAS_HEIGHT - TITLE_MARGIN - (sfont.getSize() * tchars.length);
+                int y = CANVAS_HEIGHT - TITLE_MARGIN - (sfont.getSize() * tchars.length);
                 for (int i = 0; i < tchars.length; i++) {
                     g2.drawChars(tchars, i, 1, x, y);
                     y += sfont.getSize();

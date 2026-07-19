@@ -63,6 +63,7 @@ class KicksDocumentTest {
         doc.getSongs().add(song);
 
         song.setTitle("安里屋ユンタ");
+        song.setTitleRomaji("Asadoya Yunta");
         song.setTuning(Tuning.HONCHOUSHI);
         song.setTempo("100");
         song.setTranscription("China Sadao");

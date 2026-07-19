@@ -329,7 +329,8 @@ public class PDFBoxGraphics2D extends Graphics2D implements Cloneable {
 
     @Override
     public void rotate(double theta) {
-        Matrix m = Matrix.getRotateInstance(theta, 0, 0);
+        // seems to rotate in the opposite direction to java2d. (didn't expect it to though...)
+        Matrix m = Matrix.getRotateInstance(-theta, 0, 0);
         applyTransform(m);
     }
 
@@ -337,7 +338,8 @@ public class PDFBoxGraphics2D extends Graphics2D implements Cloneable {
     public void rotate(double theta, double x, double y) {
         Matrix m = Matrix.getTranslateInstance((float) x, (float) -y);
         applyTransform(m);
-        m = Matrix.getRotateInstance(theta, 0, 0);
+        // seems to rotate in the opposite direction to java2d. (didn't expect it to though...)
+        m = Matrix.getRotateInstance(-theta, 0, 0);
         applyTransform(m);
         m = Matrix.getTranslateInstance((float) -x, (float) y);
         applyTransform(m);

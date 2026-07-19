@@ -48,6 +48,11 @@ class PDFBoxGraphics2DTest {
 
                 // re-draw with old graphics
                 drawStuff(graphics, 420, 0);
+
+                graphics.drawString("Rotate test", 10, 200);
+                graphics.rotate(Math.toRadians(90), 100, 200);
+                graphics.drawString("Rotate test", 100, 200);
+
                 graphics.dispose();
             }
 
