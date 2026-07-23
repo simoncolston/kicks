@@ -361,11 +361,15 @@ class CanvasPanel extends JPanel implements Printable {
             char[] tchars = title.toCharArray();
             g2.setFont(titleFont);
             FontMetrics titleFontMetrics = g2.getFontMetrics();
-            titleCharWidth = titleFontMetrics.charWidth(tchars[1]);
+            for (char ch : tchars) {
+                titleCharWidth = Math.max(titleFontMetrics.charWidth(ch), titleCharWidth);
+            }
             if (title.indexOf('{') >= 0) {
                 g2.setFont(ftitleFont);
                 FontMetrics ftitleFontMetrics = g2.getFontMetrics();
-                furiganaCharWidth = ftitleFontMetrics.charWidth(tchars[1]);
+                for (char ch : tchars) {
+                    furiganaCharWidth = Math.max(ftitleFontMetrics.charWidth(ch), furiganaCharWidth);
+                }
             }
         }
         if (romaji != null && !romaji.isBlank()) {
@@ -463,7 +467,7 @@ class CanvasPanel extends JPanel implements Printable {
         }
 
         String tempo = song.getTempo();
-        if (tempo != null) {
+        if (tempo != null && !tempo.isEmpty()) {
             tempo += " BPM";
             g2.setFont(tempoFont);
             FontMetrics fm = g2.getFontMetrics();

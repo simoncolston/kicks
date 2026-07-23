@@ -29,11 +29,11 @@ TODO
   - [x] **1** Use JAXB for saving/loading document to XML
   - [ ]   3   Vocal notes
   - [ ]   4   Text (in callouts?)
-  - [ ]   4   `kicksabc` script import
+  - [x]   4   `kicksabc` script import
   - [ ]   4   Implement `M:` (meter/rhythm) command for `kicksabc` - `simple` or `compound` rhythm
-  - [ ]   2   furigana on song title
-  - [ ]   3   Put romaji vertically alongside the title
-  - [ ]   4   Implement `E:` (english/romaji) command for `kicksabc` - english/romaji title
+  - [x]   2   furigana on song title
+  - [x]   3   Put romaji vertically alongside the title
+  - [x]   4   Implement `E:` (english/romaji) command for `kicksabc` - english/romaji title
   - [x]   1   Render small kana in the correct place
 
 #### View
