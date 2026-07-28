@@ -188,8 +188,13 @@ class CanvasPanel extends JPanel implements Printable {
     }
 
     void zoomReset() {
-        int res = Toolkit.getDefaultToolkit().getScreenResolution();
-        scale = (1.0f * res / 72f);
+        try {
+            int res = Toolkit.getDefaultToolkit().getScreenResolution();
+            scale = (1.0f * res / 72f);
+        } catch (java.awt.HeadlessException e) {
+            scale = 1.0f;
+        }
+
         setDimensions();
         redraw();
     }
