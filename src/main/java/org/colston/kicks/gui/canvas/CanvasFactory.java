@@ -18,7 +18,7 @@ public final class CanvasFactory {
         CanvasModel model = new CanvasModel();
 
         JTextField text = new JTextField();
-        text.setBorder(BorderFactory.createLineBorder(CanvasPanel.CURSOR_COLOUR));
+        text.setBorder(BorderFactory.createLineBorder(PageRenderer.CURSOR_COLOUR));
         text.enableInputMethods(true);
         text.addFocusListener(new JapaneseTextFocusListener());
 
@@ -53,9 +53,7 @@ public final class CanvasFactory {
     }
 
     public static Printable createPrintable(KicksDocument doc) {
-        CanvasModel model = new CanvasModel();
-        model.setDocument(doc);
-        return createCanvasPanel(model, new JTextField());
+        return new PageRenderer(doc);
     }
 
     private static CanvasPanel createCanvasPanel(CanvasModel model, JTextField text) {

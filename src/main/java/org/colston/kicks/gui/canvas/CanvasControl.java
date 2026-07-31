@@ -103,7 +103,7 @@ class CanvasControl implements Canvas {
 
     @Override
     public Printable getPrintable() {
-        return canvasPanel;
+        return new PageRenderer(model.getDocument());
     }
 
     @Override

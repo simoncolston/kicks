@@ -11,6 +11,7 @@ import jakarta.xml.bind.annotation.XmlType;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * The bean that contains the whole document and defines how it is persisted as XML.
@@ -70,6 +71,12 @@ public class KicksDocument {
 
     public List<Song> getSongs() {
         return songs;
+    }
+
+    public Optional<Song> getSongAtIndex(int index, int cellsPerCol) {
+        return songs.stream()
+                .filter(song -> index >= song.getIndex() && index < song.getIndex() + cellsPerCol)
+                .findAny();
     }
 
     public List<Note> getNotes() {
