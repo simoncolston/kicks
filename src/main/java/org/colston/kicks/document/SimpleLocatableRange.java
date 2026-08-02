@@ -83,8 +83,8 @@ public class SimpleLocatableRange implements LocatableRange {
     @Override
     public String toString() {
         return "LocatableRange{" +
-                "start=" + start +
-                ", end=" + end +
+                "start=" + start.locationAsString() +
+                ", end=" + end.locationAsString() +
                 '}';
     }
 

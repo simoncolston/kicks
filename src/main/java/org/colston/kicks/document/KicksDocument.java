@@ -10,6 +10,7 @@ import jakarta.xml.bind.annotation.XmlType;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 
@@ -73,14 +74,49 @@ public class KicksDocument {
         return songs;
     }
 
+
+    public Iterable<Song> getSongs(LocatableRange pageRange) {
+        return () -> new Iterator<Song>() {
+            int i = 0;
+            private Song current = null;
+
+            @Override
+            public boolean hasNext() {
+                while (i < songs.size() && current == null) {
+                    current = songs.get(i++);
+                    if (!(current.getIndex() >= pageRange.getLow().getIndex()
+                    && current.getIndex() <= pageRange.getHigh().getIndex())) {
+                        current = null;
+                    }
+                }
+                return current != null;
+            }
+
+            @Override
+            public Song next() {
+                Song s = current;
+                current = null;
+                return s;
+            }
+        };
+    }
+
     public Optional<Song> getSongAtIndex(int index, int cellsPerCol) {
         return songs.stream()
                 .filter(song -> index >= song.getIndex() && index < song.getIndex() + cellsPerCol)
                 .findAny();
     }
 
+    public List<List<? extends Locatable>> getAllLocatables() {
+        return List.of(notes, repeats, lyrics);
+    }
+
     public List<Note> getNotes() {
         return notes;
+    }
+
+    public Iterable<Note> getNotes(LocatableRange range) {
+        return () -> new LocatableIterator<>(notes, range);
     }
 
     public Note getNote(int index, int offset) {
@@ -100,8 +136,16 @@ public class KicksDocument {
         return repeats;
     }
 
+    public Iterable<Repeat> getRepeats(LocatableRange range) {
+        return () -> new LocatableIterator<>(repeats, range);
+    }
+
     public List<Lyric> getLyrics() {
         return lyrics;
+    }
+
+    public Iterable<Lyric> getLyrics(LocatableRange range) {
+        return () -> new LocatableIterator<>(lyrics, range);
     }
 
     public Lyric getLyric(int index, int offset) {

@@ -20,12 +20,7 @@ public class KicksDocumentEditor {
     private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
     private final EventListenerList listeners = new EventListenerList();
     private final Comparator<Locatable> comparator = new LocatableComparator();
-    private final Comparator<Song> songComparator = new Comparator<Song>() {
-        @Override
-        public int compare(Song o1, Song o2) {
-            return o1.getIndex() - o2.getIndex();
-        }
-    };
+    private final Comparator<Song> songComparator = Comparator.comparingInt(Song::getIndex);
     private final Key key = new Key();
     private KicksDocument doc;
 
@@ -346,12 +341,13 @@ public class KicksDocumentEditor {
 
     public void paste(int cursorIndex, int cursorOffset, KicksDocument doc) {
         moveDocumentToNewLocation(cursorIndex, cursorOffset, doc);
-        Locatable lowest = findLowest(null, doc.getNotes());
-        lowest = findLowest(lowest, doc.getRepeats());
-        lowest = findLowest(lowest, doc.getLyrics());
-        Locatable highest = findHighest(null, doc.getNotes());
-        highest = findHighest(highest, doc.getRepeats());
-        highest = findHighest(highest, doc.getLyrics());
+        // TODO: Make this more generic - something like: List<List<Locatables> locatablesList = doc.getLocatables();
+        Locatable lowest = LocatableUtils.findLowest(null, doc.getNotes());
+        lowest = LocatableUtils.findLowest(lowest, doc.getRepeats());
+        lowest = LocatableUtils.findLowest(lowest, doc.getLyrics());
+        Locatable highest = LocatableUtils.findHighest(null, doc.getNotes());
+        highest = LocatableUtils.findHighest(highest, doc.getRepeats());
+        highest = LocatableUtils.findHighest(highest, doc.getLyrics());
         KicksDocument removed = removeRange(new SimpleLocatableRange(lowest.getIndex(), lowest.getOffset(), highest.getIndex(), highest.getOffset()));
         add(doc);
         UndoableEdit edit = new ReplaceDocumentEdit(cursorIndex, cursorOffset, doc, removed,
@@ -361,9 +357,10 @@ public class KicksDocumentEditor {
     }
 
     private void moveDocumentToNewLocation(int index, int offset, KicksDocument doc) {
-        Locatable lowest = findLowest(null, doc.getNotes());
-        lowest = findLowest(lowest, doc.getRepeats());
-        lowest = findLowest(lowest, doc.getLyrics());
+        // TODO: Make this more generic - something like: List<List<Locatables> locatablesList = doc.getLocatables();
+        Locatable lowest = LocatableUtils.findLowest(null, doc.getNotes());
+        lowest = LocatableUtils.findLowest(lowest, doc.getRepeats());
+        lowest = LocatableUtils.findLowest(lowest, doc.getLyrics());
         int indexDelta = index - lowest.getIndex();
         int offsetDelta = offset - lowest.getOffset();
         moveLocatables(indexDelta, offsetDelta, doc.getNotes());
@@ -375,22 +372,6 @@ public class KicksDocumentEditor {
         for (Locatable locatable : locatables) {
             locatable.move(indexDelta, offsetDelta);
         }
-    }
-
-    private <T extends Locatable> Locatable findLowest(Locatable lowest, List<T> locatables) {
-        if (locatables.isEmpty()) {
-            return lowest;
-        }
-        Locatable current = locatables.getFirst();
-        return lowest == null || lowest.isGreaterThan(current) ? current : lowest;
-    }
-
-    private <T extends Locatable> Locatable findHighest(Locatable highest, List<T> locatables) {
-        if (locatables.isEmpty()) {
-            return highest;
-        }
-        Locatable current = locatables.getLast();
-        return highest == null || highest.isLessThan(current) ? current : highest;
     }
 
     public void remove(LocatableRange range) {

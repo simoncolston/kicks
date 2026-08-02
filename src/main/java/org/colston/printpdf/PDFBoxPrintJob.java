@@ -158,26 +158,32 @@ public class PDFBoxPrintJob implements DocPrintJob {
                     }
                 }
 
-                PDPage page = new PDPage(new PDRectangle((float) paper.getWidth(), (float) paper.getHeight()));
-                if (orientation == OrientationRequested.LANDSCAPE) {
-                    page.setRotation(90);
-                }
-                doc.addPage(page);
-
-                try (PDPageContentStream cs = new PDPageContentStream(doc, page)) {
+                int pageIndex = 0;
+                int pageState = Printable.PAGE_EXISTS;
+                while (pageState == Printable.PAGE_EXISTS) {
+                    PDPage page = new PDPage(new PDRectangle((float) paper.getWidth(), (float) paper.getHeight()));
                     if (orientation == OrientationRequested.LANDSCAPE) {
-                        //rotate to landscape - origin is now top-left so just always negate y
-                        Matrix landscape = Matrix.getRotateInstance(Math.PI / 2, 0, 0);
-                        cs.transform(landscape);
-                    } else {
-                        //move origin to top-left then always negate y
-                        Matrix portrait = Matrix.getTranslateInstance(0, (float) paper.getHeight());
-                        cs.transform(portrait);
+                        page.setRotation(90);
                     }
 
-                    Graphics2D graphics = new PDFBoxGraphics2D(cs, fontStore);
-                    int pageIndex = 0;
-                    printable.print(graphics, pageFormat, pageIndex);
+                    try (PDPageContentStream cs = new PDPageContentStream(doc, page)) {
+                        if (orientation == OrientationRequested.LANDSCAPE) {
+                            //rotate to landscape - origin is now top-left so just always negate y
+                            Matrix landscape = Matrix.getRotateInstance(Math.PI / 2, 0, 0);
+                            cs.transform(landscape);
+                        } else {
+                            //move origin to top-left then always negate y
+                            Matrix portrait = Matrix.getTranslateInstance(0, (float) paper.getHeight());
+                            cs.transform(portrait);
+                        }
+
+                        Graphics2D graphics = new PDFBoxGraphics2D(cs, fontStore);
+                        pageState = printable.print(graphics, pageFormat, pageIndex);
+                    }
+                    if (pageState == Printable.PAGE_EXISTS) {
+                        doc.addPage(page);
+                    }
+                    pageIndex++;
                 }
                 doc.save(outputFile);
             }

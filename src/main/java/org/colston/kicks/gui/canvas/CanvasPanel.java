@@ -59,6 +59,8 @@ class CanvasPanel extends JPanel {
     private final CanvasModel model;
     private final EventListenerList listeners = new EventListenerList();
 
+    private PageRenderer pageRenderer;
+
     public CanvasPanel(CanvasModel model, JTextComponent text) {
         // remove default layout manager - use absolute positioning for text field
         super(null);
@@ -133,15 +135,15 @@ class CanvasPanel extends JPanel {
 
         g2.scale(scale, scale);
 
-        PageRenderer pageRenderer = new PageRenderer(model.getDocument(), selection, SELECTION_COLOUR,
+        pageRenderer = new PageRenderer(model.getDocument(), selection, SELECTION_COLOUR,
                 new CanvasCursor(cursorIndex, cursorOffset, cursorOnNote));
         pageRenderer.doPaint(g2);
 
         // draw the cursor
         g2.setColor(PageRenderer.CURSOR_COLOUR);
         g2.setStroke(cursorStroke);
-        int x = PageRenderer.x(cursorIndex);
-        int y = PageRenderer.y(cursorIndex, cursorOffset);
+        int x = pageRenderer.x(cursorIndex);
+        int y = pageRenderer.y(cursorIndex, cursorOffset);
         if (!cursorOnNote) {
             x += PageRenderer.COLUMN_WIDTH / 2;
         }
@@ -296,8 +298,8 @@ class CanvasPanel extends JPanel {
             text.setVisible(false);
         } else {
             int size = PageRenderer.COLUMN_WIDTH / 2;
-            int x = PageRenderer.x(cursorIndex) + 7 * PageRenderer.COLUMN_WIDTH / 8;
-            int y = PageRenderer.y(cursorIndex, cursorOffset) - size / 3;
+            int x = pageRenderer.x(cursorIndex) + 7 * PageRenderer.COLUMN_WIDTH / 8;
+            int y = pageRenderer.y(cursorIndex, cursorOffset) - size / 3;
             // convert to screen coordinates
             x = (int) ((x + PageRenderer.BORDER_WIDTH) * scale);
             y = (int) ((y + PageRenderer.BORDER_WIDTH) * scale);

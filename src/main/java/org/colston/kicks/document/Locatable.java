@@ -12,11 +12,7 @@ public interface Locatable {
     }
 
     default int getTicks() {
-        return calculateTicks(getIndex(), getOffset());
-    }
-
-    static int calculateTicks(int index, int offset) {
-        return index * Locatable.CELL_TICKS + offset;
+        return LocatableUtils.calculateTicks(this);
     }
 
     default boolean isLessThan(Locatable l) {
@@ -32,6 +28,6 @@ public interface Locatable {
     }
 
     default String locationAsString() {
-        return "Locatable (index: " + getIndex() + ", offset: " + getOffset() + ")";
+        return "(index: " + getIndex() + ", offset: " + getOffset() + ")";
     }
 }

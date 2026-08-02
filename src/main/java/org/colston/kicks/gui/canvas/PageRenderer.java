@@ -5,10 +5,12 @@ import org.colston.kicks.document.Accidental;
 import org.colston.kicks.document.KicksDocument;
 import org.colston.kicks.document.Locatable;
 import org.colston.kicks.document.LocatableRange;
+import org.colston.kicks.document.LocatableUtils;
 import org.colston.kicks.document.Lyric;
 import org.colston.kicks.document.Note;
 import org.colston.kicks.document.Repeat;
 import org.colston.kicks.document.SimpleLocatable;
+import org.colston.kicks.document.SimpleLocatableRange;
 import org.colston.kicks.document.Song;
 import org.colston.kicks.document.Tuning;
 import org.colston.lib.i18n.Messages;
@@ -97,6 +99,7 @@ public class PageRenderer implements Printable {
      * State
      */
     private boolean cursorHighlight =  false;
+    private LocatableRange pageRange;
 
     public PageRenderer(KicksDocument doc) {
         this(doc, null, null, null);
@@ -107,11 +110,16 @@ public class PageRenderer implements Printable {
         this.selection = selection;
         this.selectionColour = selectionColour;
         this.cursor = cursor;
+        // default to first page only
+        this.pageRange = calcPageRange(0);
     }
 
     @Override
     public int print(Graphics graphics, PageFormat pageFormat, int pageIndex) throws PrinterException {
-        if (pageIndex > 0) {
+        pageRange = calcPageRange(pageIndex);
+        Locatable highest = LocatableUtils.findHighest(doc.getAllLocatables());
+
+        if (highest == null || highest.isLessThan(pageRange.getLow())) {
             return Printable.NO_SUCH_PAGE;
         }
 
@@ -144,7 +152,7 @@ public class PageRenderer implements Printable {
         // draw the background cells
         int x = CANVAS_WIDTH;
         int y = 0;
-        int index = 0;
+        int index = pageRange.getLow().getIndex();
 
         g2.setStroke(stroke);
         g2.setColor(BORDER_BOX_COLOUR);
@@ -168,7 +176,7 @@ public class PageRenderer implements Printable {
         FontMetrics fm;
         g2.setColor(FOREGROUND_COLOUR);
 
-        for (Song song : doc.getSongs()) {
+        for (Song song : doc.getSongs(pageRange)) {
             drawTitle(g2, song);
         }
 
@@ -183,7 +191,7 @@ public class PageRenderer implements Printable {
         Note chordStart = null;
         Note slurStart = null;
 
-        for (Note n : doc.getNotes()) {
+        for (Note n : doc.getNotes(pageRange)) {
             if (n.isSmall()) {
                 if (fm != sfm) {
                     g2.setFont(sfont);
@@ -232,7 +240,7 @@ public class PageRenderer implements Printable {
         }
 
         // draw the repeats
-        for (Repeat r : doc.getRepeats()) {
+        for (Repeat r : doc.getRepeats(pageRange)) {
             cursorStartHighlight(g2, r, true, null);
             drawRepeat(g2, r.isBack(), r.getIndex(), r.getOffset());
             cursorEndHighlight(g2, null);
@@ -241,7 +249,7 @@ public class PageRenderer implements Printable {
         // draw the lyrics
         g2.setFont(lyricFont);
         fm = g2.getFontMetrics();
-        for (Lyric l : doc.getLyrics()) {
+        for (Lyric l : doc.getLyrics(pageRange)) {
             if (KicksApp.settings().isRomaji()) {
                 drawRomajiLyric(g2, l.getValue(), l.getIndex(), l.getOffset(), fm);
             } else {
@@ -574,6 +582,12 @@ public class PageRenderer implements Printable {
         g2.drawString(romaji, x, y);
     }
 
+    private LocatableRange calcPageRange(int pageIndex) {
+        int startIndex = pageIndex * COLUMNS_PER_PAGE * CELLS_PER_COL;
+        int endIndex = startIndex + COLUMNS_PER_PAGE * CELLS_PER_COL - 1;
+        return new SimpleLocatableRange(startIndex, 1, endIndex, 12);
+    }
+
     private void cursorStartHighlight(Graphics2D g2, Locatable locatable, boolean noteSide, Font f) {
         if (cursor == null || (!isUnderCursor(locatable, noteSide) && !selection.contains(locatable))) {
             return;
@@ -600,8 +614,8 @@ public class PageRenderer implements Printable {
         return cursor.onNote() == noteSide && l.getIndex() == cursor.index() && l.getOffset() == cursor.offset();
     }
 
-    static int x(int index) {
-        int col = index / CELLS_PER_COL;
+    int x(int index) {
+        int col = (index - pageRange.getLow().getIndex()) / CELLS_PER_COL;
         return CANVAS_WIDTH - (COLUMN_SPACE + COLUMN_WIDTH) - (COLUMN_SPACE + COLUMN_WIDTH) * col;
     }
 
@@ -611,8 +625,8 @@ public class PageRenderer implements Printable {
         return y;
     }
 
-    static int y(int index, int offset) {
-        int cell = index % CELLS_PER_COL;
+    int y(int index, int offset) {
+        int cell = (index - pageRange.getLow().getIndex()) % CELLS_PER_COL;
         int y = CELL_HEIGHT * cell;
         y += (offset * CELL_HEIGHT) / Locatable.CELL_TICKS;
         return y;
