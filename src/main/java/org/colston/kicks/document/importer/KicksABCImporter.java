@@ -3,9 +3,11 @@ package org.colston.kicks.document.importer;
 import org.colston.kicks.document.Accidental;
 import org.colston.kicks.document.KicksDocument;
 import org.colston.kicks.document.Layout;
+import org.colston.kicks.document.Locatable;
 import org.colston.kicks.document.Lyric;
 import org.colston.kicks.document.Note;
 import org.colston.kicks.document.Repeat;
+import org.colston.kicks.document.SimpleLocatable;
 import org.colston.kicks.document.Song;
 import org.colston.kicks.document.Tuning;
 import org.colston.kicks.document.Utou;
@@ -36,6 +38,8 @@ public class KicksABCImporter implements Importer {
     private boolean previousLineWasNote = true;
     // When not null indicates we're parsing a chord.  Chord notes are stored in this list.
     private List<Note> chordNotes = null;
+    // Indicates that the previous object was a repeat start that needs to be added with the next note
+    private boolean repeatStart = false;
 
     // logging/error messages
     private int abcScriptLineNumber = 0;
@@ -204,11 +208,33 @@ public class KicksABCImporter implements Importer {
     private void parseNote(String s) throws Exception {
         StringBuilder abcn = new StringBuilder(s);
         char ch = abcn.charAt(0);
-        if (ch == '[' || ch == ']') {
-            // repeat
-            int o = calcOffset(abcn, ch != '[' ? 10 : 2);
-            int i = calcIndex(o);
-            Repeat repeat = new Repeat(i, o, ch != '[');
+        if (ch == '[') {
+            // repeat start
+            if (s.contains("<")) {
+                // absolute positioning
+                int o = calcOffset(abcn, 2);
+                int i = calcIndex(o);
+                Repeat repeat = new Repeat(i, o, false);
+                doc.getRepeats().add(repeat);
+            } else {
+                repeatStart = true;
+            }
+        } else if (ch == ']') {
+            // repeat end
+            int o = 0;
+            int i = 0;
+            if (s.contains("<")) {
+                // absolute positioning
+                o = calcOffset(abcn, 10);
+                i = calcIndex(o);
+            } else {
+                Locatable lastNote = doc.getNotes().getLast();
+                SimpleLocatable l = new SimpleLocatable(lastNote);
+                l.move(0, lastNote.getOffset() == Locatable.CELL_TICKS ? 3 : 4);
+                i = l.getIndex();
+                o = l.getOffset();
+            }
+            Repeat repeat = new Repeat(i, o, true);
             doc.getRepeats().add(repeat);
         } else if (ch == '{') {
             // start chord
@@ -307,6 +333,13 @@ public class KicksABCImporter implements Importer {
                 }
             } else {
                 doc.getNotes().add(note);
+            }
+            if (repeatStart) {
+                repeatStart = false;
+                SimpleLocatable l = new SimpleLocatable(i, o);
+                l.move(0, -4);
+                Repeat repeat = new Repeat(l.getIndex(), l.getOffset(), false);
+                doc.getRepeats().add(repeat);
             }
         } else {
             raiseException("Illegal character: " + ch);

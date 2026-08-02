@@ -92,7 +92,8 @@ A shortcut for this is to precede the note with a full-stop `.`, e.g. `.20` = `2
 
 Repeats:      `[` = start repeat, `]` = end repeat
 
-A start repeat defaults to offset 2 and end repeat defaults to offset 10.
+A start repeat defaults to is positioned relative to the note that follows
+and an end repeat is positioned relative to the note that precedes it.
 The absolute position can be controlled in the same way as for notes. E.g. `[<3>`
 
 ## Word lines

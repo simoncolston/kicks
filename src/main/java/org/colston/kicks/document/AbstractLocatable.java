@@ -31,6 +31,14 @@ public abstract class AbstractLocatable implements Locatable {
         return offset;
     }
 
+    protected void setIndex(int index) {
+        this.index = index;
+    }
+
+    protected void setOffset(int offset) {
+        this.offset = offset;
+    }
+
     @Override
     public void move(int indexDelta, int offsetDelta) {
         this.index += indexDelta;
@@ -39,13 +47,16 @@ public abstract class AbstractLocatable implements Locatable {
             // moved past the end of the cell on to the next cell
             offset = offset % CELL_TICKS;
             index++;
+        } if  (offset < 0) {
+            // moved past the start of the cell on to the previous cell
+            offset += CELL_TICKS;
+            index--;
         }
     }
 
     @Override
     public boolean equals(Object o) {
         if (!(o instanceof AbstractLocatable that)) return false;
-
         return index == that.index && offset == that.offset;
     }
 
@@ -54,5 +65,13 @@ public abstract class AbstractLocatable implements Locatable {
         int result = index;
         result = 31 * result + offset;
         return result;
+    }
+
+    @Override
+    public String toString() {
+        return "AbstractLocatable{" +
+                "index=" + index +
+                ", offset=" + offset +
+                '}';
     }
 }
