@@ -82,6 +82,7 @@ public class Utils {
                 Map.entry("tu", "toxu"),
                 Map.entry("du", "doxu"),
                 Map.entry("kwi", "kuxi"),
+                Map.entry("ye", "uxe"),
                 Map.entry("yaw", "yaxu"),
                 Map.entry("gwa", "guxwa"));
     }

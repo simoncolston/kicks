@@ -83,6 +83,8 @@ class KicksDocumentTest {
 
         Repeat repeat = new Repeat(0, 4, true);
         doc.getRepeats().add(repeat);
+        repeat = new Repeat(4, 4, false);
+        doc.getRepeats().add(repeat);
 
         repeat.setStyle(RepeatStyle.TRIANGLE_OUTLINE);
 

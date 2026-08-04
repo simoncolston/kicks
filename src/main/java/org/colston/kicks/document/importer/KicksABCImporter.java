@@ -221,8 +221,8 @@ public class KicksABCImporter implements Importer {
             }
         } else if (ch == ']') {
             // repeat end
-            int o = 0;
-            int i = 0;
+            int o;
+            int i;
             if (s.contains("<")) {
                 // absolute positioning
                 o = calcOffset(abcn, 10);
@@ -239,6 +239,10 @@ public class KicksABCImporter implements Importer {
         } else if (ch == '{') {
             // start chord
             chordNotes = new ArrayList<>();
+            if (docOffset > 0) {
+                // only increment if we are not at the start of an empty cell
+                incrementIndex(0);
+            }
         } else if (ch == '}') {
             // end chord
             if (chordNotes.size() == 1) {
@@ -260,11 +264,14 @@ public class KicksABCImporter implements Importer {
                 n1.setSmall(true);
                 n1.setChord(true);
                 doc.getNotes().add(n1);
+
                 n = chordNotes.get(1);
                 Note n2 = new Note(n1.getIndex(), 6, n.getString(), n.getPlacement());
                 n2.setSmall(true);
                 n2.setChord(true);
                 doc.getNotes().add(n2);
+
+                n = chordNotes.get(2);
                 Note n3 = new Note(n1.getIndex(), 10, n.getString(), n.getPlacement());
                 n3.setSmall(true);
                 doc.getNotes().add(n3);

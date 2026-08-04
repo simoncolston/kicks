@@ -18,7 +18,7 @@ public class Lyric extends AbstractLocatable {
 
     public Lyric(int cursorIndex, int cursorOffset, String s) {
         super(cursorIndex, cursorOffset);
-        this.value = s;
+        this.value = s != null && s.isBlank() ? null : s;
     }
 
     public String getValue() {

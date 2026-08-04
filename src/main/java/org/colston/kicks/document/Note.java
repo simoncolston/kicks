@@ -57,7 +57,7 @@ public class Note extends AbstractLocatable {
     }
 
     public void setSmall(boolean small) {
-        this.small = small;
+        this.small = small ? true : null;
     }
 
     public Accidental getAccidental() {
@@ -65,7 +65,7 @@ public class Note extends AbstractLocatable {
     }
 
     public void setAccidental(Accidental accidental) {
-        this.accidental = accidental;
+        this.accidental = accidental == Accidental.NONE ? null : accidental;
     }
 
     public Utou getUtou() {
@@ -73,7 +73,7 @@ public class Note extends AbstractLocatable {
     }
 
     public void setUtou(Utou utou) {
-        this.utou = utou;
+        this.utou = utou == Utou.NONE ? null : utou;
     }
 
     public boolean isChord() {
@@ -81,7 +81,7 @@ public class Note extends AbstractLocatable {
     }
 
     public void setChord(boolean chord) {
-        this.chord = chord;
+        this.chord = chord ? true : null;
     }
 
     public boolean isSlur() {
@@ -89,7 +89,7 @@ public class Note extends AbstractLocatable {
     }
 
     public void setSlur(boolean slur) {
-        this.slur = slur;
+        this.slur = slur ? true : null;
     }
 
     public int getFinger() {
@@ -97,7 +97,7 @@ public class Note extends AbstractLocatable {
     }
 
     public void setFinger(int finger) {
-        this.finger = finger;
+        this.finger = finger < 1 || finger > 4 ? null : finger;
     }
 
     @Override

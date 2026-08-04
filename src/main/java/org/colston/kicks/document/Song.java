@@ -44,15 +44,15 @@ public class Song {
     }
 
     public void setTitle(String title) {
-        this.title = title;
+        this.title = title != null && title.isBlank() ? null : title;
     }
 
     public Tuning getTuning() {
-        return tuning;
+        return tuning == null ? Tuning.HONCHOUSHI : tuning;
     }
 
     public void setTuning(Tuning tuning) {
-        this.tuning = tuning;
+        this.tuning = tuning == Tuning.HONCHOUSHI ? null : tuning;
     }
 
     public String getTempo() {
@@ -60,7 +60,7 @@ public class Song {
     }
 
     public void setTempo(String tempo) {
-        this.tempo = tempo;
+        this.tempo = tempo != null && tempo.isBlank() ? null : tempo;
     }
 
     public String getTranscription() {
@@ -68,7 +68,7 @@ public class Song {
     }
 
     public void setTranscription(String transcription) {
-        this.transcription = transcription;
+        this.transcription = transcription != null && transcription.isBlank() ? null : transcription;
     }
 
     public String getTitleRomaji() {
@@ -76,7 +76,7 @@ public class Song {
     }
 
     public void setTitleRomaji(String titleRomaji) {
-        this.titleRomaji = titleRomaji;
+        this.titleRomaji = titleRomaji != null && titleRomaji.isBlank() ? null : titleRomaji;
     }
 
     @Override
@@ -98,5 +98,17 @@ public class Song {
         result = 31 * result + Objects.hashCode(tempo);
         result = 31 * result + Objects.hashCode(transcription);
         return result;
+    }
+
+    @Override
+    public String toString() {
+        return "Song{" +
+                "index=" + index +
+                ", title='" + title + '\'' +
+                ", titleRomaji='" + titleRomaji + '\'' +
+                ", tuning=" + tuning +
+                ", tempo='" + tempo + '\'' +
+                ", transcription='" + transcription + '\'' +
+                '}';
     }
 }

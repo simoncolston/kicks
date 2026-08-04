@@ -36,7 +36,7 @@ public class Repeat extends AbstractLocatable {
     }
 
     public void setStyle(RepeatStyle style) {
-        this.style = style;
+        this.style = style == RepeatStyle.TRIANGLE_FILLED ? null : style;
     }
 
     @Override

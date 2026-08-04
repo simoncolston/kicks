@@ -60,17 +60,24 @@ and the numbers themselves become symbols for the notes, in the same way as the 
 Note modifiers come directly after the note number, in any order
 e.g. `21^sf2` is `上` with upstroke, small size and finger 2.
 
-Note size:    `l` =  large, `s` = small (default: `l`. But `s` for notes on a cell boundary)
+Note size
+:    `l` =  large, `s` = small (default: `l`. But `s` for notes on a cell boundary)
 
-Accidental:   `b` = flat
+Accidental
+:   `b` = flat
 
-Articulation: `'` = hammer (uchi utu), `^` = upstroke (kaki utu)
+Articulation
+: `'` = hammer (uchi utu), `^` = upstroke (kaki utu)
 
-Finger:       `f1`, `f2`, `f3`, `f4`
+Finger
+:       `f1`, `f2`, `f3`, `f4`
 
-Slur:         `)` = slur to next note
+Slur
+:         `)` = slur to next note
 
-Chord:        braces e.g. `{ 20 30 }` (NOTE: brace must be surrounded by spaces - `{20 30}` is invalid)
+Chord
+:        braces e.g. `{ 20 30 }` (NOTE: brace must be surrounded by spaces - `{20 30}` is invalid)
+(NOTE: Absolute positioning of notes is not allowed for chords)
 
 ### Note position
 
@@ -90,7 +97,8 @@ A shortcut for this is to precede the note with a full-stop `.`, e.g. `.20` = `2
 
 ### Repeats
 
-Repeats:      `[` = start repeat, `]` = end repeat
+Repeats
+:      `[` = start repeat, `]` = end repeat
 
 A start repeat defaults to is positioned relative to the note that follows
 and an end repeat is positioned relative to the note that precedes it.
