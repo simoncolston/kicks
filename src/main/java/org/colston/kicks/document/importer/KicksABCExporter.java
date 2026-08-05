@@ -36,6 +36,8 @@ public class KicksABCExporter {
             LocatableRange songRange = calcSongRange(doc, songIndex);
             writeNotesAndRepeats(doc, writer, songRange);
             writeLyrics(doc, writer, songRange);
+
+            writer.newLine();
         }
     }
 

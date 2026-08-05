@@ -2,7 +2,6 @@ package org.colston.kicks.document.importer;
 
 import org.colston.kicks.document.Accidental;
 import org.colston.kicks.document.KicksDocument;
-import org.colston.kicks.document.Layout;
 import org.colston.kicks.document.Locatable;
 import org.colston.kicks.document.Lyric;
 import org.colston.kicks.document.Note;
@@ -29,7 +28,7 @@ public class KicksABCImporter implements Importer {
 
     // state
     // index and offset within the kicks document being generated
-    private int docIndex = Layout.LANDSCAPE_11COL_12CELL.getCellsPerColumn();
+    private int docIndex = 0;
     private int docOffset = 0;
     // indexes used to align the lyrics with the notes in the previous line
     private int noteLineStartDocIndex;  // docIndex when starting a note line from the abc file
@@ -40,6 +39,10 @@ public class KicksABCImporter implements Importer {
     private List<Note> chordNotes = null;
     // Indicates that the previous object was a repeat start that needs to be added with the next note
     private boolean repeatStart = false;
+    // Indicates we are processing a song header
+    private boolean header;
+    // Index of the song we are currently parsing
+    private int songIndex;
 
     // logging/error messages
     private int abcScriptLineNumber = 0;
@@ -99,23 +102,18 @@ public class KicksABCImporter implements Importer {
     @Override
     public KicksDocument importFile(File file) throws Exception {
         log.info("Importing file: " + file.getAbsolutePath());
-        doc = initialiseDocument();
-        boolean header = true;
+        doc = new KicksDocument();
+        songIndex = -1;
         try (BufferedReader br = Files.newBufferedReader(file.toPath())) {
             String line;
             while ((line = br.readLine()) != null) {
                 abcScriptLineNumber++;
                 line = line.trim();
                 if (line.startsWith("%")) {
+                    // comment
                     continue;
                 }
-                if (header) {
-                    if (line.isEmpty()) {
-                        // end of header
-                        header = false;
-                        continue;
-                    }
-                    parseCommand(line);
+                if (parseCommand(line)) {
                     continue;
                 }
                 if (line.isEmpty()) {
@@ -210,75 +208,16 @@ public class KicksABCImporter implements Importer {
         char ch = abcn.charAt(0);
         if (ch == '[') {
             // repeat start
-            if (s.contains("<")) {
-                // absolute positioning
-                int o = calcOffset(abcn, 2);
-                int i = calcIndex(o);
-                Repeat repeat = new Repeat(i, o, false);
-                doc.getRepeats().add(repeat);
-            } else {
-                repeatStart = true;
-            }
+            repeatStart(s, abcn);
         } else if (ch == ']') {
             // repeat end
-            int o;
-            int i;
-            if (s.contains("<")) {
-                // absolute positioning
-                o = calcOffset(abcn, 10);
-                i = calcIndex(o);
-            } else {
-                Locatable lastNote = doc.getNotes().getLast();
-                SimpleLocatable l = new SimpleLocatable(lastNote);
-                l.move(0, lastNote.getOffset() == Locatable.CELL_TICKS ? 3 : 4);
-                i = l.getIndex();
-                o = l.getOffset();
-            }
-            Repeat repeat = new Repeat(i, o, true);
-            doc.getRepeats().add(repeat);
+            repeatEnd(s, abcn);
         } else if (ch == '{') {
-            // start chord
-            chordNotes = new ArrayList<>();
-            if (docOffset > 0) {
-                // only increment if we are not at the start of an empty cell
-                incrementIndex(0);
-            }
+            // chord start
+            chordStart();
         } else if (ch == '}') {
-            // end chord
-            if (chordNotes.size() == 1) {
-                // not a chord, but allow the bad syntax
-                doc.getNotes().add(chordNotes.getFirst());
-            } else if (chordNotes.size() == 2) {
-                Note n = chordNotes.getFirst();
-                Note n1 = new Note(n.getIndex(), 3, n.getString(), n.getPlacement());
-                n1.setSmall(true);
-                n1.setChord(true);
-                doc.getNotes().add(n1);
-                n = chordNotes.get(1);
-                Note n2 = new Note(n1.getIndex(), 9, n.getString(), n.getPlacement());
-                n2.setSmall(true);
-                doc.getNotes().add(n2);
-            } else if (chordNotes.size() == 3) {
-                Note n = chordNotes.getFirst();
-                Note n1 = new Note(n.getIndex(), 2, n.getString(), n.getPlacement());
-                n1.setSmall(true);
-                n1.setChord(true);
-                doc.getNotes().add(n1);
-
-                n = chordNotes.get(1);
-                Note n2 = new Note(n1.getIndex(), 6, n.getString(), n.getPlacement());
-                n2.setSmall(true);
-                n2.setChord(true);
-                doc.getNotes().add(n2);
-
-                n = chordNotes.get(2);
-                Note n3 = new Note(n1.getIndex(), 10, n.getString(), n.getPlacement());
-                n3.setSmall(true);
-                doc.getNotes().add(n3);
-            }
-            // now the chord is complete we move the index on...
-            incrementIndex(0);
-            chordNotes = null;
+            // chord end
+            chordEnd();
         } else if (isDigit(ch) && isDigit(abcn.charAt(1))) {
             // a note
             int o = calcOffset(abcn, 6);
@@ -353,52 +292,142 @@ public class KicksABCImporter implements Importer {
         }
     }
 
-    private void parseCommand(String line) throws Exception {
-        if (line.length() < 2) {
+    private void chordEnd() {
+        if (chordNotes.size() == 1) {
+            // not a chord, but allow the bad syntax
+            doc.getNotes().add(chordNotes.getFirst());
+        } else if (chordNotes.size() == 2) {
+            Note n = chordNotes.getFirst();
+            Note n1 = new Note(n.getIndex(), 3, n.getString(), n.getPlacement());
+            n1.setSmall(true);
+            n1.setChord(true);
+            doc.getNotes().add(n1);
+            n = chordNotes.get(1);
+            Note n2 = new Note(n1.getIndex(), 9, n.getString(), n.getPlacement());
+            n2.setSmall(true);
+            doc.getNotes().add(n2);
+        } else if (chordNotes.size() == 3) {
+            Note n = chordNotes.getFirst();
+            Note n1 = new Note(n.getIndex(), 2, n.getString(), n.getPlacement());
+            n1.setSmall(true);
+            n1.setChord(true);
+            doc.getNotes().add(n1);
+
+            n = chordNotes.get(1);
+            Note n2 = new Note(n1.getIndex(), 6, n.getString(), n.getPlacement());
+            n2.setSmall(true);
+            n2.setChord(true);
+            doc.getNotes().add(n2);
+
+            n = chordNotes.get(2);
+            Note n3 = new Note(n1.getIndex(), 10, n.getString(), n.getPlacement());
+            n3.setSmall(true);
+            doc.getNotes().add(n3);
+        }
+        // now the chord is complete we move the index on...
+        incrementIndex(0);
+        chordNotes = null;
+    }
+
+    private void chordStart() {
+        chordNotes = new ArrayList<>();
+        if (docOffset > 0) {
+            // only increment if we are not at the start of an empty cell
+            incrementIndex(0);
+        }
+    }
+
+    private void repeatEnd(String s, StringBuilder abcn) throws Exception {
+        int o;
+        int i;
+        if (s.contains("<")) {
+            // absolute positioning
+            o = calcOffset(abcn, 10);
+            i = calcIndex(o);
+        } else {
+            Locatable lastNote = doc.getNotes().getLast();
+            SimpleLocatable l = new SimpleLocatable(lastNote);
+            l.move(0, lastNote.getOffset() == Locatable.CELL_TICKS ? 3 : 4);
+            i = l.getIndex();
+            o = l.getOffset();
+        }
+        Repeat repeat = new Repeat(i, o, true);
+        doc.getRepeats().add(repeat);
+    }
+
+    private void repeatStart(String s, StringBuilder abcn) throws Exception {
+        if (s.contains("<")) {
+            // absolute positioning
+            int o = calcOffset(abcn, 2);
+            int i = calcIndex(o);
+            Repeat repeat = new Repeat(i, o, false);
+            doc.getRepeats().add(repeat);
+        } else {
+            repeatStart = true;
+        }
+    }
+
+    private boolean parseCommand(String line) throws Exception {
+        if (line.isEmpty()) {
+            if (header) {
+                //end of header
+                header = false;
+                return true;
+            }
+            return false;
+        }
+        if (header && line.length() < 2) {
             raiseException("Line is too short: " + line);
         }
         if (line.charAt(1) != ':') {
-            raiseException("Illegal header line: " + line);
+            if (header) {
+                raiseException("Illegal header line: " + line);
+            }
+            return false;
         }
         switch (line.charAt(0)) {
             case 'T':
-                doc.getSongs().getFirst().setTitle(line.substring(2));
+                songIndex++;
+                int cellsPerColumn = doc.getProperties().getLayout().getCellsPerColumn();
+                int cellInCol = docIndex % cellsPerColumn;
+                int i = cellInCol == 0 ? docIndex : docIndex + cellsPerColumn - cellInCol;
+                docIndex = i + doc.getProperties().getLayout().getCellsPerColumn();
+                docOffset = 0;
+                Song song = new Song(i);
+                song.setTitle(line.substring(2));
+                doc.getSongs().add(song);
+                header = true;
                 break;
             case 'E':
-                doc.getSongs().getLast().setTitleRomaji(line.substring(2));
+                doc.getSongs().get(songIndex).setTitleRomaji(line.substring(2));
                 break;
             case 'K':
                 String tuning = line.substring(2).trim();
                 switch (tuning) {
                     case "honchoshi":
-                        doc.getSongs().getFirst().setTuning(Tuning.HONCHOUSHI);
+                        doc.getSongs().get(songIndex).setTuning(Tuning.HONCHOUSHI);
                         break;
                     case "sansage":
-                        doc.getSongs().getFirst().setTuning(Tuning.SANSAGE);
+                        doc.getSongs().get(songIndex).setTuning(Tuning.SANSAGE);
                         break;
                     case "niage":
-                        doc.getSongs().getFirst().setTuning(Tuning.NIAGE);
+                        doc.getSongs().get(songIndex).setTuning(Tuning.NIAGE);
                         break;
                     default:
                         raiseException("Illegal tuning: " + tuning);
                 }
                 break;
             case 'Q':
-                doc.getSongs().getFirst().setTempo(line.substring(2, 2 + Math.min(3, line.length() - 2)));
+                doc.getSongs().get(songIndex).setTempo(line.substring(2, 2 + Math.min(3, line.length() - 2)));
                 break;
             default:
-                raiseException("Illegal header line: " + line);
+                if (header) {
+                    raiseException("Illegal header line: " + line);
+                }
+                return false;
         }
+        return true;
     }
-
-    private KicksDocument initialiseDocument() {
-        KicksDocument doc = new KicksDocument();
-        Song song = new Song(0);
-        song.setTuning(Tuning.HONCHOUSHI);
-        doc.getSongs().add(song);
-        return doc;
-    }
-
 
     private void raiseException(String message) throws Exception {
         throw new Exception("Line: " + abcScriptLineNumber + ", " + message);

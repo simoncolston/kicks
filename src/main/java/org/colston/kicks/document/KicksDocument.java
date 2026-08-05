@@ -76,7 +76,7 @@ public class KicksDocument {
 
 
     public Iterable<Song> getSongs(LocatableRange pageRange) {
-        return () -> new Iterator<Song>() {
+        return () -> new Iterator<>() {
             int i = 0;
             private Song current = null;
 

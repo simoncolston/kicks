@@ -103,7 +103,7 @@ class CanvasControl implements Canvas {
 
     @Override
     public Printable getPrintable() {
-        return new PageRenderer(model.getDocument());
+        return new PageRenderer(model.getDocument(), KicksApp.settings());
     }
 
     @Override

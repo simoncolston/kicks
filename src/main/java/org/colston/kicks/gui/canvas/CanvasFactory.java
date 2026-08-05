@@ -1,5 +1,6 @@
 package org.colston.kicks.gui.canvas;
 
+import org.colston.kicks.KicksApp;
 import org.colston.kicks.Settings;
 import org.colston.kicks.document.KicksDocument;
 import org.colston.kicks.document.Song;
@@ -53,7 +54,7 @@ public final class CanvasFactory {
     }
 
     public static Printable createPrintable(KicksDocument doc) {
-        return new PageRenderer(doc);
+        return new PageRenderer(doc, KicksApp.settings());
     }
 
     private static CanvasPanel createCanvasPanel(CanvasModel model, JTextField text) {

@@ -1,5 +1,6 @@
 package org.colston.kicks.gui.canvas;
 
+import org.colston.kicks.KicksApp;
 import org.colston.kicks.document.Locatable;
 import org.colston.kicks.document.LocatableRange;
 import org.colston.kicks.document.Lyric;
@@ -135,7 +136,7 @@ class CanvasPanel extends JPanel {
 
         g2.scale(scale, scale);
 
-        pageRenderer = new PageRenderer(model.getDocument(), selection, SELECTION_COLOUR,
+        pageRenderer = new PageRenderer(model.getDocument(), KicksApp.settings(), selection, SELECTION_COLOUR,
                 new CanvasCursor(cursorIndex, cursorOffset, cursorOnNote));
         pageRenderer.doPaint(g2);
 

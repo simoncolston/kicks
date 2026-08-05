@@ -1,6 +1,7 @@
 package org.colston.kicks.gui.canvas;
 
 import org.colston.kicks.KicksApp;
+import org.colston.kicks.Settings;
 import org.colston.kicks.document.Accidental;
 import org.colston.kicks.document.KicksDocument;
 import org.colston.kicks.document.Locatable;
@@ -94,6 +95,7 @@ public class PageRenderer implements Printable {
     private final LocatableRange selection;
     private final CanvasCursor cursor;
     private final Color selectionColour;
+    private final Settings settings;
 
     /*
      * State
@@ -101,17 +103,18 @@ public class PageRenderer implements Printable {
     private boolean cursorHighlight =  false;
     private LocatableRange pageRange;
 
-    public PageRenderer(KicksDocument doc) {
-        this(doc, null, null, null);
+    public PageRenderer(KicksDocument doc, Settings settings) {
+        this(doc, settings, null, null, null);
     }
 
-    public PageRenderer(KicksDocument doc, LocatableRange selection, Color selectionColour, CanvasCursor cursor) {
+    public PageRenderer(KicksDocument doc, Settings settings, LocatableRange selection, Color selectionColour, CanvasCursor cursor) {
         this.doc = doc;
         this.selection = selection;
         this.selectionColour = selectionColour;
         this.cursor = cursor;
         // default to first page only
         this.pageRange = calcPageRange(0);
+        this.settings = settings;
     }
 
     @Override
@@ -250,7 +253,7 @@ public class PageRenderer implements Printable {
         g2.setFont(lyricFont);
         fm = g2.getFontMetrics();
         for (Lyric l : doc.getLyrics(pageRange)) {
-            if (KicksApp.settings().isRomaji()) {
+            if (settings != null && settings.isRomaji()) {
                 drawRomajiLyric(g2, l.getValue(), l.getIndex(), l.getOffset(), fm);
             } else {
                 char[] ch = l.getValue().toCharArray();
@@ -345,7 +348,7 @@ public class PageRenderer implements Printable {
 
         if (title != null && !title.isBlank()) {
             char[] tchars = title.toCharArray();
-            int x = CANVAS_WIDTH - (COLUMN_WIDTH + COLUMN_SPACE) * ((song.getIndex() / CELLS_PER_COL) + 1);
+            int x = calcTitleBaseX(song);
             int y = 0;
 
             g2.setFont(titleFont);
@@ -407,7 +410,7 @@ public class PageRenderer implements Printable {
             }
         }
         if (romaji != null && !romaji.isBlank()) {
-            int x = CANVAS_WIDTH - (COLUMN_WIDTH + COLUMN_SPACE) * ((song.getIndex() / CELLS_PER_COL) + 1);
+            int x = calcTitleBaseX(song);
             x += COLUMN_WIDTH - romajiCharWidth;
             int y = TITLE_MARGIN + titleFont.getSize() - rtitleFont.getSize();
             g2.setFont(rtitleFont);
@@ -423,7 +426,7 @@ public class PageRenderer implements Printable {
                 // draw the tuning
                 g2.setFont(sfont);
                 FontMetrics fm = g2.getFontMetrics();
-                int x = CANVAS_WIDTH - (COLUMN_WIDTH + COLUMN_SPACE) * ((song.getIndex() / CELLS_PER_COL) + 1);
+                int x = calcTitleBaseX(song);
                 x += ((COLUMN_WIDTH - fm.charWidth(tchars[0])) / 2);
                 int y = CANVAS_HEIGHT - TITLE_MARGIN - (sfont.getSize() * tchars.length);
                 for (int i = 0; i < tchars.length; i++) {
@@ -438,10 +441,14 @@ public class PageRenderer implements Printable {
             tempo += " BPM";
             g2.setFont(tempoFont);
             FontMetrics fm = g2.getFontMetrics();
-            int x = CANVAS_WIDTH - (COLUMN_WIDTH + COLUMN_SPACE) * ((song.getIndex() / CELLS_PER_COL) + 1);
+            int x = calcTitleBaseX(song);
             x += ((COLUMN_WIDTH - fm.stringWidth(tempo)) / 2);
             g2.drawString(tempo, x, CANVAS_HEIGHT);
         }
+    }
+
+    private int calcTitleBaseX(Song song) {
+        return CANVAS_WIDTH - (COLUMN_WIDTH + COLUMN_SPACE) * (((song.getIndex() - pageRange.getLow().getIndex()) / CELLS_PER_COL) + 1);
     }
 
     private void drawNote(Graphics2D g2, Note n, FontMetrics fm) {

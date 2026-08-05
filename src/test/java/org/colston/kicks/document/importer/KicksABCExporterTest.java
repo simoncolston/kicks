@@ -19,7 +19,7 @@ class KicksABCExporterTest {
         File inputFile = new File("testdata/_test-a.kicks");
         KicksDocument inputDoc = DocumentStore.create().load(inputFile);
 
-        File outputFile = new File("testdata/_test-a.kicksabc");
+        File outputFile = new File("target/_test-a.kicksabc");
         KicksABCExporter exporter = new KicksABCExporter();
         exporter.exportDocument(inputDoc, outputFile);
 
