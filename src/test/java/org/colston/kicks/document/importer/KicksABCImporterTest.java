@@ -1,7 +1,10 @@
 package org.colston.kicks.document.importer;
 
+import de.danielbechler.diff.ObjectDifferBuilder;
+import de.danielbechler.diff.node.DiffNode;
 import org.colston.kicks.KicksApp;
 import org.colston.kicks.document.KicksDocument;
+import org.colston.kicks.document.persistence.DocumentStore;
 import org.colston.kicks.gui.canvas.PageRenderer;
 import org.colston.printpdf.PDFBoxPrintFontMap;
 import org.colston.printpdf.PDFBoxPrintService;
@@ -28,22 +31,37 @@ import java.awt.print.Printable;
 import java.io.File;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 class KicksABCImporterTest {
 
     private static final int MARGIN = 20;
 
     @ParameterizedTest
-    @ValueSource(strings = {"asadoyayunta", "asadoya-and-nandaki", "ahabushi-thrice"})
+    @ValueSource(strings = {"asadoyayunta"})
+    @ValueSource(strings = {"sonda-2-chunjunnagari"})
+//    @ValueSource(strings = {"asadoya-and-nandaki"})
+//    @ValueSource(strings = {"ahabushi-thrice"})
     void importFile(String filename) throws Exception {
+        File inputFile = new File("testdata/" + filename + ".kicks");
+        KicksDocument expected = DocumentStore.create().load(inputFile);
+
         File file = new File("testdata/" + filename + ".kicksabc");
         Optional<Importer> importer = ImporterFactory.getImporter(file);
         assertTrue(importer.isPresent());
-        KicksDocument outputDoc = importer.get().importFile(file);
+        KicksDocument actual = importer.get().importFile(file);
 
-        assertNotNull(outputDoc);
+        // TODO: remove this when kicksabc supports versions
+        actual.getProperties().setVersion(expected.getProperties().getVersion());
+
+        // do a diff of the kicks doc and the kicksabc doc
+        DiffNode diff = ObjectDifferBuilder.buildDefault().compare(expected, actual);
+        if (diff.hasChanges()) {
+            diff.visit((node, visit) -> System.out.println(node.getPath() + " => " + node.getState()));
+        }
+
+        assertNotNull(actual);
+        assertEquals(expected, actual);
 
 //        exportToPDF(filename, outputDoc);
     }

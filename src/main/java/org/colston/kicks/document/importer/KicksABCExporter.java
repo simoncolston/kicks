@@ -53,9 +53,9 @@ public class KicksABCExporter {
                 for (int i = prev.getIndex(); i < lyric.getIndex() - 1; i++) {
                     writer.write(" *");
                 }
-                if (prev.getIndex() == lyric.getIndex() && prev.getOffset() != 6 && lyric.getOffset() != 6) {
-                    writer.write(" *");
-                }
+//                if (prev.getIndex() == lyric.getIndex() && prev.getOffset() != 6 && lyric.getOffset() == Locatable.CELL_TICKS) {
+//                    writer.write(" *");
+//                }
                 if (prev.getIndex() != lyric.getIndex() && lyric.getOffset() > 6) {
                     writer.write(" *");
                 }
@@ -83,9 +83,11 @@ public class KicksABCExporter {
         boolean chordStarted = false;
         for (Note note : doc.getNotes(songRange)) {
             Repeat repeat = getRepeat(songRepeats, repeatIndex);
-            if (repeat != null && note.isGreaterThan(repeat)) {
+            while (repeat != null && note.isGreaterThan(repeat)) {
+                // while loop to handle consecutive repeats
                 writer.write(repeat.isBack() ? " ]" : " [");
                 repeatIndex = calcRepeatIndex(songRepeats, repeatIndex);
+                repeat = getRepeat(songRepeats, repeatIndex);
             }
             if (note.isChord()) {
                 if (!chordStarted) {

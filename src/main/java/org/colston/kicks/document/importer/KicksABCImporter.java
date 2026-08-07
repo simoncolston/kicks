@@ -60,9 +60,9 @@ public class KicksABCImporter implements Importer {
         return docIndex;
     }
 
-    private void incrementIndex(int newOffset) {
+    private void incrementIndex() {
         docIndex++;
-        docOffset = newOffset;
+        docOffset = 0;
     }
 
     private void startNotesSetIndex() {
@@ -171,7 +171,9 @@ public class KicksABCImporter implements Importer {
         int ch = abcl.charAt(0);
         if (ch == '*') {
             // space, so move on...
-            incrementIndex(6);
+            // these two methods do the calculation of docIndex as if a lyric was imported
+            int o = calcOffset(abcl, 6);
+            int i = calcIndex(o);
         } else  {
             int o = calcOffset(abcl, 6);
             int i = calcIndex(o);
@@ -182,7 +184,7 @@ public class KicksABCImporter implements Importer {
     }
 
     private void parseNotes(String line) throws Exception {
-        boolean first = true;
+        startNotesSetIndex();
         String[] abcns = line.split(" +"); // allow one or more spaces between notes
         for (String abcn : abcns) {
             int dot = abcn.indexOf('.');
@@ -194,10 +196,6 @@ public class KicksABCImporter implements Importer {
                     parseNote(abcn.substring(0, dot));
                 }
                 parseNote(abcn.substring(dot + 1) + "<12>");
-            }
-            if (first) {
-                first = false;
-                startNotesSetIndex();
             }
         }
         endNotesSetIndex();
@@ -282,14 +280,27 @@ public class KicksABCImporter implements Importer {
             }
             if (repeatStart) {
                 repeatStart = false;
-                SimpleLocatable l = new SimpleLocatable(i, o);
-                l.move(0, -4);
-                Repeat repeat = new Repeat(l.getIndex(), l.getOffset(), false);
+                Repeat repeat = createStartRepeat(i, o);
                 doc.getRepeats().add(repeat);
             }
         } else {
             raiseException("Illegal character: " + ch);
         }
+    }
+
+    private Repeat createStartRepeat(int i, int o) {
+        SimpleLocatable l = new SimpleLocatable(i, o);
+        l.move(0, -4);
+        // this might be the second of consecutive repeats
+        // therefore, make sure it comes after the previous repeat
+        if (!doc.getRepeats().isEmpty()) {
+            Repeat prev = doc.getRepeats().getLast();
+            if (prev.isGreaterThan(l)) {
+                l = new SimpleLocatable(prev.getIndex(), prev.getOffset());
+                l.move(0, 1);
+            }
+        }
+        return new Repeat(l.getIndex(), l.getOffset(), false);
     }
 
     private void chordEnd() {
@@ -325,7 +336,7 @@ public class KicksABCImporter implements Importer {
             doc.getNotes().add(n3);
         }
         // now the chord is complete we move the index on...
-        incrementIndex(0);
+        incrementIndex();
         chordNotes = null;
     }
 
@@ -333,7 +344,7 @@ public class KicksABCImporter implements Importer {
         chordNotes = new ArrayList<>();
         if (docOffset > 0) {
             // only increment if we are not at the start of an empty cell
-            incrementIndex(0);
+            incrementIndex();
         }
     }
 
