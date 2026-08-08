@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<kunkunshi version="2">
+    <properties>
+        <version>2026-08-09</version>
+        <layout>LANDSCAPE_11COL_12CELL</layout>
+    </properties>
+    <songs>
+        <song index="0">
+            <title>テスト</title>
+            <titleRomaji>Test</titleRomaji>
+        </song>
+    </songs>
+    <notes>
+        <note string="1" placement="0" index="12" offset="6"/>
+        <note string="1" placement="1" index="12" offset="12">
+            <small>true</small>
+        </note>
+        <note string="1" placement="2" index="13" offset="6"/>
+        <note string="2" placement="0" index="13" offset="12">
+            <small>true</small>
+        </note>
+        <note string="2" placement="1" index="14" offset="6"/>
+        <note string="2" placement="2" index="14" offset="12">
+            <small>true</small>
+        </note>
+        <note string="2" placement="3" index="15" offset="6"/>
+        <note string="3" placement="0" index="15" offset="12">
+            <small>true</small>
+        </note>
+        <note string="3" placement="1" index="16" offset="6"/>
+        <note string="3" placement="2" index="16" offset="12">
+            <small>true</small>
+        </note>
+        <note string="3" placement="3" index="17" offset="6"/>
+        <note string="3" placement="4" index="17" offset="12">
+            <small>true</small>
+        </note>
+        <note string="3" placement="5" index="18" offset="6"/>
+        <note string="3" placement="4" index="18" offset="12">
+            <small>true</small>
+        </note>
+        <note string="3" placement="3" index="19" offset="6"/>
+        <note string="3" placement="2" index="19" offset="12">
+            <small>true</small>
+        </note>
+        <note string="3" placement="1" index="20" offset="6"/>
+        <note string="3" placement="0" index="20" offset="12">
+            <small>true</small>
+        </note>
+        <note string="2" placement="3" index="21" offset="6"/>
+        <note string="2" placement="2" index="21" offset="12">
+            <small>true</small>
+        </note>
+        <note string="2" placement="1" index="22" offset="6"/>
+        <note string="2" placement="0" index="22" offset="12">
+            <small>true</small>
+        </note>
+        <note string="1" placement="2" index="23" offset="6"/>
+        <note string="1" placement="1" index="23" offset="12">
+            <small>true</small>
+        </note>
+        <note string="1" placement="0" index="24" offset="6"/>
+    </notes>
+    <breaks/>
+    <repeats>
+        <repeat index="23" offset="12">
+            <back>true</back>
+        </repeat>
+    </repeats>
+    <lyrics/>
+</kunkunshi>

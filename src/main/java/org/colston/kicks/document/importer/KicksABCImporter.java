@@ -66,7 +66,7 @@ public class KicksABCImporter implements Importer {
     }
 
     private void startNotesSetIndex() {
-        noteLineStartDocIndex = docIndex;
+        noteLineStartDocIndex = docIndex + 1;
     }
 
     private void endNotesSetIndex() {
@@ -150,6 +150,10 @@ public class KicksABCImporter implements Importer {
 
     private void parseLyrics(String line) throws Exception {
         startLyricsSetIndex();
+        if (doc.getSongs().getLast().getIndex() == docIndex - doc.getProperties().getLayout().getCellsPerColumn() - 1) {
+            // if it is the first lyric after a song title docIndex needs tweaking
+            docIndex--;
+        }
         String[] abcls = line.split(" +"); // allow one or more spaces between lyrics
         for (String abcl : abcls) {
             int dot = abcl.indexOf('.');
@@ -359,8 +363,15 @@ public class KicksABCImporter implements Importer {
             Locatable lastNote = doc.getNotes().getLast();
             SimpleLocatable l = new SimpleLocatable(lastNote);
             l.move(0, lastNote.getOffset() == Locatable.CELL_TICKS ? 3 : 4);
-            i = l.getIndex();
-            o = l.getOffset();
+            if (l.getIndex() == lastNote.getIndex() + 1 && l.getIndex() % doc.getProperties().getLayout().getCellsPerColumn() == 0) {
+                // moved over a column boundary so set the repeat at the bottom of the previous column
+                i = lastNote.getIndex();
+                o = Locatable.CELL_TICKS;
+            } else {
+                // move the repeat to a nice distance after the last note
+                i = l.getIndex();
+                o = l.getOffset();
+            }
         }
         Repeat repeat = new Repeat(i, o, true);
         doc.getRepeats().add(repeat);

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <kunkunshi version="2">
     <properties>
-        <version>2026-08-06</version>
+        <version>2026-08-08</version>
         <layout>LANDSCAPE_11COL_12CELL</layout>
     </properties>
     <songs>
@@ -232,6 +232,19 @@
         <note string="3" placement="3" index="87" offset="12">
             <small>true</small>
         </note>
+        <note string="1" placement="0" index="88" offset="6"/>
+        <note string="3" placement="0" index="89" offset="6"/>
+        <note string="3" placement="1" index="89" offset="12">
+            <small>true</small>
+        </note>
+        <note string="2" placement="0" index="90" offset="6"/>
+        <note string="3" placement="0" index="90" offset="12">
+            <small>true</small>
+        </note>
+        <note string="1" placement="2" index="91" offset="6"/>
+        <note string="3" placement="3" index="91" offset="12">
+            <small>true</small>
+        </note>
     </notes>
     <breaks/>
     <repeats>
@@ -250,7 +263,7 @@
         <repeat index="82" offset="4">
             <back>false</back>
         </repeat>
-        <repeat index="88" offset="3">
+        <repeat index="92" offset="3">
             <back>true</back>
         </repeat>
     </repeats>
@@ -371,6 +384,18 @@
         </lyric>
         <lyric index="85" offset="7">
             <value>ヒ</value>
+        </lyric>
+        <lyric index="88" offset="12">
+            <value>テ</value>
+        </lyric>
+        <lyric index="89" offset="3">
+            <value>ン</value>
+        </lyric>
+        <lyric index="90" offset="12">
+            <value>ハ</value>
+        </lyric>
+        <lyric index="91" offset="6">
+            <value>リ</value>
         </lyric>
     </lyrics>
 </kunkunshi>

@@ -1,13 +1,12 @@
 package org.colston.kicks.document.importer;
 
-import de.danielbechler.diff.ObjectDifferBuilder;
-import de.danielbechler.diff.node.DiffNode;
 import org.colston.kicks.KicksApp;
 import org.colston.kicks.document.KicksDocument;
 import org.colston.kicks.document.persistence.DocumentStore;
 import org.colston.kicks.gui.canvas.PageRenderer;
 import org.colston.printpdf.PDFBoxPrintFontMap;
 import org.colston.printpdf.PDFBoxPrintService;
+import org.colston.unittestutils.UnitTestUtils;
 import org.colston.utils.Utils;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -29,9 +28,12 @@ import javax.print.attribute.standard.OrientationRequested;
 import java.awt.*;
 import java.awt.print.Printable;
 import java.io.File;
+import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class KicksABCImporterTest {
 
@@ -40,8 +42,9 @@ class KicksABCImporterTest {
     @ParameterizedTest
     @ValueSource(strings = {"asadoyayunta"})
     @ValueSource(strings = {"sonda-2-chunjunnagari"})
-//    @ValueSource(strings = {"asadoya-and-nandaki"})
-//    @ValueSource(strings = {"ahabushi-thrice"})
+    @ValueSource(strings = {"asadoya-and-nandaki"})
+    @ValueSource(strings = {"ahabushi-thrice"})
+    @ValueSource(strings = {"import-test"})
     void importFile(String filename) throws Exception {
         File inputFile = new File("testdata/" + filename + ".kicks");
         KicksDocument expected = DocumentStore.create().load(inputFile);
@@ -55,10 +58,7 @@ class KicksABCImporterTest {
         actual.getProperties().setVersion(expected.getProperties().getVersion());
 
         // do a diff of the kicks doc and the kicksabc doc
-        DiffNode diff = ObjectDifferBuilder.buildDefault().compare(expected, actual);
-        if (diff.hasChanges()) {
-            diff.visit((node, visit) -> System.out.println(node.getPath() + " => " + node.getState()));
-        }
+        UnitTestUtils.diff(expected, actual, List.of("/allLocatables"));
 
         assertNotNull(actual);
         assertEquals(expected, actual);

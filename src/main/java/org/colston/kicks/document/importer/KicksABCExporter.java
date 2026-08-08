@@ -7,6 +7,7 @@ import org.colston.kicks.document.LocatableRange;
 import org.colston.kicks.document.Lyric;
 import org.colston.kicks.document.Note;
 import org.colston.kicks.document.Repeat;
+import org.colston.kicks.document.SimpleLocatable;
 import org.colston.kicks.document.SimpleLocatableRange;
 import org.colston.kicks.document.Song;
 import org.colston.kicks.document.Tuning;
@@ -47,15 +48,16 @@ public class KicksABCExporter {
         Iterator<Note> iterator = doc.getNotes(songRange).iterator();
         if (iterator.hasNext()) {
             prev = iterator.next();
+            prev = new SimpleLocatable(prev.getIndex() -1 , prev.getOffset());
         }
         for (Lyric lyric : doc.getLyrics(songRange)) {
             if (prev != null) {
                 for (int i = prev.getIndex(); i < lyric.getIndex() - 1; i++) {
                     writer.write(" *");
                 }
-//                if (prev.getIndex() == lyric.getIndex() && prev.getOffset() != 6 && lyric.getOffset() == Locatable.CELL_TICKS) {
-//                    writer.write(" *");
-//                }
+                if (prev.getIndex() != lyric.getIndex() && prev.getOffset() < 6 && lyric.getOffset() == Locatable.CELL_TICKS) {
+                    writer.write(" *");
+                }
                 if (prev.getIndex() != lyric.getIndex() && lyric.getOffset() > 6) {
                     writer.write(" *");
                 }
@@ -151,6 +153,10 @@ public class KicksABCExporter {
         }
         writer.write("K:" + convertTuning(song.getTuning()));
         writer.newLine();
+        if (song.getTempo() != null) {
+            writer.write(" Q:" + song.getTempo());
+            writer.newLine();
+        }
         writer.newLine();
     }
 
