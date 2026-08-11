@@ -17,19 +17,8 @@ class KicksABCExporterTest {
 
     private final static String INPUT_DIR = "testdata/";
     private final static String OUTPUT_DIR = "target/";
-//    private final static String INPUT_DIR = "/home/simon/Drive/sanshin/mykunkunshi/kicks/eisa/";
-//    private final static String OUTPUT_DIR = "/home/simon/Drive/sanshin/mykunkunshi/kicksabc/eisa/";
 
     @ParameterizedTest
-//    @ValueSource(strings = {"sonda-1-nandakibushi"})
-//    @ValueSource(strings = {"sonda-2-chunjunnagari"})
-//    @ValueSource(strings = {"sonda-3-kudaka"})
-//    @ValueSource(strings = {"sonda-4-sunsami"})
-//    @ValueSource(strings = {"sonda-5-tutankani"})
-//    @ValueSource(strings = {"sonda-6-umiyakara"})
-//    @ValueSource(strings = {"sonda-7-tenyobushi"})
-//    @ValueSource(strings = {"sonda-8-ichubigwabushi"})
-//    @ValueSource(strings = {"sonda-9-katamibushi"})
     @ValueSource(strings = {"_test-a"})
     @ValueSource(strings = {"asadoyayunta"})
     @ValueSource(strings = {"sonda-2-chunjunnagari"})
