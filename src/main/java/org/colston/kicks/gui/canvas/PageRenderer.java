@@ -72,14 +72,14 @@ public class PageRenderer implements Printable {
      */
     private static final Font titleFont = new Font(KicksApp.V_FONT_NAME, Font.PLAIN, 26);
     private static final Font ftitleFont = new Font(KicksApp.V_FONT_NAME, Font.PLAIN, 12);
-    private static final Font rtitleFont = new Font("SansSerif", Font.PLAIN, 14);
+    private static final Font rtitleFont = new Font(KicksApp.R_FONT_NAME, Font.PLAIN, 14);
     private static final Font font = new Font(KicksApp.FONT_NAME, Font.PLAIN, 18);
     private static final Font fontBold = new Font(KicksApp.FONT_NAME, Font.BOLD, 18);
     private static final Font sfont = new Font(KicksApp.FONT_NAME, Font.PLAIN, 14);
     private static final Font sfontBold = new Font(KicksApp.FONT_NAME, Font.BOLD, 14);
     private static final Font flatFont = new Font(KicksApp.FONT_NAME, Font.PLAIN, 9);
     private static final Font fingerFont = new Font(KicksApp.FONT_NAME, Font.PLAIN, 7);
-    private static final Font tempoFont = new Font("SansSerif", Font.PLAIN, 9);
+    private static final Font tempoFont = new Font(KicksApp.R_FONT_NAME, Font.PLAIN, 9);
     static final Font lyricFont = new Font(KicksApp.V_FONT_NAME, Font.PLAIN, 12);
 
     /*

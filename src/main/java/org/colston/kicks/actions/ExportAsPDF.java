@@ -99,6 +99,8 @@ public class ExportAsPDF extends AbstractAction {
         fontMap.add(font, KicksApp.class, KicksApp.FONT_RESOURCE_NAME);
         font = new Font(KicksApp.V_FONT_NAME, Font.PLAIN, 1);
         fontMap.add(font, KicksApp.class, KicksApp.V_FONT_RESOURCE_NAME);
+        font = new Font(KicksApp.R_FONT_NAME, Font.PLAIN, 1);
+        fontMap.add(font, KicksApp.class, KicksApp.R_FONT_RESOURCE_NAME);
         aset.add(fontMap);
 
         printJob.print(doc, aset);

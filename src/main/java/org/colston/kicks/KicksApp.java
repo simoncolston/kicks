@@ -69,6 +69,8 @@ public class KicksApp extends GuiApp {
     public static final String FONT_RESOURCE_NAME = "EPKYOUKA.TTF";
     public static final String V_FONT_NAME = "EPSON 教科書体Ｍ V";
     public static final String V_FONT_RESOURCE_NAME = "EPKYOUKAV.TTF";
+    public static final String R_FONT_NAME = "FreeSans";
+    public static final String R_FONT_RESOURCE_NAME = "FreeSans.ttf";
 
     private static KicksApp kicks;
     //TODO: Make this system dependent?  Go for a "dot file" config?
@@ -189,6 +191,11 @@ public class KicksApp extends GuiApp {
             graphics.registerFont(f);
         }
         try (BufferedInputStream bis = new BufferedInputStream(openFontResourceInputStream(V_FONT_RESOURCE_NAME))) {
+            Font f = Font.createFont(Font.TRUETYPE_FONT, bis);
+            logger.info("Font loaded: " + f.getFontName());
+            graphics.registerFont(f);
+        }
+        try (BufferedInputStream bis = new BufferedInputStream(openFontResourceInputStream(R_FONT_RESOURCE_NAME))) {
             Font f = Font.createFont(Font.TRUETYPE_FONT, bis);
             logger.info("Font loaded: " + f.getFontName());
             graphics.registerFont(f);
