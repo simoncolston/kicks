@@ -6,6 +6,8 @@ import org.colston.kicks.document.LocatableRange;
 import org.colston.kicks.document.Lyric;
 import org.colston.kicks.document.SimpleLocatableRange;
 import org.colston.kicks.document.Song;
+import org.colston.kicks.render.PageCursor;
+import org.colston.kicks.render.PageRenderer;
 
 import javax.swing.*;
 import javax.swing.event.EventListenerList;
@@ -137,7 +139,7 @@ class CanvasPanel extends JPanel {
         g2.scale(scale, scale);
 
         pageRenderer = new PageRenderer(model.getDocument(), KicksApp.settings(), selection, SELECTION_COLOUR,
-                new CanvasCursor(cursorIndex, cursorOffset, cursorOnNote));
+                new PageCursor(cursorIndex, cursorOffset, cursorOnNote));
         pageRenderer.doPaint(g2);
 
         // draw the cursor

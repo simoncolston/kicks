@@ -20,6 +20,7 @@ import org.colston.kicks.document.Note;
 import org.colston.kicks.document.Repeat;
 import org.colston.kicks.document.Song;
 import org.colston.kicks.document.Utou;
+import org.colston.kicks.render.PageRenderer;
 
 import javax.swing.*;
 import javax.swing.event.UndoableEditListener;

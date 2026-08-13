@@ -1,4 +1,4 @@
-package org.colston.kicks.gui.canvas;
+package org.colston.kicks.render;
 
 import org.colston.kicks.KicksApp;
 import org.colston.kicks.Settings;
@@ -34,19 +34,19 @@ public class PageRenderer implements Printable {
      */
     // deprecated: private static final int TITLE_WIDTH = 56;
     private static final int TITLE_MARGIN = 9;
-    static final int COLUMN_WIDTH = 56;
-    static final int COLUMN_SPACE = 9;
-    static final int CELL_HEIGHT = 36;
-    static final int BORDER_WIDTH = 20;
+    public static final int COLUMN_WIDTH = 56;
+    public static final int COLUMN_SPACE = 9;
+    public static final int CELL_HEIGHT = 36;
+    public static final int BORDER_WIDTH = 20;
 
-    static final int COLUMNS_PER_PAGE = 11;
-    static final int CELLS_PER_COL = 12;
+    public static final int COLUMNS_PER_PAGE = 11;
+    public static final int CELLS_PER_COL = 12;
 
     //NOTE: This is now the same as 11 columns, so we could replace any column with a title
     //CANVAS_WIDTH = 706;
-    static final int CANVAS_WIDTH = COLUMN_WIDTH * COLUMNS_PER_PAGE + COLUMN_SPACE * COLUMNS_PER_PAGE;
+    public static final int CANVAS_WIDTH = COLUMN_WIDTH * COLUMNS_PER_PAGE + COLUMN_SPACE * COLUMNS_PER_PAGE;
     //CANVAS_HEIGHT = 432;
-    static final int CANVAS_HEIGHT = CELL_HEIGHT * CELLS_PER_COL;
+    public static final int CANVAS_HEIGHT = CELL_HEIGHT * CELLS_PER_COL;
 
     private static final int REPEAT_HEAD_WIDTH = 6;
     private static final int REPEAT_HEAD_HEIGHT = 8;
@@ -65,7 +65,7 @@ public class PageRenderer implements Printable {
      */
     private static final Color BORDER_BOX_COLOUR = new Color(150, 150, 150);
     private static final Color FOREGROUND_COLOUR = Color.BLACK;
-    static final Color CURSOR_COLOUR = Color.BLUE;
+    public static final Color CURSOR_COLOUR = Color.BLUE;
 
     /*
      * Fonts
@@ -80,20 +80,20 @@ public class PageRenderer implements Printable {
     private static final Font flatFont = new Font(KicksApp.FONT_NAME, Font.PLAIN, 9);
     private static final Font fingerFont = new Font(KicksApp.FONT_NAME, Font.PLAIN, 7);
     private static final Font tempoFont = new Font(KicksApp.R_FONT_NAME, Font.PLAIN, 9);
-    static final Font lyricFont = new Font(KicksApp.V_FONT_NAME, Font.PLAIN, 12);
+    public static final Font lyricFont = new Font(KicksApp.V_FONT_NAME, Font.PLAIN, 12);
 
     /*
      * Text Constants
      */
-    private static final String VERSION = Messages.message(CanvasPanel.class, "canvas.panel.version");
-    private static final String TRANSCRIPTION_FROM = Messages.message(CanvasPanel.class, "canvas.panel.transcription.from");
+    private static final String VERSION = Messages.get(PageRenderer.class, "renderer.version");
+    private static final String TRANSCRIPTION_FROM = Messages.get(PageRenderer.class, "renderer.transcription.from");
 
     /*
      * Stuff to render
      */
     private final KicksDocument doc;
     private final LocatableRange selection;
-    private final CanvasCursor cursor;
+    private final PageCursor cursor;
     private final Color selectionColour;
     private final Settings settings;
 
@@ -107,7 +107,7 @@ public class PageRenderer implements Printable {
         this(doc, settings, null, null, null);
     }
 
-    public PageRenderer(KicksDocument doc, Settings settings, LocatableRange selection, Color selectionColour, CanvasCursor cursor) {
+    public PageRenderer(KicksDocument doc, Settings settings, LocatableRange selection, Color selectionColour, PageCursor cursor) {
         this.doc = doc;
         this.selection = selection;
         this.selectionColour = selectionColour;
@@ -142,7 +142,7 @@ public class PageRenderer implements Printable {
         return Printable.PAGE_EXISTS;
     }
 
-    void doPaint(Graphics2D g2) {
+    public void doPaint(Graphics2D g2) {
 
         // draw properties
         drawProperties(g2);
@@ -452,14 +452,14 @@ public class PageRenderer implements Printable {
     }
 
     private void drawNote(Graphics2D g2, Note n, FontMetrics fm) {
-        char[] ch = CanvasResources.getNoteText(n.getString(), n.getPlacement()).toCharArray();
+        char[] ch = RendererResources.getNoteText(n.getString(), n.getPlacement()).toCharArray();
         int x = x(n.getIndex());
         int y = y(n.getIndex(), n.getOffset(), fm) - 1;
 
         if (n.getFinger() != 0) {
             Font tfont = g2.getFont();
             g2.setFont(fingerFont);
-            g2.drawString(CanvasResources.getNoteFingerText(n.getFinger()),
+            g2.drawString(RendererResources.getNoteFingerText(n.getFinger()),
                     x - COLUMN_SPACE + 1,
                     y(n.getIndex(), n.getOffset(), g2.getFontMetrics()) + 1);
             g2.setFont(tfont);
@@ -621,7 +621,7 @@ public class PageRenderer implements Printable {
         return cursor.onNote() == noteSide && l.getIndex() == cursor.index() && l.getOffset() == cursor.offset();
     }
 
-    int x(int index) {
+    public int x(int index) {
         int col = (index - pageRange.getLow().getIndex()) / CELLS_PER_COL;
         return CANVAS_WIDTH - (COLUMN_SPACE + COLUMN_WIDTH) - (COLUMN_SPACE + COLUMN_WIDTH) * col;
     }
@@ -632,7 +632,7 @@ public class PageRenderer implements Printable {
         return y;
     }
 
-    int y(int index, int offset) {
+    public int y(int index, int offset) {
         int cell = (index - pageRange.getLow().getIndex()) % CELLS_PER_COL;
         int y = CELL_HEIGHT * cell;
         y += (offset * CELL_HEIGHT) / Locatable.CELL_TICKS;

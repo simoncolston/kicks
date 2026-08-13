@@ -1,0 +1,401 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<kunkunshi version="2">
+    <properties>
+        <version>2026-08-08</version>
+        <layout>LANDSCAPE_11COL_12CELL</layout>
+    </properties>
+    <songs>
+        <song index="0">
+            <title>かな{漢字}{かんじ}カタカナティドゥグヮ</title>
+            <titleRomaji>Kana Kanji Katakana Tidugwa</titleRomaji>
+            <tuning>SANSAGE</tuning>
+        </song>
+    </songs>
+    <notes>
+        <note string="1" placement="0" index="12" offset="6"/>
+        <note string="1" placement="1" index="13" offset="6"/>
+        <note string="1" placement="2" index="14" offset="6"/>
+        <note string="1" placement="3" index="15" offset="6"/>
+        <note string="1" placement="4" index="16" offset="6"/>
+        <note string="1" placement="5" index="17" offset="6"/>
+        <note string="1" placement="6" index="18" offset="6"/>
+        <note string="1" placement="7" index="19" offset="6"/>
+        <note string="1" placement="8" index="20" offset="6"/>
+        <note string="1" placement="0" index="21" offset="6"/>
+        <note string="1" placement="1" index="21" offset="12">
+            <small>true</small>
+        </note>
+        <note string="1" placement="2" index="22" offset="6"/>
+        <note string="1" placement="3" index="22" offset="12">
+            <small>true</small>
+        </note>
+        <note string="1" placement="4" index="23" offset="6"/>
+        <note string="1" placement="5" index="23" offset="12">
+            <small>true</small>
+        </note>
+        <note string="2" placement="0" index="24" offset="6"/>
+        <note string="2" placement="1" index="25" offset="6"/>
+        <note string="2" placement="2" index="26" offset="6"/>
+        <note string="2" placement="3" index="27" offset="6"/>
+        <note string="2" placement="4" index="28" offset="6"/>
+        <note string="2" placement="5" index="29" offset="6"/>
+        <note string="2" placement="6" index="30" offset="6"/>
+        <note string="2" placement="7" index="31" offset="6"/>
+        <note string="2" placement="8" index="32" offset="6"/>
+        <note string="2" placement="0" index="33" offset="6"/>
+        <note string="2" placement="1" index="33" offset="12">
+            <small>true</small>
+        </note>
+        <note string="2" placement="2" index="34" offset="6"/>
+        <note string="2" placement="3" index="34" offset="12">
+            <small>true</small>
+        </note>
+        <note string="2" placement="4" index="35" offset="6"/>
+        <note string="2" placement="5" index="35" offset="12">
+            <small>true</small>
+        </note>
+        <note string="3" placement="0" index="36" offset="6"/>
+        <note string="3" placement="1" index="37" offset="6"/>
+        <note string="3" placement="2" index="38" offset="6"/>
+        <note string="3" placement="3" index="39" offset="6"/>
+        <note string="3" placement="4" index="40" offset="6"/>
+        <note string="3" placement="5" index="41" offset="6"/>
+        <note string="3" placement="6" index="42" offset="6"/>
+        <note string="3" placement="7" index="43" offset="6">
+            <slur>true</slur>
+        </note>
+        <note string="3" placement="8" index="44" offset="6"/>
+        <note string="3" placement="0" index="45" offset="6"/>
+        <note string="3" placement="1" index="45" offset="12">
+            <small>true</small>
+        </note>
+        <note string="3" placement="2" index="46" offset="6"/>
+        <note string="3" placement="3" index="46" offset="12">
+            <small>true</small>
+        </note>
+        <note string="3" placement="4" index="47" offset="6"/>
+        <note string="3" placement="5" index="47" offset="12">
+            <small>true</small>
+        </note>
+        <note string="3" placement="0" index="48" offset="2">
+            <small>true</small>
+            <chord>true</chord>
+        </note>
+        <note string="2" placement="0" index="48" offset="6">
+            <small>true</small>
+            <chord>true</chord>
+        </note>
+        <note string="1" placement="0" index="48" offset="10">
+            <small>true</small>
+        </note>
+        <note string="3" placement="0" index="49" offset="3">
+            <small>true</small>
+            <chord>true</chord>
+        </note>
+        <note string="2" placement="0" index="49" offset="9">
+            <small>true</small>
+        </note>
+        <note string="1" placement="0" index="50" offset="6"/>
+        <note string="2" placement="0" index="51" offset="6"/>
+        <note string="3" placement="0" index="52" offset="6"/>
+        <note string="3" placement="0" index="53" offset="2">
+            <small>true</small>
+            <chord>true</chord>
+        </note>
+        <note string="2" placement="0" index="53" offset="6">
+            <small>true</small>
+            <chord>true</chord>
+        </note>
+        <note string="1" placement="0" index="53" offset="10">
+            <small>true</small>
+        </note>
+        <note string="2" placement="0" index="54" offset="6"/>
+        <note string="1" placement="0" index="55" offset="6"/>
+        <note string="1" placement="0" index="56" offset="6"/>
+        <note string="2" placement="0" index="57" offset="6"/>
+        <note string="3" placement="0" index="58" offset="6"/>
+        <note string="2" placement="0" index="59" offset="6"/>
+        <note string="0" placement="0" index="60" offset="6"/>
+        <note string="0" placement="0" index="61" offset="6"/>
+        <note string="2" placement="0" index="62" offset="6">
+            <finger>1</finger>
+        </note>
+        <note string="3" placement="0" index="62" offset="12">
+            <small>true</small>
+            <finger>2</finger>
+        </note>
+        <note string="2" placement="0" index="63" offset="6">
+            <finger>3</finger>
+        </note>
+        <note string="1" placement="0" index="63" offset="12">
+            <small>true</small>
+            <finger>4</finger>
+        </note>
+        <note string="3" placement="0" index="64" offset="6">
+            <utou>UCHI</utou>
+        </note>
+        <note string="3" placement="1" index="64" offset="12">
+            <small>true</small>
+            <utou>KAKI</utou>
+        </note>
+        <note string="3" placement="2" index="65" offset="6">
+            <accidental>FLAT</accidental>
+        </note>
+        <note string="3" placement="3" index="65" offset="12">
+            <small>true</small>
+        </note>
+        <note string="3" placement="4" index="66" offset="6">
+            <slur>true</slur>
+        </note>
+        <note string="3" placement="5" index="66" offset="12">
+            <small>true</small>
+        </note>
+        <note string="2" placement="0" index="67" offset="6">
+            <accidental>FLAT</accidental>
+            <utou>KAKI</utou>
+            <finger>2</finger>
+        </note>
+        <note string="2" placement="1" index="67" offset="12">
+            <small>true</small>
+        </note>
+        <note string="2" placement="2" index="68" offset="6"/>
+        <note string="2" placement="3" index="68" offset="12">
+            <small>true</small>
+        </note>
+        <note string="1" placement="0" index="69" offset="6"/>
+        <note string="1" placement="1" index="69" offset="12">
+            <small>true</small>
+        </note>
+        <note string="1" placement="2" index="70" offset="6"/>
+        <note string="1" placement="3" index="70" offset="12">
+            <small>true</small>
+        </note>
+        <note string="2" placement="3" index="71" offset="6"/>
+        <note string="3" placement="2" index="71" offset="12">
+            <small>true</small>
+        </note>
+        <note string="3" placement="0" index="72" offset="6"/>
+        <note string="1" placement="2" index="72" offset="12">
+            <small>true</small>
+        </note>
+        <note string="3" placement="0" index="73" offset="6"/>
+        <note string="2" placement="3" index="74" offset="6"/>
+        <note string="3" placement="2" index="74" offset="12">
+            <small>true</small>
+        </note>
+        <note string="3" placement="0" index="75" offset="6"/>
+        <note string="1" placement="2" index="75" offset="12">
+            <small>true</small>
+        </note>
+        <note string="3" placement="0" index="76" offset="6"/>
+        <note string="2" placement="0" index="77" offset="6"/>
+        <note string="2" placement="1" index="77" offset="12">
+            <small>true</small>
+        </note>
+        <note string="2" placement="2" index="78" offset="6"/>
+        <note string="2" placement="3" index="78" offset="12">
+            <small>true</small>
+        </note>
+        <note string="3" placement="0" index="79" offset="6"/>
+        <note string="3" placement="1" index="79" offset="12">
+            <small>true</small>
+        </note>
+        <note string="3" placement="2" index="80" offset="6"/>
+        <note string="3" placement="3" index="80" offset="12">
+            <small>true</small>
+        </note>
+        <note string="3" placement="4" index="81" offset="6"/>
+        <note string="3" placement="5" index="81" offset="12">
+            <small>true</small>
+        </note>
+        <note string="1" placement="0" index="82" offset="6"/>
+        <note string="1" placement="1" index="82" offset="12">
+            <small>true</small>
+        </note>
+        <note string="1" placement="2" index="83" offset="6"/>
+        <note string="1" placement="2" index="83" offset="12">
+            <small>true</small>
+        </note>
+        <note string="2" placement="0" index="84" offset="6"/>
+        <note string="2" placement="1" index="84" offset="12">
+            <small>true</small>
+        </note>
+        <note string="2" placement="2" index="85" offset="6"/>
+        <note string="2" placement="3" index="85" offset="12">
+            <small>true</small>
+        </note>
+        <note string="3" placement="0" index="86" offset="6"/>
+        <note string="3" placement="1" index="86" offset="12">
+            <small>true</small>
+        </note>
+        <note string="3" placement="2" index="87" offset="6"/>
+        <note string="3" placement="3" index="87" offset="12">
+            <small>true</small>
+        </note>
+        <note string="1" placement="0" index="88" offset="6"/>
+        <note string="3" placement="0" index="89" offset="6"/>
+        <note string="3" placement="1" index="89" offset="12">
+            <small>true</small>
+        </note>
+        <note string="2" placement="0" index="90" offset="6"/>
+        <note string="3" placement="0" index="90" offset="12">
+            <small>true</small>
+        </note>
+        <note string="1" placement="2" index="91" offset="6"/>
+        <note string="3" placement="3" index="91" offset="12">
+            <small>true</small>
+        </note>
+    </notes>
+    <breaks/>
+    <repeats>
+        <repeat index="12" offset="2">
+            <back>false</back>
+        </repeat>
+        <repeat index="20" offset="10">
+            <back>true</back>
+        </repeat>
+        <repeat index="77" offset="2">
+            <back>false</back>
+        </repeat>
+        <repeat index="82" offset="3">
+            <back>true</back>
+        </repeat>
+        <repeat index="82" offset="4">
+            <back>false</back>
+        </repeat>
+        <repeat index="92" offset="3">
+            <back>true</back>
+        </repeat>
+    </repeats>
+    <lyrics>
+        <lyric index="21" offset="6">
+            <value>ア</value>
+        </lyric>
+        <lyric index="21" offset="12">
+            <value>イ</value>
+        </lyric>
+        <lyric index="22" offset="6">
+            <value>ウ</value>
+        </lyric>
+        <lyric index="22" offset="12">
+            <value>エ</value>
+        </lyric>
+        <lyric index="23" offset="6">
+            <value>オ</value>
+        </lyric>
+        <lyric index="23" offset="12">
+            <value>カ</value>
+        </lyric>
+        <lyric index="33" offset="6">
+            <value>キ</value>
+        </lyric>
+        <lyric index="34" offset="6">
+            <value>ク</value>
+        </lyric>
+        <lyric index="35" offset="6">
+            <value>ケ</value>
+        </lyric>
+        <lyric index="45" offset="6">
+            <value>コ</value>
+        </lyric>
+        <lyric index="55" offset="6">
+            <value>ティ</value>
+        </lyric>
+        <lyric index="55" offset="12">
+            <value>ドゥ</value>
+        </lyric>
+        <lyric index="56" offset="6">
+            <value>グヮ</value>
+        </lyric>
+        <lyric index="56" offset="12">
+            <value>ウェ</value>
+        </lyric>
+        <lyric index="57" offset="6">
+            <value>フィ</value>
+        </lyric>
+        <lyric index="57" offset="12">
+            <value>チェ</value>
+        </lyric>
+        <lyric index="58" offset="6">
+            <value>ス</value>
+        </lyric>
+        <lyric index="59" offset="12">
+            <value>ア</value>
+        </lyric>
+        <lyric index="60" offset="6">
+            <value>イ</value>
+        </lyric>
+        <lyric index="62" offset="3">
+            <value>サ</value>
+        </lyric>
+        <lyric index="62" offset="9">
+            <value>シ</value>
+        </lyric>
+        <lyric index="62" offset="12">
+            <value>ス</value>
+        </lyric>
+        <lyric index="63" offset="3">
+            <value>セ</value>
+        </lyric>
+        <lyric index="63" offset="12">
+            <value>ソ</value>
+        </lyric>
+        <lyric index="71" offset="9">
+            <value>ド</value>
+        </lyric>
+        <lyric index="72" offset="1">
+            <value>ン</value>
+        </lyric>
+        <lyric index="72" offset="7">
+            <value>ド</value>
+        </lyric>
+        <lyric index="72" offset="12">
+            <value>ン</value>
+        </lyric>
+        <lyric index="74" offset="9">
+            <value>ド</value>
+        </lyric>
+        <lyric index="75" offset="1">
+            <value>ン</value>
+        </lyric>
+        <lyric index="75" offset="7">
+            <value>ド</value>
+        </lyric>
+        <lyric index="75" offset="12">
+            <value>ン</value>
+        </lyric>
+        <lyric index="77" offset="6">
+            <value>マ</value>
+        </lyric>
+        <lyric index="77" offset="12">
+            <value>ミ</value>
+        </lyric>
+        <lyric index="78" offset="12">
+            <value>ム</value>
+        </lyric>
+        <lyric index="79" offset="12">
+            <value>メ</value>
+        </lyric>
+        <lyric index="80" offset="6">
+            <value>モ</value>
+        </lyric>
+        <lyric index="84" offset="6">
+            <value>ハ</value>
+        </lyric>
+        <lyric index="85" offset="7">
+            <value>ヒ</value>
+        </lyric>
+        <lyric index="88" offset="12">
+            <value>テ</value>
+        </lyric>
+        <lyric index="89" offset="3">
+            <value>ン</value>
+        </lyric>
+        <lyric index="90" offset="12">
+            <value>ハ</value>
+        </lyric>
+        <lyric index="91" offset="6">
+            <value>リ</value>
+        </lyric>
+    </lyrics>
+</kunkunshi>

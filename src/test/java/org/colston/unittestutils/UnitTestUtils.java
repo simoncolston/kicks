@@ -16,16 +16,18 @@ public class UnitTestUtils {
     public static <T> void diff(T expected, T actual, List<String> ignoredPaths) {
         DiffNode diff = ObjectDifferBuilder.buildDefault().compare(expected, actual);
         if (diff.hasChanges()) {
-            diff.visit(visit(ignoredPaths));
+            diff.visit(visit(ignoredPaths, expected, actual));
         }
     }
 
-    private static DiffNode.@NonNull Visitor visit(List<String> ignoredPaths) {
+    private static <T> DiffNode.@NonNull Visitor visit(List<String> ignoredPaths, T expected, T actual) {
         return (node, _) -> {
-            if (ignoredPaths != null && ignoredPaths.stream().anyMatch(ignoredPath -> node.getPath().toString().startsWith(ignoredPath))) {
+            if (ignoredPaths != null
+                    && ignoredPaths.stream().anyMatch(ignoredPath -> node.getPath().toString().startsWith(ignoredPath))) {
                 return;
             }
-            System.out.println(node.getPath() + " => " + node.getState());
+            System.out.println(node.getPath() + " => " + node.getState()
+                    + "　[ " + node.canonicalGet(expected) + " -> " + node.canonicalGet(actual) + " ]");
         };
     }
 

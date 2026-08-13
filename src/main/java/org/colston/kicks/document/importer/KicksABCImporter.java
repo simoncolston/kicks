@@ -44,6 +44,10 @@ public class KicksABCImporter implements Importer {
     // Index of the song we are currently parsing
     private int songIndex;
 
+    //config
+    // true if the notes are specified by kanji, false if they are specified by numbers
+    private boolean noteFormatKanji = false;
+
     // logging/error messages
     private int abcScriptLineNumber = 0;
 
@@ -134,7 +138,9 @@ public class KicksABCImporter implements Importer {
         if (ch == '.') {
             ch = line.charAt(1);
         }
-        if (ch == '[' || ch == ']' || isDigit(ch)) {
+        if (ch == '[' || ch == ']'
+                || isDigit(ch)
+                || (noteFormatKanji && ImporterResources.isNoteFormatKanjiChar(ch))) {
             parseNotes(line);
             previousLineWasNote = true;
         } else if (Character.isLetter(ch) || ch == '*') {
@@ -154,34 +160,34 @@ public class KicksABCImporter implements Importer {
             // if it is the first lyric after a song title docIndex needs tweaking
             docIndex--;
         }
-        String[] abcls = line.split(" +"); // allow one or more spaces between lyrics
-        for (String abcl : abcls) {
-            int dot = abcl.indexOf('.');
+        String[] abcLyrics = line.split("\\p{javaWhitespace}+");
+        for (String abcLyric : abcLyrics) {
+            int dot = abcLyric.indexOf('.');
             if (dot == -1) {
-                parseLyric(abcl);
+                parseLyric(abcLyric);
             } else {
                 // dot is an abbreviation for <12>
                 if (dot > 0) {
-                    parseLyric(abcl.substring(0, dot));
+                    parseLyric(abcLyric.substring(0, dot));
                 }
-                parseLyric(abcl.substring(dot + 1) + "<12>");
+                parseLyric(abcLyric.substring(dot + 1) + "<12>");
             }
         }
         endLyricsSetIndex();
     }
 
     private void parseLyric(String s) throws Exception {
-        StringBuilder abcl = new StringBuilder(s);
-        int ch = abcl.charAt(0);
+        StringBuilder abcLyric = new StringBuilder(s);
+        int ch = abcLyric.charAt(0);
         if (ch == '*') {
             // space, so move on...
             // these two methods do the calculation of docIndex as if a lyric was imported
-            int o = calcOffset(abcl, 6);
+            int o = calcOffset(abcLyric, 6);
             int i = calcIndex(o);
         } else  {
-            int o = calcOffset(abcl, 6);
+            int o = calcOffset(abcLyric, 6);
             int i = calcIndex(o);
-            String syllable = Utils.toKatakana(abcl.toString());
+            String syllable = Utils.toKatakana(abcLyric.toString());
             Lyric lyric = new Lyric(i, o, syllable);
             doc.getLyrics().add(lyric);
         }
@@ -189,46 +195,56 @@ public class KicksABCImporter implements Importer {
 
     private void parseNotes(String line) throws Exception {
         startNotesSetIndex();
-        String[] abcns = line.split(" +"); // allow one or more spaces between notes
-        for (String abcn : abcns) {
-            int dot = abcn.indexOf('.');
+        String[] abcNotes = line.split("\\p{javaWhitespace}+");
+        for (String abcNote : abcNotes) {
+            int dot = abcNote.indexOf('.');
             if (dot == -1) {
-                parseNote(abcn);
+                parseNote(abcNote);
             } else {
                 // dot is an abbreviation for <12>
                 if (dot > 0) {
-                    parseNote(abcn.substring(0, dot));
+                    parseNote(abcNote.substring(0, dot));
                 }
-                parseNote(abcn.substring(dot + 1) + "<12>");
+                parseNote(abcNote.substring(dot + 1) + "<12>");
             }
         }
         endNotesSetIndex();
     }
 
     private void parseNote(String s) throws Exception {
-        StringBuilder abcn = new StringBuilder(s);
-        char ch = abcn.charAt(0);
+        StringBuilder abcNote = new StringBuilder(s);
+        char ch = abcNote.charAt(0);
         if (ch == '[') {
             // repeat start
-            repeatStart(s, abcn);
+            repeatStart(s, abcNote);
         } else if (ch == ']') {
             // repeat end
-            repeatEnd(s, abcn);
+            repeatEnd(s, abcNote);
         } else if (ch == '{') {
             // chord start
             chordStart();
         } else if (ch == '}') {
             // chord end
             chordEnd();
-        } else if (isDigit(ch) && isDigit(abcn.charAt(1))) {
+        } else if (noteFormatKanji || isDigit(ch) && isDigit(abcNote.charAt(1))) {
             // a note
-            int o = calcOffset(abcn, 6);
+            if (noteFormatKanji) {
+                // convert the kanji to the numeric representation, then all the other logic remains the same.
+                int kanjiLength = ImporterResources.isNoteFormatKanjiDigraphMarker(ch) ? 2 : 1;
+                String kanji = abcNote.substring(0, kanjiLength);
+                String numbers = ImporterResources.getNoteFormatKanjiAsNumbers(kanji);
+                if (numbers == null) {
+                    raiseException("Invalid kanji: " + kanji);
+                }
+                abcNote.replace(0, kanjiLength, numbers);
+            }
+            int o = calcOffset(abcNote, 6);
             int i = calcIndex(o);
-            int string = Integer.parseInt(abcn.substring(0, 1));
+            int string = Integer.parseInt(abcNote.substring(0, 1));
             if (string < 0 || string > 3) {
                 raiseException("Invalid string number: " + string);
             }
-            int placement = Integer.parseInt(abcn.substring(1, 2));
+            int placement = Integer.parseInt(abcNote.substring(1, 2));
             if (placement < 0 || placement > 9) {
                 raiseException("Invalid string placement number: " + placement);
             }
@@ -238,8 +254,8 @@ public class KicksABCImporter implements Importer {
                 // default to small
                 note.setSmall(true);
             }
-            for (int j = 2; j < abcn.length(); j++) {
-                switch (abcn.charAt(j)) {
+            for (int j = 2; j < abcNote.length(); j++) {
+                switch (abcNote.charAt(j)) {
                     case 'l':
                         note.setSmall(false);
                         break;
@@ -256,12 +272,12 @@ public class KicksABCImporter implements Importer {
                         note.setAccidental(Accidental.FLAT);
                         break;
                     case 'f':
-                        if (!isDigit(abcn.charAt(j + 1))) {
-                            raiseException("Invalid finger specification: " + abcn);
+                        if (!isDigit(abcNote.charAt(j + 1))) {
+                            raiseException("Invalid finger specification: " + abcNote);
                         }
-                        int f = Integer.parseInt(abcn.substring(j + 1, j + 2));
+                        int f = Integer.parseInt(abcNote.substring(j + 1, j + 2));
                         if (f < 1 || f > 4) {
-                            raiseException("Invalid finger specification: " + abcn);
+                            raiseException("Invalid finger specification: " + abcNote);
                         }
                         note.setFinger(f);
                         j++; // move on because this is a 2 character modifier
@@ -441,6 +457,23 @@ public class KicksABCImporter implements Importer {
                 break;
             case 'Q':
                 doc.getSongs().get(songIndex).setTempo(line.substring(2, 2 + Math.min(3, line.length() - 2)));
+                break;
+            case 'I':
+                String[] instruction = line.substring(2).split(" ");
+                if (instruction[0].equals("note-format")) {
+                    switch (instruction[1]) {
+                        case "number":
+                            noteFormatKanji = false;
+                            break;
+                        case "kanji":
+                            noteFormatKanji = true;
+                            break;
+                        default:
+                            raiseException("Illegal instruction: " + line);
+                    }
+                } else {
+                    raiseException("Illegal instruction: " + line);
+                }
                 break;
             default:
                 if (header) {

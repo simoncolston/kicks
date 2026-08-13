@@ -19,7 +19,7 @@ class KicksABCExporterTest {
     private final static String OUTPUT_DIR = "target/";
 
     @ParameterizedTest
-    @ValueSource(strings = {"_test-a"})
+    @ValueSource(strings = {"export-_test-a"})
     @ValueSource(strings = {"asadoyayunta"})
     @ValueSource(strings = {"sonda-2-chunjunnagari"})
     @ValueSource(strings = {"asadoya-and-nandaki"})
@@ -29,7 +29,7 @@ class KicksABCExporterTest {
         KicksDocument inputDoc = DocumentStore.create().load(inputFile);
 
         File outputFile = new File(OUTPUT_DIR + filename + ".kicksabc");
-        KicksABCExporter exporter = new KicksABCExporter();
+        KicksABCExporter exporter = new KicksABCExporter(true);
         exporter.exportDocument(inputDoc, outputFile);
 
         Optional<Importer> importer = ImporterFactory.getImporter(outputFile);

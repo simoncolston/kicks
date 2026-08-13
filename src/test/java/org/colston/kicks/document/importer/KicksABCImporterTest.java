@@ -3,7 +3,7 @@ package org.colston.kicks.document.importer;
 import org.colston.kicks.KicksApp;
 import org.colston.kicks.document.KicksDocument;
 import org.colston.kicks.document.persistence.DocumentStore;
-import org.colston.kicks.gui.canvas.PageRenderer;
+import org.colston.kicks.render.PageRenderer;
 import org.colston.printpdf.PDFBoxPrintFontMap;
 import org.colston.printpdf.PDFBoxPrintService;
 import org.colston.unittestutils.UnitTestUtils;
@@ -40,11 +40,13 @@ class KicksABCImporterTest {
     private static final int MARGIN = 20;
 
     @ParameterizedTest
+    @ValueSource(strings = {"asadoyayunta-kanji"})
     @ValueSource(strings = {"asadoyayunta"})
     @ValueSource(strings = {"sonda-2-chunjunnagari"})
     @ValueSource(strings = {"asadoya-and-nandaki"})
     @ValueSource(strings = {"ahabushi-thrice"})
     @ValueSource(strings = {"import-test"})
+    @ValueSource(strings = {"_test-a"})
     void importFile(String filename) throws Exception {
         File inputFile = new File("testdata/" + filename + ".kicks");
         KicksDocument expected = DocumentStore.create().load(inputFile);

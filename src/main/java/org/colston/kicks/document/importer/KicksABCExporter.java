@@ -11,6 +11,7 @@ import org.colston.kicks.document.SimpleLocatable;
 import org.colston.kicks.document.SimpleLocatableRange;
 import org.colston.kicks.document.Song;
 import org.colston.kicks.document.Tuning;
+import org.colston.kicks.render.RendererResources;
 import org.colston.utils.Utils;
 
 import java.io.BufferedWriter;
@@ -22,6 +23,18 @@ import java.util.Iterator;
 import java.util.List;
 
 public class KicksABCExporter {
+
+    //config
+    // true if the notes are specified by kanji, false if they are specified by numbers
+    private boolean noteFormatKanji = false;
+
+    public KicksABCExporter() {
+        this(false);
+    }
+
+    public KicksABCExporter(boolean noteFormatKanji) {
+        this.noteFormatKanji = noteFormatKanji;
+    }
 
     void exportDocument(KicksDocument doc, File file) throws Exception {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
@@ -110,8 +123,13 @@ public class KicksABCExporter {
                     }
                 }
             }
-            writer.write(String.valueOf(note.getString()));
-            writer.write(String.valueOf(note.getPlacement()));
+            if (!noteFormatKanji) {
+                writer.write(String.valueOf(note.getString()));
+                writer.write(String.valueOf(note.getPlacement()));
+            } else {
+                String kanji = ImporterResources.getNoteFormatNumbersAsKanji(note.getString(), note.getPlacement());
+                writer.write(kanji);
+            }
             writer.write(absoluteOffset);
             if (!chordStarted) {
                 if (note.isSmall()) {
@@ -155,6 +173,10 @@ public class KicksABCExporter {
         writer.newLine();
         if (song.getTempo() != null) {
             writer.write(" Q:" + song.getTempo());
+            writer.newLine();
+        }
+        if (noteFormatKanji) {
+            writer.write("I:note-format kanji");
             writer.newLine();
         }
         writer.newLine();
