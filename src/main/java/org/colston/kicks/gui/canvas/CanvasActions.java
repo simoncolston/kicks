@@ -253,6 +253,18 @@ final class CanvasActions {
                         .handler((c, e) -> c.moveCursorDown(e.getModifiers()))
                         .smallIconResourceName("Down24.png")
                         .largeIconResourceName("Down24.png"));
+        map.put("canvas.cursor.home", new CanvasAction((c, e) -> c.moveCursorHome(e.getModifiers()),
+                new KeyStroke[] {
+                        KeyStroke.getKeyStroke(KeyEvent.VK_HOME, 0),
+                        KeyStroke.getKeyStroke(KeyEvent.VK_HOME, InputEvent.SHIFT_DOWN_MASK)
+                },
+                "canvas.cursor.home"));
+        map.put("canvas.cursor.end", new CanvasAction((c, e) -> c.moveCursorEnd(e.getModifiers()),
+                new KeyStroke[] {
+                        KeyStroke.getKeyStroke(KeyEvent.VK_END, 0),
+                        KeyStroke.getKeyStroke(KeyEvent.VK_END, InputEvent.SHIFT_DOWN_MASK)
+                },
+                "canvas.cursor.end"));
         map.put("canvas.cursor.auto.off", new CanvasAction((c, e) -> c.setAutoCursor(Canvas.AutoCursor.OFF),
                 new KeyStroke[]{KeyStroke.getKeyStroke(KeyEvent.VK_F6, InputEvent.CTRL_DOWN_MASK)},
                 "canvas.cursor.auto.off"));

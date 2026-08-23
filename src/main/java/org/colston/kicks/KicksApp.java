@@ -290,8 +290,7 @@ public class KicksApp extends GuiApp {
         JPanel mainPanel = new JPanel(new BorderLayout());
         mainPanel.setBackground(Color.GRAY);
 
-        JScrollPane scroller = new JScrollPane(canvas.getContainer());
-        mainPanel.add(scroller, BorderLayout.CENTER);
+        mainPanel.add(canvas.getContainer(), BorderLayout.CENTER);
         mainPanel.add(canvas.getInputComponent(), BorderLayout.SOUTH);
 
         statusPanel.setMessage(APPLICATION_NAME);

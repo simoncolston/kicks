@@ -41,6 +41,7 @@ public class PageRenderer implements Printable {
 
     public static final int COLUMNS_PER_PAGE = 11;
     public static final int CELLS_PER_COL = 12;
+    public static final int CELLS_PER_PAGE = COLUMNS_PER_PAGE * CELLS_PER_COL;
 
     //NOTE: This is now the same as 11 columns, so we could replace any column with a title
     //CANVAS_WIDTH = 706;
@@ -104,22 +105,22 @@ public class PageRenderer implements Printable {
     private LocatableRange pageRange;
 
     public PageRenderer(KicksDocument doc, Settings settings) {
-        this(doc, settings, null, null, null);
+        this(doc, settings, null, null, -1, null);
     }
 
-    public PageRenderer(KicksDocument doc, Settings settings, LocatableRange selection, Color selectionColour, PageCursor cursor) {
+    public PageRenderer(KicksDocument doc, Settings settings, LocatableRange selection, Color selectionColour,
+            int pageIndex, PageCursor cursor) {
         this.doc = doc;
         this.selection = selection;
         this.selectionColour = selectionColour;
         this.cursor = cursor;
-        // default to first page only
-        this.pageRange = calcPageRange(0);
+        this.pageRange = pageIndex >= 0 ? calculatePageRange(pageIndex) : null;
         this.settings = settings;
     }
 
     @Override
     public int print(Graphics graphics, PageFormat pageFormat, int pageIndex) throws PrinterException {
-        pageRange = calcPageRange(pageIndex);
+        pageRange = calculatePageRange(pageIndex);
         Locatable highest = LocatableUtils.findHighest(doc.getAllLocatables());
 
         if (highest == null || highest.isLessThan(pageRange.getLow())) {
@@ -589,12 +590,6 @@ public class PageRenderer implements Printable {
         g2.drawString(romaji, x, y);
     }
 
-    private LocatableRange calcPageRange(int pageIndex) {
-        int startIndex = pageIndex * COLUMNS_PER_PAGE * CELLS_PER_COL;
-        int endIndex = startIndex + COLUMNS_PER_PAGE * CELLS_PER_COL - 1;
-        return new SimpleLocatableRange(startIndex, 1, endIndex, 12);
-    }
-
     private void cursorStartHighlight(Graphics2D g2, Locatable locatable, boolean noteSide, Font f) {
         if (cursor == null || (!isUnderCursor(locatable, noteSide) && !selection.contains(locatable))) {
             return;
@@ -637,5 +632,19 @@ public class PageRenderer implements Printable {
         int y = CELL_HEIGHT * cell;
         y += (offset * CELL_HEIGHT) / Locatable.CELL_TICKS;
         return y;
+    }
+
+    public static LocatableRange calculatePageRange(int pageIndex) {
+        int startIndex = pageIndex * COLUMNS_PER_PAGE * CELLS_PER_COL;
+        int endIndex = startIndex + COLUMNS_PER_PAGE * CELLS_PER_COL - 1;
+        return new SimpleLocatableRange(startIndex, 1, endIndex, 12);
+    }
+
+    public static int calculateNumberOfPages(int highestIndex) {
+        return (highestIndex / (COLUMNS_PER_PAGE * CELLS_PER_COL)) + 1;
+    }
+
+    public static int calculatePageIndex(int cursorIndex) {
+        return cursorIndex / (COLUMNS_PER_PAGE * CELLS_PER_COL);
     }
 }

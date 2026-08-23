@@ -31,6 +31,8 @@ import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.Transferable;
 import java.awt.event.ActionEvent;
+import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
 import java.awt.print.Printable;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -44,52 +46,104 @@ class CanvasControl implements Canvas {
 
     private final CanvasActionProvider actionProvider = new CanvasActionProvider();
 
-    private final JComponent container;
-    private final CanvasPanel canvasPanel;
+    private final CanvasPages canvasPages;
     private final CanvasModel model;
     private final InputComponent inputComponent;
     private final UndoManager undo = new UndoManager();
+    private final JScrollPane scroller;
     private KicksDocument savedDocument = null;
+    private final CanvasCursorModel cursorModel;
+    private final CanvasZoomModel zoomModel;
 
-    CanvasControl(JPanel container, CanvasPanel canvasPanel, CanvasModel model, InputComponent inputComponent) {
-        this.container = container;
-        this.canvasPanel = canvasPanel;
-
+    CanvasControl(JPanel container, CanvasPages canvasPages, CanvasModel model, CanvasCursorModel cursorModel, CanvasZoomModel zoomModel, InputComponent inputComponent) {
+        this.canvasPages = canvasPages;
         this.model = model;
+        this.inputComponent = inputComponent;
+        this.cursorModel = cursorModel;
+        this.zoomModel = zoomModel;
+
+        this.scroller = new JScrollPane(container);
+        scroller.getVerticalScrollBar().setUnitIncrement(16);
+        scroller.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT)
+                .put(KeyStroke.getKeyStroke(KeyEvent.VK_PAGE_DOWN, InputEvent.SHIFT_DOWN_MASK), "scrollDown");
+        scroller.getActionMap().put("scrollDown", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                cursorModel.pageDown((e.getModifiers() & ActionEvent.SHIFT_MASK) > 0);
+            }
+        });
+        scroller.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT)
+                .put(KeyStroke.getKeyStroke(KeyEvent.VK_PAGE_UP, InputEvent.SHIFT_DOWN_MASK), "scrollUp");
+        scroller.getActionMap().put("scrollUp", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                cursorModel.pageUp((e.getModifiers() & ActionEvent.SHIFT_MASK) > 0);
+            }
+        });
+
+        // listen for changes on the document
         KicksDocumentListener docListener = new KicksDocumentListener() {
             @Override
             public void documentUpdated() {
                 updateUndoActions();
-                canvasPanel.redraw();
+                canvasPages.redraw();
             }
 
             @Override
             public void locationUpdated(int index, int offset) {
-                canvasPanel.setCursorWithOnNote(index, offset, true);
+                cursorModel.setCursor(index, offset);
             }
         };
         this.model.getEditor().addDocumentListener(docListener);
+
+        // listen for changes on the cursor model
+        this.cursorModel.addListener(new CanvasCursorModelListener() {
+            @Override
+            public boolean vetoableCursorChanged(CanvasCursorModelEvent e) {
+                int numberOfPages = PageRenderer.calculateNumberOfPages(e.newCursor().index());
+                if (numberOfPages > canvasPages.getNumberOfPages()) {
+                    return false;
+                }
+                cursorChanged(e);
+                return true;
+            }
+
+            @Override
+            public void cursorChanged(CanvasCursorModelEvent e) {
+                int pageIndex = PageRenderer.calculatePageIndex(e.newCursor().index());
+                if (pageIndex != PageRenderer.calculatePageIndex(e.oldCursor().index())) {
+                    canvasPages.scrollPageToVisible(pageIndex);
+                }
+                canvasPages.handleText();
+                canvasPages.redraw();
+            }
+        });
+
+        // listen for zoom changes
+        zoomModel.addListener(event -> {
+            Dimension dimension = new Dimension();
+            dimension.width = (int) (event.scale() * (PageRenderer.CANVAS_WIDTH + 2 * PageRenderer.BORDER_WIDTH));
+            dimension.height = (int) (event.scale() * (PageRenderer.CANVAS_HEIGHT + 2 * PageRenderer.BORDER_WIDTH));
+            canvasPages.setDimensions(dimension);
+            canvasPages.redraw();
+        });
+
+        // listen for undoable edits
         UndoableEditListener undoListener = e -> undo.addEdit(e.getEdit());
         this.model.getEditor().addUndoableEditListener(undoListener);
 
-        KicksApp.settings().addListener(canvasPanel::redraw);
-
-        this.inputComponent = inputComponent;
+        // listen for setting changing
+        KicksApp.settings().addListener(canvasPages::redraw);
     }
 
     @Override
     public void requestFocusInWindow() {
-        canvasPanel.requestFocusInWindow();
+        canvasPages.requestFocusInWindow();
     }
 
     @Override
     public JComponent getContainer() {
-        return container;
-    }
-
-    @Override
-    public JComponent getComponent() {
-        return canvasPanel;
+        return scroller;
     }
 
     @Override
@@ -125,7 +179,8 @@ class CanvasControl implements Canvas {
         model.setDocument(doc);
         documentSaved();
 
-        canvasPanel.documentSet();
+        canvasPages.documentSet();
+        zoomReset();
 
         requestFocusInWindow();
     }
@@ -154,17 +209,17 @@ class CanvasControl implements Canvas {
 
     @Override
     public void zoomIn() {
-        canvasPanel.zoomIn();
+        zoomModel.zoomIn();
     }
 
     @Override
     public void zoomOut() {
-        canvasPanel.zoomOut();
+        zoomModel.zoomOut();
     }
 
     @Override
     public void zoomReset() {
-        canvasPanel.zoomReset();
+        zoomModel.zoomReset();
     }
 
     private void updateUndoActions() {
@@ -179,27 +234,29 @@ class CanvasControl implements Canvas {
     }
 
     public void addLyric() {
-        String s = canvasPanel.getText();
-        Lyric l = model.getDocument().getLyric(canvasPanel.getCursorIndex(), canvasPanel.getCursorOffset());
+        String s = canvasPages.getText();
+        int cursorIndex = cursorModel.getCursorIndex();
+        int cursorOffset = cursorModel.getCursorOffset();
+        Lyric l = model.getDocument().getLyric(cursorIndex,  cursorOffset);
         if (l == null && (s == null || s.isEmpty())) {
             // user hit enter, nothing to do, so just auto cursor (avoid creating undo edit)
-            canvasPanel.doAutoCursor();
+            cursorModel.doAutoCursor();
             return;
         }
         if (s == null || s.isEmpty()) {
-            model.getEditor().removeLyric(canvasPanel.getCursorIndex(), canvasPanel.getCursorOffset());
+            model.getEditor().removeLyric(cursorIndex,  cursorOffset);
         } else {
             if (s.length() > 2) {
                 s = s.substring(0, 2);
             }
-            l = new Lyric(canvasPanel.getCursorIndex(), canvasPanel.getCursorOffset(), s);
+            l = new Lyric(cursorIndex,  cursorOffset, s);
             model.getEditor().addLyric(l);
         }
-        canvasPanel.doAutoCursor();
+        cursorModel.doAutoCursor();
     }
 
     void addNote(int string, int placement, boolean isSmall) {
-        Note n = new Note(canvasPanel.getCursorIndex(), canvasPanel.getCursorOffset(), string, placement);
+        Note n = new Note(cursorModel.getCursorIndex(), cursorModel.getCursorOffset(), string, placement);
         model.getEditor().addNote(n);
         if (isSmall) {
             // override the input component setting (probably because user pressed Shift key)
@@ -207,71 +264,81 @@ class CanvasControl implements Canvas {
         } else if (inputComponent.isSmallNoteSelected()) {
             n.setSmall(true);
         }
-        canvasPanel.doAutoCursor();
+        cursorModel.doAutoCursor();
     }
 
     void moveCursorLeft(int modifiers) {
         boolean selecting = (modifiers & ActionEvent.SHIFT_MASK) > 0;
-        canvasPanel.moveCursorLeft(selecting);
+        cursorModel.moveCursorLeft(selecting);
     }
 
     void moveCursorRight(int modifiers) {
         boolean selecting = (modifiers & ActionEvent.SHIFT_MASK) > 0;
-        canvasPanel.moveCursorRight(selecting);
+        cursorModel.moveCursorRight(selecting);
     }
 
     void moveCursorUp(int modifiers) {
         boolean selecting = (modifiers & ActionEvent.SHIFT_MASK) > 0;
         if ((modifiers & ActionEvent.ALT_MASK) > 0) {
-            canvasPanel.moveCursorUpMinAmount(selecting);
+            cursorModel.moveCursorUpMinAmount(selecting);
         } else {
-            canvasPanel.moveCursorUp(selecting);
+            cursorModel.moveCursorUp(selecting);
         }
     }
 
     void moveCursorDown(int modifiers) {
         boolean selecting = (modifiers & ActionEvent.SHIFT_MASK) > 0;
         if ((modifiers & ActionEvent.ALT_MASK) > 0) {
-            canvasPanel.moveCursorDownMinAmount(selecting);
+            cursorModel.moveCursorDownMinAmount(selecting);
         } else {
-            canvasPanel.moveCursorDown(selecting);
+            cursorModel.moveCursorDown(selecting);
         }
     }
 
+    void moveCursorHome(int modifiers) {
+        boolean selecting = (modifiers & ActionEvent.SHIFT_MASK) > 0;
+        cursorModel.moveCursorHome(selecting);
+    }
+
+    void moveCursorEnd(int modifiers) {
+        boolean selecting = (modifiers & ActionEvent.SHIFT_MASK) > 0;
+        cursorModel.moveCursorEnd(canvasPages.getNumberOfPages(), selecting);
+    }
+
     void addRest() {
-        Note n = new Note(canvasPanel.getCursorIndex(), canvasPanel.getCursorOffset(),
+        Note n = new Note(cursorModel.getCursorIndex(), cursorModel.getCursorOffset(),
                 CanvasResources.REST_STRING, CanvasResources.REST_PLACEMENT);
         model.getEditor().addNote(n);
-        canvasPanel.doAutoCursor();
+        cursorModel.doAutoCursor();
     }
 
     void addRepeat(boolean end) {
-        Repeat r = new Repeat(canvasPanel.getCursorIndex(), canvasPanel.getCursorOffset(), end);
+        Repeat r = new Repeat(cursorModel.getCursorIndex(), cursorModel.getCursorOffset(), end);
         model.getEditor().addRepeat(r);
     }
 
     void setFlat() {
-        model.getEditor().setFlat(canvasPanel.getCursorIndex(), canvasPanel.getCursorOffset());
+        model.getEditor().setFlat(cursorModel.getCursorIndex(), cursorModel.getCursorOffset());
     }
 
     void setUtou(Utou utou) {
-        model.getEditor().setUtou(canvasPanel.getCursorIndex(), canvasPanel.getCursorOffset(), utou);
+        model.getEditor().setUtou(cursorModel.getCursorIndex(), cursorModel.getCursorOffset(), utou);
     }
 
     void setChord() {
-        model.getEditor().setChord(canvasPanel.getCursorIndex(), canvasPanel.getCursorOffset());
+        model.getEditor().setChord(cursorModel.getCursorIndex(), cursorModel.getCursorOffset());
     }
 
     void setSlur() {
-        model.getEditor().setSlur(canvasPanel.getCursorIndex(), canvasPanel.getCursorOffset());
+        model.getEditor().setSlur(cursorModel.getCursorIndex(), cursorModel.getCursorOffset());
     }
 
     @Override
     public void copy() {
-        if (canvasPanel.getSelection().isEmpty()) {
+        if (cursorModel.getSelection().isEmpty()) {
             return;
         }
-        KicksDocument copy = model.getEditor().copy(canvasPanel.getSelection());
+        KicksDocument copy = model.getEditor().copy(cursorModel.getSelection());
         if (copy == null) {
             return;
         }
@@ -295,7 +362,7 @@ class CanvasControl implements Canvas {
         }
         try (ByteArrayInputStream is = new ByteArrayInputStream(data.getBytes())) {
             KicksDocument doc = KicksApp.documentStore().load(is);
-            model.getEditor().paste(canvasPanel.getCursorIndex(), canvasPanel.getCursorOffset(), doc);
+            model.getEditor().paste(cursorModel.getCursorIndex(), cursorModel.getCursorOffset(), doc);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -306,14 +373,12 @@ class CanvasControl implements Canvas {
         Transferable transferable = cb.getContents(null);
 
         if (transferable.isDataFlavorSupported(DataFlavor.stringFlavor)) {
-            String data = null;
             try {
-                data = (String) transferable.getTransferData(DataFlavor.stringFlavor);
+                return (String) transferable.getTransferData(DataFlavor.stringFlavor);
             } catch (Exception e) {
                 System.out.println("Couldn't get data from the clipboard");
                 return null;
             }
-            return data;
         }
         System.out.println("Couldn't get data from the clipboard");
         return null;
@@ -321,29 +386,29 @@ class CanvasControl implements Canvas {
 
     @Override
     public void delete() {
-        if (!canvasPanel.getSelection().isEmpty()) {
-            model.getEditor().remove(canvasPanel.getAndClearSelection());
-        } else if (canvasPanel.isCursorOnNote()) {
-            model.getEditor().removeNote(canvasPanel.getCursorIndex(), canvasPanel.getCursorOffset());
-            model.getEditor().removeRepeat(canvasPanel.getCursorIndex(), canvasPanel.getCursorOffset());
+        if (!cursorModel.getSelection().isEmpty()) {
+            model.getEditor().remove(cursorModel.getAndClearSelection());
+        } else if (cursorModel.isCursorOnNote()) {
+            model.getEditor().removeNote(cursorModel.getCursorIndex(), cursorModel.getCursorOffset());
+            model.getEditor().removeRepeat(cursorModel.getCursorIndex(), cursorModel.getCursorOffset());
         } else {
-            model.getEditor().removeLyric(canvasPanel.getCursorIndex(), canvasPanel.getCursorOffset());
+            model.getEditor().removeLyric(cursorModel.getCursorIndex(), cursorModel.getCursorOffset());
         }
     }
 
     @Override
     public void setNoteSizeNormal() {
-        model.getEditor().setNoteSize(canvasPanel.getCursorIndex(), canvasPanel.getCursorOffset(), false);
+        model.getEditor().setNoteSize(cursorModel.getCursorIndex(), cursorModel.getCursorOffset(), false);
     }
 
     @Override
     public void setNoteSizeSmall() {
-        model.getEditor().setNoteSize(canvasPanel.getCursorIndex(), canvasPanel.getCursorOffset(), true);
+        model.getEditor().setNoteSize(cursorModel.getCursorIndex(), cursorModel.getCursorOffset(), true);
     }
 
     @Override
     public void setFinger(int finger) {
-        model.getEditor().setFinger(canvasPanel.getCursorIndex(), canvasPanel.getCursorOffset(), finger);
+        model.getEditor().setFinger(cursorModel.getCursorIndex(), cursorModel.getCursorOffset(), finger);
     }
 
     /**
@@ -351,53 +416,52 @@ class CanvasControl implements Canvas {
      * Ignored if not in the note column.
      */
     void backspace() {
-        if (!canvasPanel.isCursorOnNote()) {
+        if (!cursorModel.isCursorOnNote()) {
             return;
         }
-        Locatable locatable = model.getEditor().findPreviousNote(canvasPanel.getCursorIndex(),
-                canvasPanel.getCursorOffset());
+        Locatable locatable = model.getEditor().findPreviousNote(cursorModel.getCursorIndex(), cursorModel.getCursorOffset());
         if (locatable == null) {
-            canvasPanel.initialiseCursor();
+            cursorModel.initialiseCursor();
         } else {
-            canvasPanel.setCursor(locatable.getIndex(), locatable.getOffset());
+            cursorModel.setCursor(locatable.getIndex(), locatable.getOffset());
         }
         delete();
     }
 
     void setAutoCursor(AutoCursor autoCursor) {
-        canvasPanel.setAutoCursor(autoCursor);
+        cursorModel.setAutoCursor(autoCursor);
     }
 
     @Override
     public void editSongHeader() {
-        int index = canvasPanel.getCursorIndex();
+        int index = cursorModel.getCursorIndex();
         Optional<Song> song = model.getEditor().findSongBeforeIndex(index);
         if (song.isEmpty()) {
             return;
         }
         SongHeaderEditor sde = new SongHeaderEditor();
-        sde.edit(song.get(), canvasPanel.getCursorIndex(), canvasPanel.getCursorOffset());
+        sde.edit(song.get(), cursorModel.getCursorIndex(), cursorModel.getCursorOffset());
     }
 
     @Override
     public void addSongHeader() {
-        int index = canvasPanel.getCursorColumnIndex();
+        int index = cursorModel.getCursorColumnIndex();
         if (index == -1) {
             // column not valid to receive song header
             return;
         }
         SongHeaderEditor sde = new SongHeaderEditor();
-        sde.edit(new Song(index), canvasPanel.getCursorIndex(), canvasPanel.getCursorOffset());
+        sde.edit(new Song(index), cursorModel.getCursorIndex(), cursorModel.getCursorOffset());
     }
 
     @Override
     public void removeSongHeader() {
-        int index = canvasPanel.getCursorIndex();
+        int index = cursorModel.getCursorIndex();
         Optional<Song> song = model.getEditor().findSongBeforeIndex(index);
         if (song.isEmpty()) {
             return;
         }
-        model.getEditor().removeSong(song.get().getIndex(), canvasPanel.getCursorIndex(), canvasPanel.getCursorOffset());
+        model.getEditor().removeSong(song.get().getIndex(), cursorModel.getCursorIndex(), cursorModel.getCursorOffset());
     }
 
     private static class CanvasActionProvider implements ActionProvider {

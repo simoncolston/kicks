@@ -13,8 +13,6 @@ public interface Canvas {
 
     JComponent getContainer();
 
-    JComponent getComponent();
-
     Component getInputComponent();
 
     ActionProvider getActionProvider();

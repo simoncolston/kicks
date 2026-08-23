@@ -3,6 +3,7 @@ package org.colston.kicks.gui.canvas;
 import org.colston.kicks.KicksApp;
 import org.colston.kicks.document.Locatable;
 import org.colston.kicks.document.Note;
+import org.colston.kicks.render.PageCursor;
 import org.colston.lib.i18n.Messages;
 
 import javax.swing.*;
@@ -11,7 +12,7 @@ import java.awt.*;
 public class InputComponent extends JPanel {
     private JRadioButton smallNoteRadioButton;
 
-    InputComponent(CanvasPanel canvas, CanvasModel model) {
+    InputComponent(CanvasModel model, CanvasCursorModel cursorModel) {
         setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
         setBackground(KicksApp.PANEL_COLOUR);
         setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
@@ -22,7 +23,7 @@ public class InputComponent extends JPanel {
         JPanel editButtonPanel = createEditButtonPanel();
         editButtonPanel.setAlignmentY(Component.TOP_ALIGNMENT);
 
-        JPanel noteSizePanel = createNoteSizePanel(canvas, model);
+        JPanel noteSizePanel = createNoteSizePanel(model, cursorModel);
         noteSizePanel.setAlignmentY(Component.TOP_ALIGNMENT);
 
         JPanel cursorControlPanel = createCursorControlPanel();
@@ -43,7 +44,7 @@ public class InputComponent extends JPanel {
         return smallNoteRadioButton.isSelected();
     }
 
-    private JPanel createNoteSizePanel(CanvasPanel canvas, CanvasModel model) {
+    private JPanel createNoteSizePanel(CanvasModel model, CanvasCursorModel cursorModel) {
         JPanel noteSizePanel = new JPanel();
         noteSizePanel.setLayout(new BoxLayout(noteSizePanel, BoxLayout.Y_AXIS));
         noteSizePanel.setBorder(
@@ -59,14 +60,15 @@ public class InputComponent extends JPanel {
         noteSizePanel.add(smallNoteRadioButton);
         noteSizePanel.setAlignmentY(Component.TOP_ALIGNMENT);
 
-        canvas.addListener((index, offset) -> {
-            Note note = model.getDocument().getNote(index, offset);
+        cursorModel.addListener((e) -> {
+            PageCursor cursor = e.newCursor();
+            Note note = model.getDocument().getNote(cursor.index(), cursor.offset());
             JRadioButton button = normalButton;
             if (note != null) {
                 if (note.isSmall()) {
                     button = smallNoteRadioButton;
                 }
-            } else if (offset == 0 || offset == Locatable.CELL_TICKS) {
+            } else if (cursor.offset() == 0 || cursor.offset() == Locatable.CELL_TICKS) {
                 button = smallNoteRadioButton;
             }
             button.setSelected(true);

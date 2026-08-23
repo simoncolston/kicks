@@ -1,7 +1,6 @@
 package org.colston.kicks.gui.canvas;
 
 import org.colston.kicks.KicksApp;
-import org.colston.kicks.Settings;
 import org.colston.kicks.document.KicksDocument;
 import org.colston.kicks.document.Song;
 import org.colston.kicks.gui.util.JapaneseTextFocusListener;
@@ -9,34 +8,26 @@ import org.colston.kicks.render.PageRenderer;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
-import java.awt.im.InputContext;
 import java.awt.print.Printable;
 
 public final class CanvasFactory {
+
     public static Canvas create() {
 
         CanvasModel model = new CanvasModel();
-
-        JTextField text = new JTextField();
-        text.setBorder(BorderFactory.createLineBorder(PageRenderer.CURSOR_COLOUR));
-        text.enableInputMethods(true);
-        text.addFocusListener(new JapaneseTextFocusListener());
-
-        CanvasPanel canvas = createCanvasPanel(model, text);
-        canvas.addFocusListener(new CanvasPanelFocusListener());
+        CanvasCursorModel cursorModel = new CanvasCursorModel(model);
+        CanvasZoomModel zoomModel = new CanvasZoomModel();
 
         JPanel canvasContainer = new JPanel();
         canvasContainer.setBackground(Color.GRAY);
         canvasContainer.setLayout(new BoxLayout(canvasContainer, BoxLayout.Y_AXIS));
-        canvasContainer.add(Box.createVerticalStrut(10));
-        canvasContainer.add(canvas);
-        canvasContainer.add(Box.createVerticalStrut(10));
+        canvasContainer.add(Box.createVerticalStrut(CanvasPages.PAGE_PADDING));
 
-        InputComponent inputComponent = new InputComponent(canvas, model);
+        CanvasPages canvasPages = CanvasPagesImpl.create(canvasContainer, model, cursorModel, zoomModel);
 
-        CanvasControl control = new CanvasControl(canvasContainer, canvas, model, inputComponent);
+        InputComponent inputComponent = new InputComponent(model, cursorModel);
+
+        CanvasControl control = new CanvasControl(canvasContainer, canvasPages, model, cursorModel, zoomModel, inputComponent);
         control.setDocument(new KicksDocument(new Song(0)));
 
         /*
@@ -44,10 +35,7 @@ public final class CanvasFactory {
          */
         CanvasActions.initialise(control);
 
-        CanvasActions.addPrefixToInputActionMaps(canvas, "canvas.");
-
-        CanvasActions.addPrefixToInputActionMaps(text, "canvas.cursor.");
-        CanvasActions.addPrefixToInputActionMaps(text, "canvastext.");
+        CanvasActions.addPrefixToInputActionMaps(canvasContainer, "canvas.");
 
         CanvasActions.enableAll();
 
@@ -57,23 +45,4 @@ public final class CanvasFactory {
     public static Printable createPrintable(KicksDocument doc) {
         return new PageRenderer(doc, KicksApp.settings());
     }
-
-    private static CanvasPanel createCanvasPanel(CanvasModel model, JTextField text) {
-        return new CanvasPanel(model, text);
-    }
-
-    private static class CanvasPanelFocusListener implements FocusListener {
-
-        @Override
-        public void focusGained(FocusEvent e) {
-            InputContext ic = e.getComponent().getInputContext();
-            ic.setCharacterSubsets(Settings.LATIN);
-//			ic.selectInputMethod(Locale.getDefault());
-        }
-
-        @Override
-        public void focusLost(FocusEvent e) {
-        }
-    }
-
 }
