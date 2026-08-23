@@ -10,7 +10,7 @@ import org.colston.kicks.document.SimpleLocatable;
 import org.colston.kicks.document.Song;
 import org.colston.kicks.document.Tuning;
 import org.colston.kicks.document.Utou;
-import org.colston.utils.Utils;
+import org.colston.utils.KanaConverter;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -187,7 +187,7 @@ public class KicksABCImporter implements Importer {
         } else  {
             int o = calcOffset(abcLyric, 6);
             int i = calcIndex(o);
-            String syllable = Utils.toKatakana(abcLyric.toString());
+            String syllable = KanaConverter.toKatakana(abcLyric.toString());
             Lyric lyric = new Lyric(i, o, syllable);
             doc.getLyrics().add(lyric);
         }

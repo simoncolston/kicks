@@ -4,23 +4,23 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class UtilsTest {
+class KanaConverterTest {
 
     @Test
     void toRomaji() {
-        String romaji = Utils.toRomaji("サ");
+        String romaji = KanaConverter.toRomaji("サ");
         assertEquals("sa", romaji);
     }
 
     @Test
     void toKatakana() {
-        String katakana = Utils.toKatakana("sa");
+        String katakana = KanaConverter.toKatakana("sa");
         assertEquals("サ", katakana);
-        katakana = Utils.toKatakana("gwa");
+        katakana = KanaConverter.toKatakana("gwa");
         assertEquals("グヮ", katakana);
-        katakana = Utils.toKatakana("ti");
+        katakana = KanaConverter.toKatakana("ti");
         assertEquals("ティ", katakana);
-        katakana = Utils.toKatakana("zz");
+        katakana = KanaConverter.toKatakana("zz");
         assertEquals("zz", katakana);
     }
 }
