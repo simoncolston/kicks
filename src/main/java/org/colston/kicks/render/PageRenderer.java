@@ -15,7 +15,7 @@ import org.colston.kicks.document.SimpleLocatableRange;
 import org.colston.kicks.document.Song;
 import org.colston.kicks.document.Tuning;
 import org.colston.lib.i18n.Messages;
-import org.colston.utils.Utils;
+import org.colston.utils.KanaConverter;
 
 import java.awt.*;
 import java.awt.geom.AffineTransform;
@@ -584,7 +584,7 @@ public class PageRenderer implements Printable {
 
     private void drawRomajiLyric(Graphics2D g2, String value, int index, int offset, FontMetrics fm) {
         int x = x(index) + (COLUMN_WIDTH / 2) + 2;
-        String romaji = Utils.toRomaji(value);
+        String romaji = KanaConverter.toRomaji(value);
         int y = y(index, offset, fm);
         g2.drawString(romaji, x, y);
     }

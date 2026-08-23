@@ -12,7 +12,7 @@ import org.colston.kicks.document.SimpleLocatableRange;
 import org.colston.kicks.document.Song;
 import org.colston.kicks.document.Tuning;
 import org.colston.kicks.render.RendererResources;
-import org.colston.utils.Utils;
+import org.colston.utils.KanaConverter;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -84,7 +84,7 @@ public class KicksABCExporter {
                     absoluteOffset = "<" + lyric.getOffset() + ">";
                 }
             }
-            writer.write(Utils.toRomaji(lyric.getValue()));
+            writer.write(KanaConverter.toRomaji(lyric.getValue()));
             writer.write(absoluteOffset);
             prev = lyric;
         }
