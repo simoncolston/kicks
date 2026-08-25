@@ -120,43 +120,37 @@ public class PDFBoxGraphics2D extends Graphics2D implements Cloneable {
                         setFont(shared.fontStore.getDefaultFont());
                     }
                     break;
-                case STROKE,
-                     NONE:
+                case STROKE:
+                case NONE:
                     break;
             }
         } catch (IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }
 
     @Override
     public void draw(Shape s) {
-        // TODO Auto-generated method stub
 
     }
 
     @Override
     public boolean drawImage(Image img, AffineTransform xform, ImageObserver obs) {
-        // TODO Auto-generated method stub
         return false;
     }
 
     @Override
     public void drawImage(BufferedImage img, BufferedImageOp op, int x, int y) {
-        // TODO Auto-generated method stub
 
     }
 
     @Override
     public void drawRenderedImage(RenderedImage img, AffineTransform xform) {
-        // TODO Auto-generated method stub
 
     }
 
     @Override
     public void drawRenderableImage(RenderableImage img, AffineTransform xform) {
-        // TODO Auto-generated method stub
 
     }
 
@@ -183,19 +177,16 @@ public class PDFBoxGraphics2D extends Graphics2D implements Cloneable {
 
     @Override
     public void drawString(AttributedCharacterIterator iterator, int x, int y) {
-        // TODO Auto-generated method stub
 
     }
 
     @Override
     public void drawString(AttributedCharacterIterator iterator, float x, float y) {
-        // TODO Auto-generated method stub
 
     }
 
     @Override
     public void drawGlyphVector(GlyphVector g, float x, float y) {
-        // TODO Auto-generated method stub
 
     }
 
@@ -237,25 +228,21 @@ public class PDFBoxGraphics2D extends Graphics2D implements Cloneable {
 
     @Override
     public boolean hit(Rectangle rect, Shape s, boolean onStroke) {
-        // TODO Auto-generated method stub
         return false;
     }
 
     @Override
     public GraphicsConfiguration getDeviceConfiguration() {
-        // TODO Auto-generated method stub
         return null;
     }
 
     @Override
     public void setComposite(Composite comp) {
-        // TODO Auto-generated method stub
 
     }
 
     @Override
     public void setPaint(Paint paint) {
-        // TODO Auto-generated method stub
 
     }
 
@@ -278,31 +265,26 @@ public class PDFBoxGraphics2D extends Graphics2D implements Cloneable {
 
     @Override
     public void setRenderingHint(Key hintKey, Object hintValue) {
-        // TODO Auto-generated method stub
 
     }
 
     @Override
     public Object getRenderingHint(Key hintKey) {
-        // TODO Auto-generated method stub
         return null;
     }
 
     @Override
     public void setRenderingHints(Map<?, ?> hints) {
-        // TODO Auto-generated method stub
 
     }
 
     @Override
     public void addRenderingHints(Map<?, ?> hints) {
-        // TODO Auto-generated method stub
 
     }
 
     @Override
     public RenderingHints getRenderingHints() {
-        // TODO Auto-generated method stub
         return null;
     }
 
@@ -375,13 +357,11 @@ public class PDFBoxGraphics2D extends Graphics2D implements Cloneable {
 
     @Override
     public Paint getPaint() {
-        // TODO Auto-generated method stub
         return null;
     }
 
     @Override
     public Composite getComposite() {
-        // TODO Auto-generated method stub
         return null;
     }
 
@@ -402,13 +382,11 @@ public class PDFBoxGraphics2D extends Graphics2D implements Cloneable {
 
     @Override
     public void clip(Shape s) {
-        // TODO Auto-generated method stub
 
     }
 
     @Override
     public FontRenderContext getFontRenderContext() {
-        // TODO Auto-generated method stub
         return null;
     }
 
@@ -432,13 +410,11 @@ public class PDFBoxGraphics2D extends Graphics2D implements Cloneable {
 
     @Override
     public void setPaintMode() {
-        // TODO Auto-generated method stub
 
     }
 
     @Override
     public void setXORMode(Color c1) {
-        // TODO Auto-generated method stub
 
     }
 
@@ -474,37 +450,31 @@ public class PDFBoxGraphics2D extends Graphics2D implements Cloneable {
 
     @Override
     public Rectangle getClipBounds() {
-        // TODO Auto-generated method stub
         return null;
     }
 
     @Override
     public void clipRect(int x, int y, int width, int height) {
-        // TODO Auto-generated method stub
 
     }
 
     @Override
     public void setClip(int x, int y, int width, int height) {
-        // TODO Auto-generated method stub
 
     }
 
     @Override
     public Shape getClip() {
-        // TODO Auto-generated method stub
         return null;
     }
 
     @Override
     public void setClip(Shape clip) {
-        // TODO Auto-generated method stub
 
     }
 
     @Override
     public void copyArea(int x, int y, int width, int height, int dx, int dy) {
-        // TODO Auto-generated method stub
 
     }
 
@@ -518,6 +488,19 @@ public class PDFBoxGraphics2D extends Graphics2D implements Cloneable {
             e.printStackTrace();
         }
 
+    }
+
+    @Override
+    public void drawRect(int x, int y, int width, int height) {
+        checkMode(Mode.STROKE);
+        if (Color.WHITE.equals(colour)) {
+            return;
+        }
+        try {
+            shared.cstream.addRect(x, -y, width, -height);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -542,93 +525,78 @@ public class PDFBoxGraphics2D extends Graphics2D implements Cloneable {
 
     @Override
     public void drawRoundRect(int x, int y, int width, int height, int arcWidth, int arcHeight) {
-        // TODO Auto-generated method stub
 
     }
 
     @Override
     public void fillRoundRect(int x, int y, int width, int height, int arcWidth, int arcHeight) {
-        // TODO Auto-generated method stub
 
     }
 
     @Override
     public void drawOval(int x, int y, int width, int height) {
-        // TODO Auto-generated method stub
 
     }
 
     @Override
     public void fillOval(int x, int y, int width, int height) {
-        // TODO Auto-generated method stub
 
     }
 
     @Override
     public void drawArc(int x, int y, int width, int height, int startAngle, int arcAngle) {
-        // TODO Auto-generated method stub
 
     }
 
     @Override
     public void fillArc(int x, int y, int width, int height, int startAngle, int arcAngle) {
-        // TODO Auto-generated method stub
 
     }
 
     @Override
     public void drawPolyline(int[] xPoints, int[] yPoints, int nPoints) {
-        // TODO Auto-generated method stub
 
     }
 
     @Override
     public void drawPolygon(int[] xPoints, int[] yPoints, int nPoints) {
-        // TODO Auto-generated method stub
 
     }
 
     @Override
     public void fillPolygon(int[] xPoints, int[] yPoints, int nPoints) {
-        // TODO Auto-generated method stub
 
     }
 
     @Override
     public boolean drawImage(Image img, int x, int y, ImageObserver observer) {
-        // TODO Auto-generated method stub
         return false;
     }
 
     @Override
     public boolean drawImage(Image img, int x, int y, int width, int height, ImageObserver observer) {
-        // TODO Auto-generated method stub
         return false;
     }
 
     @Override
     public boolean drawImage(Image img, int x, int y, Color bgcolor, ImageObserver observer) {
-        // TODO Auto-generated method stub
         return false;
     }
 
     @Override
     public boolean drawImage(Image img, int x, int y, int width, int height, Color bgcolor, ImageObserver observer) {
-        // TODO Auto-generated method stub
         return false;
     }
 
     @Override
     public boolean drawImage(Image img, int dx1, int dy1, int dx2, int dy2, int sx1, int sy1, int sx2, int sy2,
                              ImageObserver observer) {
-        // TODO Auto-generated method stub
         return false;
     }
 
     @Override
     public boolean drawImage(Image img, int dx1, int dy1, int dx2, int dy2, int sx1, int sy1, int sx2, int sy2,
                              Color bgcolor, ImageObserver observer) {
-        // TODO Auto-generated method stub
         return false;
     }
 }

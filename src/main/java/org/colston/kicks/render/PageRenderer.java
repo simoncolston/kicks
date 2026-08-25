@@ -58,13 +58,13 @@ public class PageRenderer implements Printable {
     /*
      * Strokes
      */
-    private final Stroke stroke = new BasicStroke(1.0f);
-    private final Stroke decorateStroke = new BasicStroke(1.1f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+    private final Stroke stroke = new BasicStroke(0.5f);
+    private final Stroke decorateStroke = new BasicStroke(1.0f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
 
     /*
      * Colours
      */
-    private static final Color BORDER_BOX_COLOUR = new Color(150, 150, 150);
+    private static final Color BORDER_BOX_COLOUR = new Color(160, 160, 160);
     private static final Color FOREGROUND_COLOUR = Color.BLACK;
     public static final Color CURSOR_COLOUR = Color.BLUE;
 
@@ -502,7 +502,7 @@ public class PageRenderer implements Printable {
         if (n.getAccidental() == Accidental.FLAT) {
             Font tfont = g2.getFont();
             g2.setFont(flatFont);
-            g2.drawString("♭", x - flatFont.getSize() / 2, y);
+            g2.drawString("♭", x - 1 - flatFont.getSize() / 2, y);
             g2.setFont(tfont);
         }
 
@@ -517,16 +517,26 @@ public class PageRenderer implements Printable {
                 g2.drawLine(x, y, x + 1 - fm.getFont().getSize() / 2, y);
                 g2.drawLine(x, y, x, y - 1 + fm.getFont().getSize() / 2);
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
-                g2.setStroke(stroke);
             }
             case UCHI -> {
                 g2.setStroke(decorateStroke);
+                int[] xs = new int[3];
+                int[] ys = new int[3];
+
+                xs[0] = x - fm.getFont().getSize() / 4;
+                ys[0] = y;
+                xs[1] = x;
+                ys[1] = y + fm.getFont().getSize() / 4;
+                xs[2] = x + 1;
+                ys[2] = y - 1 + fm.getFont().getSize() / 4;
+                Polygon tri = new Polygon(xs, ys, 3);
+
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                g2.drawLine(x - fm.getFont().getSize() / 4, y, x, y + fm.getFont().getSize() / 4);
-                g2.drawLine(x - fm.getFont().getSize() / 4, y, x + 1, y - 1 + fm.getFont().getSize() / 4);
-                g2.drawLine(x, y + fm.getFont().getSize() / 4, x + 1, y - 1 + fm.getFont().getSize() / 4);
+                g2.drawLine(xs[0], ys[0], xs[1], ys[1]);
+                g2.drawLine(xs[0], ys[0], xs[2], ys[2]);
+                g2.drawLine(xs[1], ys[1], xs[2], ys[2]);
+                g2.fill(tri);
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
-                g2.setStroke(stroke);
             }
             case NONE -> {
                 // do nothing
@@ -544,11 +554,11 @@ public class PageRenderer implements Printable {
         int y1 = y(end.getIndex(), end.getOffset(), end.isSmall() ? sfm : lfm) - 2;
         g2.drawLine(x, y, x, y1);
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
-        g2.setStroke(stroke);
         cursorEndHighlight(g2, null);
     }
 
     private void drawRepeat(Graphics2D g2, boolean back, int index, int offset) {
+        g2.setStroke(stroke);
         int x = x(index) + (COLUMN_WIDTH / 2);
         int y = y(index, offset);
         int x1 = x + (COLUMN_WIDTH / 8) * 3;
