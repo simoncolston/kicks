@@ -7,10 +7,15 @@
 	<groupId>org.colston.kicks</groupId>
 	<artifactId>kicks</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<packaging>jar</packaging>
+	<packaging>pom</packaging>
 
 	<name>kicks</name>
 	<description>Kunkunshi Editor</description>
+
+	<modules>
+		<module>kicks-app</module>
+		<module>kicks-core</module>
+	</modules>
 
 	<properties>
 		<jaxb.version>4.0.9</jaxb.version>
@@ -105,34 +110,6 @@
 						</jdk>
 					</toolchains>
 				</configuration>
-			</plugin>
-
-			<!-- Set main class in manifest and don't use long default jar name -->
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-assembly-plugin</artifactId>
-				<version>3.8.0</version>
-				<configuration>
-					<archive>
-						<manifest>
-							<mainClass>org.colston.kicks.KicksApp</mainClass>
-							<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
-						</manifest>
-					</archive>
-					<descriptorRefs>
-						<descriptorRef>jar-with-dependencies</descriptorRef>
-					</descriptorRefs>
-					<finalName>kicks</finalName>
-					<appendAssemblyId>false</appendAssemblyId>
-				</configuration>
-				<executions>
-					<execution>
-						<phase>package</phase>
-						<goals>
-							<goal>single</goal>
-						</goals>
-					</execution>
-				</executions>
 			</plugin>
 
 			<plugin>

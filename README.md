@@ -9,12 +9,12 @@ Kunkunshi Editor
 
 GUI editor
 
-    java -jar target/kicks.jar
-    java -jar target/kicks.jar [filename.kicks]
+    java -jar kicks-app/target/kicks.jar
+    java -jar kicks-app/target/kicks.jar [filename.kicks]
 
 Command line to create pdf file `<output directory>/<filename>.pdf`
 
-    java -jar target/kicks.jar --cli --to-pdf --output-dir=<output directory> <filename>.kicks
+    java -jar kicks-app/target/kicks.jar --cli --to-pdf --output-dir=<output directory> <filename>.kicks
 
 ## `kicksabc` Text Notation
 
