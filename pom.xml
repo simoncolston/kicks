@@ -13,10 +13,10 @@
 	<description>Kunkunshi Editor</description>
 
 	<properties>
-		<jaxb.version>4.0.8</jaxb.version>
+		<jaxb.version>4.0.9</jaxb.version>
 		<pdfbox.version>3.0.8</pdfbox.version>
 
-		<junit.version>6.0.3</junit.version>
+		<junit.version>6.1.3</junit.version>
 
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
@@ -83,13 +83,13 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.13.0</version>
+				<version>3.15.0</version>
 			</plugin>
 			<!-- Allow use of different compilers -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-toolchains-plugin</artifactId>
-				<version>3.2.0</version>
+				<version>3.3.0</version>
 				<executions>
 					<execution>
 						<goals>
@@ -111,7 +111,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-assembly-plugin</artifactId>
-				<version>3.7.1</version>
+				<version>3.8.0</version>
 				<configuration>
 					<archive>
 						<manifest>
@@ -137,17 +137,17 @@
 
 			<plugin>
 				<artifactId>maven-jar-plugin</artifactId>
-				<version>3.4.2</version>
+				<version>3.5.1</version>
 			</plugin>
 
 			<!-- For running unit tests -->
 			<plugin>
 				<artifactId>maven-surefire-plugin</artifactId>
-				<version>3.5.2</version>
+				<version>3.5.6</version>
 			</plugin>
 			<plugin>
 				<artifactId>maven-failsafe-plugin</artifactId>
-				<version>3.5.2</version>
+				<version>3.5.6</version>
 			</plugin>
 		</plugins>
 	</build>
