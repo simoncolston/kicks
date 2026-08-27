@@ -1,4 +1,4 @@
-package org.colston.utils;
+package org.colston.lib.gui;
 
 import org.colston.lib.i18n.Messages;
 

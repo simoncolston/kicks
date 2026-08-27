@@ -4,7 +4,7 @@ import org.colston.gui.actions.ActionManager;
 import org.colston.kicks.KicksApp;
 import org.colston.lib.gui.task.Task;
 import org.colston.lib.i18n.Message;
-import org.colston.utils.Utils;
+import org.colston.lib.gui.Utils;
 
 import javax.print.attribute.HashPrintRequestAttributeSet;
 import javax.print.attribute.PrintRequestAttributeSet;

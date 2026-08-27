@@ -29,7 +29,7 @@ import org.colston.lib.args.Param;
 import org.colston.lib.gui.GuiApp;
 import org.colston.lib.gui.task.Task;
 import org.colston.lib.i18n.Messages;
-import org.colston.utils.Utils;
+import org.colston.lib.gui.Utils;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;

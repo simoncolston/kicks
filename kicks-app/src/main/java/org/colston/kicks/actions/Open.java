@@ -6,14 +6,18 @@ import org.colston.kicks.document.KicksDocument;
 import org.colston.lib.gui.task.Task;
 import org.colston.lib.i18n.Message;
 import org.colston.lib.i18n.Messages;
-import org.colston.utils.Utils;
+import org.colston.lib.gui.SingleExtensionFileFilter;
+import org.colston.lib.gui.Utils;
 
 import javax.swing.*;
+import javax.swing.filechooser.FileFilter;
 import java.awt.event.ActionEvent;
 import java.io.File;
 
 public class Open extends AbstractAction {
     public static final String ACTION_COMMAND = "action.open";
+    public static final String FILE_EXT = ".kicks";
+    public static final FileFilter FILE_FILTER = new SingleExtensionFileFilter(FILE_EXT, "kicks");
 
     private static final String MESSAGE_RESOURCE_PREFIX = "open";
     private static final String SMALL_ICON_NAME = "Open24.png";
@@ -33,7 +37,7 @@ public class Open extends AbstractAction {
         }
         File f = Utils.chooseFile(KicksApp.frame(), Messages.get(Open.class, "open.file.choose.title"),
                 Messages.get(Open.class, "open.file.choose.submit.button"),
-                null, Utils.FILE_FILTER, false, null);
+                null, FILE_FILTER, false, null);
         if (f == null || !f.exists()) {
             return;
         }

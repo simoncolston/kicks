@@ -29,7 +29,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.colston.utils;
+package org.colston.lib.gui;
 
 import javax.swing.*;
 import java.awt.*;

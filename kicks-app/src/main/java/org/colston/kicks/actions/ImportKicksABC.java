@@ -8,15 +8,19 @@ import org.colston.kicks.document.importer.ImporterFactory;
 import org.colston.lib.gui.task.Task;
 import org.colston.lib.i18n.Message;
 import org.colston.lib.i18n.Messages;
-import org.colston.utils.Utils;
+import org.colston.lib.gui.SingleExtensionFileFilter;
+import org.colston.lib.gui.Utils;
 
 import javax.swing.*;
+import javax.swing.filechooser.FileFilter;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.util.Optional;
 
 public class ImportKicksABC extends AbstractAction {
     public static final String ACTION_COMMAND = "action.import.kicksabc";
+    public static final String KICKSABC_FILE_EXT = ".kicksabc";
+    public static final FileFilter KICKSABC_FILE_FILTER = new SingleExtensionFileFilter(KICKSABC_FILE_EXT, "kicksabc");
 
     private static final String MESSAGE_RESOURCE_PREFIX = "import.kicksabc";
 
@@ -32,7 +36,7 @@ public class ImportKicksABC extends AbstractAction {
         }
         File f = Utils.chooseFile(KicksApp.frame(), Messages.get(ImportKicksABC.class, "import.kicksabc.file.choose.title"),
                 Messages.get(ImportKicksABC.class, "import.kicksabc.file.choose.submit.button"),
-                null, Utils.KICKSABC_FILE_FILTER, false, null);
+                null, KICKSABC_FILE_FILTER, false, null);
         if (f == null || !f.exists()) {
             return;
         }

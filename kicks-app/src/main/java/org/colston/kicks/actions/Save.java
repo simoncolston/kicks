@@ -6,7 +6,7 @@ import org.colston.kicks.document.KicksDocument;
 import org.colston.lib.gui.task.Task;
 import org.colston.lib.i18n.Message;
 import org.colston.lib.i18n.Messages;
-import org.colston.utils.Utils;
+import org.colston.lib.gui.Utils;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -53,7 +53,7 @@ public class Save extends AbstractAction {
             file = Utils.chooseFile(KicksApp.frame(),
                     Messages.get(Save.class, "save.file.choose.title"),
                     Messages.get(Save.class, "save.file.choose.submit.button"),
-                    null, Utils.FILE_FILTER, true, Utils.FILE_EXT);
+                    null, Open.FILE_FILTER, true, Open.FILE_EXT);
             if (file == null) {
                 return false;
             }

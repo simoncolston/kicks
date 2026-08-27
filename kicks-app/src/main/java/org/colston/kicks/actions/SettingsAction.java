@@ -4,10 +4,9 @@ import org.colston.gui.actions.ActionManager;
 import org.colston.kicks.KicksApp;
 import org.colston.kicks.Settings;
 import org.colston.lib.i18n.Messages;
-import org.colston.utils.SpringUtilities;
+import org.colston.lib.gui.SpringUtilities;
 
 import javax.swing.*;
-import javax.swing.border.Border;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 

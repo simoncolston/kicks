@@ -2,7 +2,7 @@
  * Created on 2004/02/07
  *
  */
-package org.colston.utils;
+package org.colston.lib.gui;
 
 import org.colston.kicks.KicksApp;
 
@@ -23,32 +23,7 @@ import java.util.prefs.Preferences;
 public class Utils {
     private static final String LAST_DIR = "open.lastdir";
 
-    public static final String FILE_EXT = ".kicks";
-    public static final String KICKSABC_FILE_EXT = ".kicksabc";
     public static final String PDF_FILE_EXT = ".pdf";
-
-    public static class SingleExtensionFileFilter extends FileFilter {
-        private final String extension;
-        private final String fileType;
-
-        private SingleExtensionFileFilter(String ext, String fileType) {
-            this.extension = ext;
-            this.fileType = fileType;
-        }
-
-        @Override
-        public String getDescription() {
-            return fileType + " files (*" + extension + ")";
-        }
-
-        @Override
-        public boolean accept(File f) {
-            return f.isDirectory() || f.getName().endsWith(extension);
-        }
-    }
-
-    public static final FileFilter FILE_FILTER = new SingleExtensionFileFilter(FILE_EXT, "kicks");
-    public static final FileFilter KICKSABC_FILE_FILTER = new SingleExtensionFileFilter(KICKSABC_FILE_EXT, "kicksabc");
     public static final FileFilter PDF_FILE_FILTER = new SingleExtensionFileFilter(PDF_FILE_EXT, "PDF");
 
     public static Icon createIconFromResource(Class<?> cls, String path) {

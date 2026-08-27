@@ -7,7 +7,7 @@ import org.colston.printpdf.PDFBoxPrintFontMap;
 import org.colston.printpdf.PDFBoxPrintService;
 import org.colston.lib.gui.task.Task;
 import org.colston.lib.i18n.Messages;
-import org.colston.utils.Utils;
+import org.colston.lib.gui.Utils;
 
 import javax.print.*;
 import javax.print.attribute.HashPrintRequestAttributeSet;
