@@ -1,4 +1,4 @@
-package org.colston.kicks.document.importer;
+package org.colston.kicks.document.persistence;
 
 import org.colston.kicks.render.RendererResources;
 
@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class ImporterResources {
+public class KicksABCResources {
 
     private static final Set<Character> DIGRAPH_MARKERS = Set.of('イ', 'ロ', '下');
     private static final Map<String, String> KANJI_TO_NUMBERS;

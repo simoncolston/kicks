@@ -3,7 +3,7 @@ package org.colston.kicks.gui.canvas;
 import org.colston.kicks.KicksApp;
 import org.colston.kicks.document.Song;
 import org.colston.kicks.document.Tuning;
-import org.colston.kicks.gui.util.JapaneseTextFocusListener;
+import org.colston.lib.gui.JapaneseTextFocusListener;
 import org.colston.lib.i18n.Messages;
 import org.colston.lib.gui.SpringUtilities;
 

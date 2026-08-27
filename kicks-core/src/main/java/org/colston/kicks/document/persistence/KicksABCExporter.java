@@ -1,21 +1,9 @@
-package org.colston.kicks.document.importer;
+package org.colston.kicks.document.persistence;
 
-import org.colston.kicks.document.Accidental;
-import org.colston.kicks.document.KicksDocument;
-import org.colston.kicks.document.Locatable;
-import org.colston.kicks.document.LocatableRange;
-import org.colston.kicks.document.Lyric;
-import org.colston.kicks.document.Note;
-import org.colston.kicks.document.Repeat;
-import org.colston.kicks.document.SimpleLocatable;
-import org.colston.kicks.document.SimpleLocatableRange;
-import org.colston.kicks.document.Song;
-import org.colston.kicks.document.Tuning;
+import org.colston.kicks.document.*;
 import org.colston.utils.KanaConverter;
 
 import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -25,23 +13,17 @@ public class KicksABCExporter {
 
     //config
     // true if the notes are specified by kanji, false if they are specified by numbers
-    private boolean noteFormatKanji = false;
+    private final boolean noteFormatKanji;
 
     public KicksABCExporter() {
-        this(false);
+        this(true);
     }
 
     public KicksABCExporter(boolean noteFormatKanji) {
         this.noteFormatKanji = noteFormatKanji;
     }
 
-    void exportDocument(KicksDocument doc, File file) throws Exception {
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
-            exportDocument(doc, writer);
-        }
-    }
-
-    public void exportDocument(KicksDocument doc, BufferedWriter writer) throws IOException {
+    void save(KicksDocument doc, BufferedWriter writer) throws IOException {
         for (int songIndex = 0; songIndex < doc.getSongs().size(); songIndex++) {
             Song song = doc.getSongs().get(songIndex);
 
@@ -126,7 +108,7 @@ public class KicksABCExporter {
                 writer.write(String.valueOf(note.getString()));
                 writer.write(String.valueOf(note.getPlacement()));
             } else {
-                String kanji = ImporterResources.getNoteFormatNumbersAsKanji(note.getString(), note.getPlacement());
+                String kanji = KicksABCResources.getNoteFormatNumbersAsKanji(note.getString(), note.getPlacement());
                 writer.write(kanji);
             }
             writer.write(absoluteOffset);

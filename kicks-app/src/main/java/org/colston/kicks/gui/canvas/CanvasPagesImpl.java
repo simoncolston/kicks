@@ -4,7 +4,7 @@ import org.colston.kicks.document.KicksDocument;
 import org.colston.kicks.document.KicksDocumentUtils;
 import org.colston.kicks.document.Locatable;
 import org.colston.kicks.document.Song;
-import org.colston.kicks.gui.util.JapaneseTextFocusListener;
+import org.colston.lib.gui.JapaneseTextFocusListener;
 import org.colston.kicks.render.PageRenderer;
 
 import javax.swing.*;

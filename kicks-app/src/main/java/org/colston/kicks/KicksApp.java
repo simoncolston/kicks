@@ -3,33 +3,20 @@ package org.colston.kicks;
 import org.colston.gui.actions.ActionManager;
 import org.colston.gui.actions.ActionProvider;
 import org.colston.gui.actions.ActionProviders;
-import org.colston.kicks.actions.About;
-import org.colston.kicks.actions.ExportAsPDF;
-import org.colston.kicks.actions.ImportKicksABC;
-import org.colston.kicks.actions.KeyboardShortcuts;
-import org.colston.kicks.actions.New;
-import org.colston.kicks.actions.Open;
-import org.colston.kicks.actions.Quit;
-import org.colston.kicks.actions.Save;
-import org.colston.kicks.actions.SaveAs;
-import org.colston.kicks.actions.SettingsAction;
-import org.colston.kicks.actions.ZoomIn;
-import org.colston.kicks.actions.ZoomOut;
-import org.colston.kicks.actions.ZoomReset;
+import org.colston.kicks.actions.*;
 import org.colston.kicks.document.KicksDocument;
 import org.colston.kicks.document.Song;
-import org.colston.kicks.document.importer.Importer;
-import org.colston.kicks.document.importer.ImporterFactory;
 import org.colston.kicks.document.persistence.DocumentStore;
+import org.colston.kicks.document.persistence.DocumentStoreFactory;
 import org.colston.kicks.gui.canvas.Canvas;
 import org.colston.kicks.gui.canvas.CanvasFactory;
 import org.colston.kicks.render.PageRenderer;
 import org.colston.lib.args.Args;
 import org.colston.lib.args.Param;
 import org.colston.lib.gui.GuiApp;
+import org.colston.lib.gui.Utils;
 import org.colston.lib.gui.task.Task;
 import org.colston.lib.i18n.Messages;
-import org.colston.lib.gui.Utils;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -43,11 +30,8 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Collection;
+import java.util.*;
 import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -175,7 +159,7 @@ public class KicksApp extends GuiApp {
     protected void configureOther(String[] args) throws Exception {
 
          // XML Schema load
-        documentStore = DocumentStore.create();
+        documentStore = DocumentStoreFactory.createDefault();
 
          // Load fonts
         GraphicsEnvironment graphics = GraphicsEnvironment.getLocalGraphicsEnvironment();
@@ -391,8 +375,11 @@ public class KicksApp extends GuiApp {
         if (!file.exists() || !file.canRead()) {
             throw new Exception("Cannot read file: " + file.getAbsolutePath());
         }
-        Optional<Importer> importer = ImporterFactory.getImporter(file);
-        return importer.isPresent() ? importer.get().importFile(file) : documentStore().load(file);
+        Optional<DocumentStore> docStore = DocumentStoreFactory.create(file);
+        if (docStore.isEmpty()) {
+            throw new Exception("Invalid file type: " + file.getAbsolutePath());
+        }
+        return docStore.get().load(file);
     }
 
     public static void setDocument(File file, KicksDocument document) {

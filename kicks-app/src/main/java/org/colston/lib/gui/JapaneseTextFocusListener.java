@@ -1,4 +1,4 @@
-package org.colston.kicks.gui.util;
+package org.colston.lib.gui;
 
 import org.colston.kicks.KicksApp;
 

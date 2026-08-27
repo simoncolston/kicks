@@ -3,13 +3,13 @@ package org.colston.kicks.actions;
 import org.colston.gui.actions.ActionManager;
 import org.colston.kicks.KicksApp;
 import org.colston.kicks.document.KicksDocument;
-import org.colston.kicks.document.importer.Importer;
-import org.colston.kicks.document.importer.ImporterFactory;
+import org.colston.kicks.document.persistence.DocumentStore;
+import org.colston.kicks.document.persistence.DocumentStoreFactory;
+import org.colston.lib.gui.SingleExtensionFileFilter;
+import org.colston.lib.gui.Utils;
 import org.colston.lib.gui.task.Task;
 import org.colston.lib.i18n.Message;
 import org.colston.lib.i18n.Messages;
-import org.colston.lib.gui.SingleExtensionFileFilter;
-import org.colston.lib.gui.Utils;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
@@ -44,11 +44,11 @@ public class ImportKicksABC extends AbstractAction {
 
             @Override
             protected KicksDocument doInBackground() throws Exception {
-                Optional<Importer> importer = ImporterFactory.getImporter(f);
-                if (importer.isEmpty()) {
+                Optional<DocumentStore> store = DocumentStoreFactory.create(f);
+                if (store.isEmpty()) {
                     throw new Exception("Importer not found");
                 }
-                return importer.get().importFile(f);
+                return store.get().load(f);
             }
 
             @Override

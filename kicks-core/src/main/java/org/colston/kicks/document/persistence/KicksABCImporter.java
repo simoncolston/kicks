@@ -1,27 +1,16 @@
-package org.colston.kicks.document.importer;
+package org.colston.kicks.document.persistence;
 
-import org.colston.kicks.document.Accidental;
-import org.colston.kicks.document.KicksDocument;
-import org.colston.kicks.document.Locatable;
-import org.colston.kicks.document.Lyric;
-import org.colston.kicks.document.Note;
-import org.colston.kicks.document.Repeat;
-import org.colston.kicks.document.SimpleLocatable;
-import org.colston.kicks.document.Song;
-import org.colston.kicks.document.Tuning;
-import org.colston.kicks.document.Utou;
+import org.colston.kicks.document.*;
 import org.colston.utils.KanaConverter;
 
 import java.io.BufferedReader;
-import java.io.File;
-import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
 import static java.lang.Character.isDigit;
 
-public class KicksABCImporter implements Importer {
+public class KicksABCImporter {
 
     private final Logger log = Logger.getLogger(KicksABCImporter.class.getName());
     private KicksDocument doc;
@@ -103,30 +92,25 @@ public class KicksABCImporter implements Importer {
         return o;
     }
 
-    @Override
-    public KicksDocument importFile(File file) throws Exception {
-        log.info("Importing file: " + file.getAbsolutePath());
+    KicksDocument load(BufferedReader br) throws Exception {
         doc = new KicksDocument();
         songIndex = -1;
-        try (BufferedReader br = Files.newBufferedReader(file.toPath())) {
-            String line;
-            while ((line = br.readLine()) != null) {
-                abcScriptLineNumber++;
-                line = line.trim();
-                if (line.startsWith("%")) {
-                    // comment
-                    continue;
-                }
-                if (parseCommand(line)) {
-                    continue;
-                }
-                if (line.isEmpty()) {
-                    continue;
-                }
-                parseNotesOrLyrics(line);
+        String line;
+        while ((line = br.readLine()) != null) {
+            abcScriptLineNumber++;
+            line = line.trim();
+            if (line.startsWith("%")) {
+                // comment
+                continue;
             }
+            if (parseCommand(line)) {
+                continue;
+            }
+            if (line.isEmpty()) {
+                continue;
+            }
+            parseNotesOrLyrics(line);
         }
-        log.info("Import complete.");
         return doc;
     }
 
@@ -140,7 +124,7 @@ public class KicksABCImporter implements Importer {
         }
         if (ch == '[' || ch == ']'
                 || isDigit(ch)
-                || (noteFormatKanji && ImporterResources.isNoteFormatKanjiChar(ch))) {
+                || (noteFormatKanji && KicksABCResources.isNoteFormatKanjiChar(ch))) {
             parseNotes(line);
             previousLineWasNote = true;
         } else if (Character.isLetter(ch) || ch == '*') {
@@ -230,9 +214,9 @@ public class KicksABCImporter implements Importer {
             // a note
             if (noteFormatKanji) {
                 // convert the kanji to the numeric representation, then all the other logic remains the same.
-                int kanjiLength = ImporterResources.isNoteFormatKanjiDigraphMarker(ch) ? 2 : 1;
+                int kanjiLength = KicksABCResources.isNoteFormatKanjiDigraphMarker(ch) ? 2 : 1;
                 String kanji = abcNote.substring(0, kanjiLength);
-                String numbers = ImporterResources.getNoteFormatKanjiAsNumbers(kanji);
+                String numbers = KicksABCResources.getNoteFormatKanjiAsNumbers(kanji);
                 if (numbers == null) {
                     raiseException("Invalid kanji: " + kanji);
                 }

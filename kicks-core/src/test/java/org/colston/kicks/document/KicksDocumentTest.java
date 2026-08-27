@@ -1,6 +1,7 @@
 package org.colston.kicks.document;
 
 import org.colston.kicks.document.persistence.DocumentStore;
+import org.colston.kicks.document.persistence.DocumentStoreFactory;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -16,7 +17,7 @@ class KicksDocumentTest {
 
     @BeforeAll
     static void setUp() throws Exception {
-        docStore = DocumentStore.create();
+        docStore = DocumentStoreFactory.createDefault();
     }
 
     @Test

@@ -1,7 +1,6 @@
-package org.colston.kicks.document.importer;
+package org.colston.kicks.document.persistence;
 
 import org.colston.kicks.document.KicksDocument;
-import org.colston.kicks.document.persistence.DocumentStore;
 import org.colston.unittestutils.UnitTestUtils;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -26,15 +25,14 @@ class KicksABCExporterTest {
     @ValueSource(strings = {"ahabushi-thrice"})
     void exportDocument(String filename) throws Exception {
         File inputFile = new File(INPUT_DIR + filename + ".kicks");
-        KicksDocument inputDoc = DocumentStore.create().load(inputFile);
+        KicksDocument inputDoc = DocumentStoreFactory.createDefault().load(inputFile);
 
         File outputFile = new File(OUTPUT_DIR + filename + ".kicksabc");
-        KicksABCExporter exporter = new KicksABCExporter(true);
-        exporter.exportDocument(inputDoc, outputFile);
+        Optional<DocumentStore> abcStore = DocumentStoreFactory.create(outputFile);
+        assertTrue(abcStore.isPresent());
+        abcStore.get().save(inputDoc, outputFile);
 
-        Optional<Importer> importer = ImporterFactory.getImporter(outputFile);
-        assertTrue(importer.isPresent());
-        KicksDocument outputDoc = importer.get().importFile(outputFile);
+        KicksDocument outputDoc = abcStore.get().load(outputFile);
 
         // TODO: remove this when kicksabc supports versions
         outputDoc.getProperties().setVersion(inputDoc.getProperties().getVersion());
