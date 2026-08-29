@@ -115,11 +115,11 @@ public class KicksABCImporter {
     }
 
     private void parseNotesOrLyrics(String line) throws Exception {
-        if (line.length() < 2) {
-            raiseException("Line is too short: " + line);
-        }
         char ch = line.charAt(0);
         if (ch == '.') {
+            if (line.length() < 2) {
+                raiseException("Dot must be followed by note or lyric: " + line);
+            }
             ch = line.charAt(1);
         }
         if (ch == '[' || ch == ']'
@@ -398,8 +398,11 @@ public class KicksABCImporter {
             }
             return false;
         }
-        if (header && line.length() < 2) {
-            raiseException("Line is too short: " + line);
+        if (line.length() < 2) {
+            if (header) {
+                raiseException("Line is too short: " + line);
+            }
+            return false;
         }
         if (line.charAt(1) != ':') {
             if (header) {
