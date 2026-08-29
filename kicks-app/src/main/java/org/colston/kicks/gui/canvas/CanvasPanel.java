@@ -70,6 +70,7 @@ class CanvasPanel extends JPanel {
         g2.scale(zoomModel.getScale(), zoomModel.getScale());
 
         pageRenderer = PageRenderer.create(model.getDocument())
+                .fillPageWithColumns(true)
                 .romaji(KicksApp.settings().isRomaji())
                 .selection(cursorModel.getSelection(), SELECTION_COLOUR)
                 .pageIndex(pageIndex)

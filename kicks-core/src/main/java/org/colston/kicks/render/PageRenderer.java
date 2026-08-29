@@ -2,6 +2,7 @@ package org.colston.kicks.render;
 
 import org.colston.kicks.document.Accidental;
 import org.colston.kicks.document.KicksDocument;
+import org.colston.kicks.document.KicksDocumentUtils;
 import org.colston.kicks.document.Locatable;
 import org.colston.kicks.document.LocatableRange;
 import org.colston.kicks.document.LocatableUtils;
@@ -101,6 +102,7 @@ public class PageRenderer implements Printable {
     private Color selectionColour;
     private boolean romaji = false;
     private LocatableRange pageRange;
+    private boolean fillPageWithColumns = false;
 
     /*
      * State
@@ -133,6 +135,11 @@ public class PageRenderer implements Printable {
 
     public PageRenderer pageIndex(int pageIndex) {
         this.pageRange = calculatePageRange(pageIndex);
+        return this;
+    }
+
+    public PageRenderer fillPageWithColumns(boolean fillPageWithColumns) {
+        this.fillPageWithColumns = fillPageWithColumns;
         return this;
     }
 
@@ -179,10 +186,11 @@ public class PageRenderer implements Printable {
         int x = CANVAS_WIDTH;
         int y = 0;
         int index = pageRange.getLow().getIndex();
+        int highestIndex = fillPageWithColumns ? Integer.MAX_VALUE : KicksDocumentUtils.calculateHighestIndex(doc);
 
         g2.setStroke(stroke);
         g2.setColor(BORDER_BOX_COLOUR);
-        while (x > 0) {
+        while (x > 0 && index <= highestIndex) {
             x -= COLUMN_SPACE + COLUMN_WIDTH;
             if (doc.getSongAtIndex(index, CELLS_PER_COL).isEmpty()) {
                 // only draw the cells if there is not a title here
