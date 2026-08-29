@@ -42,6 +42,8 @@ public final class CanvasFactory {
     }
 
     public static Printable createPrintable(KicksDocument doc) {
-        return PageRenderer.create(doc).romaji(KicksApp.settings().isRomaji());
+        return PageRenderer.create(doc)
+                .includeVersion(KicksApp.settings().isIncludeVersion())
+                .romaji(KicksApp.settings().isRomaji());
     }
 }

@@ -103,6 +103,7 @@ public class PageRenderer implements Printable {
     private boolean romaji = false;
     private LocatableRange pageRange;
     private boolean fillPageWithColumns = false;
+    private boolean includeVersion = false;
 
     /*
      * State
@@ -140,6 +141,11 @@ public class PageRenderer implements Printable {
 
     public PageRenderer fillPageWithColumns(boolean fillPageWithColumns) {
         this.fillPageWithColumns = fillPageWithColumns;
+        return this;
+    }
+
+    public PageRenderer includeVersion(boolean includeVersion) {
+        this.includeVersion = includeVersion;
         return this;
     }
 
@@ -299,19 +305,20 @@ public class PageRenderer implements Printable {
     }
 
     private void drawProperties(Graphics2D g2) {
+        if (!includeVersion) {
+            return;
+        }
         String version = doc.getDocumentVersion();
-        String transcription = doc.getTranscription();
-        if ((transcription == null || transcription.isBlank())
-                && (version == null || version.isBlank())) {
+        if (version == null || version.isBlank()) {
             return;
         }
         g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
         g2.setFont(flatFont);
         g2.setColor(BORDER_BOX_COLOUR);
 
-        if (version != null && !version.isBlank()) {
-            g2.drawString(VERSION + " " + version, BORDER_WIDTH, flatFont.getSize() + 2);
-        }
+        String s = VERSION + " " + version;
+        int width = g2.getFontMetrics().stringWidth(s);
+        g2.drawString(s, CANVAS_WIDTH + COLUMN_SPACE - width, flatFont.getSize() + 2);
 
         g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
     }

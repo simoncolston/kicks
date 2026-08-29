@@ -159,6 +159,7 @@ class CanvasControl implements Canvas {
     @Override
     public Printable getPrintable() {
         return PageRenderer.create(model.getDocument())
+                .includeVersion(KicksApp.settings().isIncludeVersion())
                 .romaji(KicksApp.settings().isRomaji());
     }
 

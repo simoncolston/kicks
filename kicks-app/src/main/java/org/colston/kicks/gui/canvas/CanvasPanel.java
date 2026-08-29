@@ -74,6 +74,7 @@ class CanvasPanel extends JPanel {
                 .romaji(KicksApp.settings().isRomaji())
                 .selection(cursorModel.getSelection(), SELECTION_COLOUR)
                 .pageIndex(pageIndex)
+                .includeVersion(KicksApp.settings().isIncludeVersion())
                 .cursor(new PageCursor(cursorModel.getCursorIndex(), cursorModel.getCursorOffset(), cursorModel.isCursorOnNote()));
         pageRenderer.doPaint(g2);
 

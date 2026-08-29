@@ -7,6 +7,7 @@ public class SettingsData implements SettingsDataAccess {
     private Character.Subset[] characterSubset = Settings.KATAKANA;
     private boolean openPdfAfterExport = true;
     private boolean romaji = false;
+    private boolean includeVersion = true;
 
     private final EventListenerList listeners = new EventListenerList();
 
@@ -40,6 +41,19 @@ public class SettingsData implements SettingsDataAccess {
     public void setRomaji(boolean romaji) {
         if (this.romaji != romaji) {
             this.romaji = romaji;
+            fireSettingsUpdated();
+        }
+    }
+
+    @Override
+    public boolean isIncludeVersion() {
+        return includeVersion;
+    }
+
+    @Override
+    public void setIncludeVersion(boolean includeVersion) {
+        if (includeVersion != this.includeVersion) {
+            this.includeVersion = includeVersion;
             fireSettingsUpdated();
         }
     }

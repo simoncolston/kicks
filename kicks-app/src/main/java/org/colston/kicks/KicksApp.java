@@ -3,7 +3,19 @@ package org.colston.kicks;
 import org.colston.gui.actions.ActionManager;
 import org.colston.gui.actions.ActionProvider;
 import org.colston.gui.actions.ActionProviders;
-import org.colston.kicks.actions.*;
+import org.colston.kicks.actions.About;
+import org.colston.kicks.actions.ExportAsPDF;
+import org.colston.kicks.actions.ImportKicksABC;
+import org.colston.kicks.actions.KeyboardShortcuts;
+import org.colston.kicks.actions.New;
+import org.colston.kicks.actions.Open;
+import org.colston.kicks.actions.Quit;
+import org.colston.kicks.actions.Save;
+import org.colston.kicks.actions.SaveAs;
+import org.colston.kicks.actions.SettingsAction;
+import org.colston.kicks.actions.ZoomIn;
+import org.colston.kicks.actions.ZoomOut;
+import org.colston.kicks.actions.ZoomReset;
 import org.colston.kicks.document.KicksDocument;
 import org.colston.kicks.document.Song;
 import org.colston.kicks.document.persistence.DocumentStore;
@@ -30,8 +42,11 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -130,6 +145,9 @@ public class KicksApp extends GuiApp {
         if (argss.is("--romaji-lyrics")) {
             settings().setRomaji(true);
         }
+        // TODO: make this a command line option
+        settings.setIncludeVersion(false);
+
         Printable canvas = CanvasFactory.createPrintable(doc);
         ExportAsPDF action = new ExportAsPDF();
         action.export(canvas, outputFile);

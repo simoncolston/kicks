@@ -15,6 +15,10 @@ public interface SettingsDataAccess {
 
     void setRomaji(boolean romaji);
 
+    boolean isIncludeVersion();
+
+    void setIncludeVersion(boolean includeVersion);
+
 
     void addListener(Listener listener);
     void removeListener(Listener listener);
