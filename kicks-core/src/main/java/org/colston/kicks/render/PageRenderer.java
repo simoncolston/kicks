@@ -9,6 +9,7 @@ import org.colston.kicks.document.LocatableUtils;
 import org.colston.kicks.document.Lyric;
 import org.colston.kicks.document.Note;
 import org.colston.kicks.document.Repeat;
+import org.colston.kicks.document.RepeatStyle;
 import org.colston.kicks.document.SimpleLocatable;
 import org.colston.kicks.document.SimpleLocatableRange;
 import org.colston.kicks.document.Song;
@@ -282,7 +283,7 @@ public class PageRenderer implements Printable {
         // draw the repeats
         for (Repeat r : doc.getRepeats(pageRange)) {
             cursorStartHighlight(g2, r, true, null);
-            drawRepeat(g2, r.isBack(), r.getIndex(), r.getOffset());
+            drawRepeat(g2, r);
             cursorEndHighlight(g2, null);
         }
 
@@ -589,31 +590,52 @@ public class PageRenderer implements Printable {
         cursorEndHighlight(g2, null);
     }
 
-    private void drawRepeat(Graphics2D g2, boolean back, int index, int offset) {
+    private void drawRepeat(Graphics2D g2, Repeat repeat) {
         g2.setStroke(stroke);
-        int x = x(index) + (COLUMN_WIDTH / 2);
-        int y = y(index, offset);
+        int x = x(repeat.getIndex()) + (COLUMN_WIDTH / 2);
+        int y = y(repeat.getIndex(), repeat.getOffset());
         int x1 = x + (COLUMN_WIDTH / 8) * 3;
         int y1 = y;
         g2.drawLine(x, y, x1, y1);
         x = x1;
-        y = back ? y1 - CELL_HEIGHT : y1 + CELL_HEIGHT;
+        y = repeat.isBack() ? Math.max(y1 - CELL_HEIGHT, 0) : Math.min(y1 + CELL_HEIGHT, CANVAS_HEIGHT);
         g2.drawLine(x, y, x1, y1);
 
-        int[] xs = new int[3];
-        int[] ys = new int[3];
+        if (repeat.getStyle() == RepeatStyle.TRIANGLE_FILLED
+                || repeat.getStyle() == RepeatStyle.TRIANGLE_OUTLINE) {
 
-        xs[0] = x - REPEAT_HEAD_WIDTH / 2;
-        ys[0] = y;
-        xs[1] = x + REPEAT_HEAD_WIDTH / 2;
-        ys[1] = y;
-        xs[2] = x;
-        ys[2] = back ? y - REPEAT_HEAD_HEIGHT : y + REPEAT_HEAD_HEIGHT;
-        Polygon tri = new Polygon(xs, ys, 3);
+            int[] xs = new int[3];
+            int[] ys = new int[3];
 
-        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        g2.fill(tri);
-        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
+            xs[0] = x - REPEAT_HEAD_WIDTH / 2;
+            ys[0] = y;
+            xs[1] = x + REPEAT_HEAD_WIDTH / 2;
+            ys[1] = y;
+            xs[2] = x;
+            ys[2] = repeat.isBack() ? y - REPEAT_HEAD_HEIGHT : y + REPEAT_HEAD_HEIGHT;
+            Polygon tri = new Polygon(xs, ys, 3);
+
+            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            if (repeat.getStyle() == RepeatStyle.TRIANGLE_OUTLINE) {
+                g2.draw(tri);
+            } else {
+                g2.fill(tri);
+            }
+            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
+        } else if (repeat.getStyle() == RepeatStyle.CIRCLE_FILLED
+                || repeat.getStyle() == RepeatStyle.CIRCLE_OUTLINE) {
+            g2.setStroke(decorateStroke);
+            int cx = x - REPEAT_HEAD_WIDTH / 2;
+            int cy = repeat.isBack() ? y - REPEAT_HEAD_WIDTH : y;
+
+            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            if (repeat.getStyle() == RepeatStyle.CIRCLE_OUTLINE) {
+                g2.drawOval(cx, cy, REPEAT_HEAD_WIDTH, REPEAT_HEAD_WIDTH);
+            } else {
+                g2.drawOval(cx, cy, REPEAT_HEAD_WIDTH, REPEAT_HEAD_WIDTH);
+            }
+            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
+        }
     }
 
     private void drawLyric(Graphics2D g2, char[] ch, int choff, int index, int offset, FontMetrics fm) {

@@ -179,6 +179,7 @@ public class PDFBoxPrintJob implements DocPrintJob {
 
                         Graphics2D graphics = new PDFBoxGraphics2D(cs, fontStore);
                         pageState = printable.print(graphics, pageFormat, pageIndex);
+                        graphics.dispose();
                     }
                     if (pageState == Printable.PAGE_EXISTS) {
                         doc.addPage(page);

@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 
 import javax.print.attribute.Size2DSyntax;
 import java.awt.*;
+import java.awt.geom.Arc2D;
 import java.awt.print.Paper;
 import java.io.IOException;
 
@@ -66,8 +67,8 @@ class PDFBoxGraphics2DTest {
         graphics.setColor(Color.BLUE);
         graphics.drawString("Hello, World!", baseX, baseY + 100);
         graphics.drawLine(baseX + 80, baseY, baseX + 80, baseY + 100);
-        graphics.setColor(Color.GREEN);
 
+        graphics.setColor(Color.GREEN);
         int[] xs = new int[3];
         int[] ys = new int[3];
         xs[0] = baseX + 10;
@@ -79,6 +80,20 @@ class PDFBoxGraphics2DTest {
         Polygon tri = new Polygon(xs, ys, 3);
         graphics.fill(tri);
 
+        graphics.setColor(Color.RED.darker());
+        graphics.draw(tri);
+
+        graphics.setColor(Color.GREEN.darker());
+        Shape circle = new Arc2D.Float(baseX + 30f, baseY + 30f, 20f, 20f, 0f, 360f, Arc2D.OPEN);
+        graphics.draw(circle);
+
+        graphics.setColor(Color.BLUE.darker());
+        graphics.drawOval(baseX + 55, baseY + 30, 20, 30);
+
+        graphics.setColor(Color.PINK.darker());
+        graphics.fillOval(baseX + 30, baseY + 55, 20, 20);
+
+        graphics.setColor(Color.RED.darker());
         graphics.drawString("Hello, World!", baseX + 110, baseY + 50);
     }
 }

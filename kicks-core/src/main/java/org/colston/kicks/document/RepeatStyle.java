@@ -5,5 +5,7 @@ import jakarta.xml.bind.annotation.XmlEnum;
 @XmlEnum
 public enum RepeatStyle {
     TRIANGLE_FILLED,
-    TRIANGLE_OUTLINE
+    TRIANGLE_OUTLINE,
+    CIRCLE_FILLED,
+    CIRCLE_OUTLINE,
 }

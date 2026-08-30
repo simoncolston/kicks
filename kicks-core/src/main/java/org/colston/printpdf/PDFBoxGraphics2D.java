@@ -9,6 +9,7 @@ import java.awt.RenderingHints.Key;
 import java.awt.font.FontRenderContext;
 import java.awt.font.GlyphVector;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.Arc2D;
 import java.awt.geom.PathIterator;
 import java.awt.image.BufferedImage;
 import java.awt.image.BufferedImageOp;
@@ -55,6 +56,8 @@ public class PDFBoxGraphics2D extends Graphics2D implements Cloneable {
     private Color backgroundColour = Color.WHITE;
     private BasicStroke stroke = new BasicStroke(1.0f);
     private Font font = null;
+    // flag indicated that this object has been disposed of and is dead
+    private boolean disposed = false;
 
     PDFBoxGraphics2D(PDPageContentStream cs, PDFBoxFontStore fontStore) {
         this.shared.cstream = cs;
@@ -84,9 +87,13 @@ public class PDFBoxGraphics2D extends Graphics2D implements Cloneable {
 
     @Override
     public void dispose() {
+        if (disposed) {
+            return;
+        }
         checkMode(Mode.NONE);
         if (parent != null) {
             parent.restoreState();
+            disposed = true;
         }
     }
 
@@ -131,7 +138,13 @@ public class PDFBoxGraphics2D extends Graphics2D implements Cloneable {
 
     @Override
     public void draw(Shape s) {
-
+        checkMode(Mode.NONE);
+        try {
+            iterateOverPath(s);
+            shared.cstream.stroke();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -197,32 +210,34 @@ public class PDFBoxGraphics2D extends Graphics2D implements Cloneable {
             return;
         }
         try {
-            float startx = 0f;
-            float starty = 0f;
-            float[] coords = new float[6];
-            PathIterator pi = s.getPathIterator(null);
-            while (!pi.isDone()) {
-                int type = pi.currentSegment(coords);
-                switch (type) {
-                    case PathIterator.SEG_MOVETO -> {
-                        startx = coords[0];
-                        starty = coords[1];
-                        shared.cstream.moveTo(startx, -starty);
-                    }
-                    case PathIterator.SEG_LINETO -> shared.cstream.lineTo(coords[0], -coords[1]);
-                    case PathIterator.SEG_CLOSE -> shared.cstream.lineTo(startx, -starty);
-                    case PathIterator.SEG_CUBICTO, PathIterator.SEG_QUADTO -> {
-                        //TODO: not supported yet
-                    }
-                    default -> {
-                    }
-                }
-                pi.next();
-            }
+            iterateOverPath(s);
             shared.cstream.fill();
-            shared.cstream.closePath();
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    private void iterateOverPath(Shape s) throws IOException {
+        float startx = 0f;
+        float starty = 0f;
+        float[] coords = new float[6];
+        PathIterator pi = s.getPathIterator(null);
+        while (!pi.isDone()) {
+            int type = pi.currentSegment(coords);
+            switch (type) {
+                case PathIterator.SEG_MOVETO -> {
+                    startx = coords[0];
+                    starty = coords[1];
+                    shared.cstream.moveTo(startx, -starty);
+                }
+                case PathIterator.SEG_LINETO -> shared.cstream.lineTo(coords[0], -coords[1]);
+                case PathIterator.SEG_CLOSE -> shared.cstream.closePath();
+                case PathIterator.SEG_QUADTO -> shared.cstream.curveTo1(coords[0], -coords[1], coords[2], -coords[3]);
+                case PathIterator.SEG_CUBICTO -> shared.cstream.curveTo(coords[0], -coords[1], coords[2], -coords[3], coords[4], -coords[5]);
+                default -> {
+                }
+            }
+            pi.next();
         }
     }
 
@@ -535,12 +550,14 @@ public class PDFBoxGraphics2D extends Graphics2D implements Cloneable {
 
     @Override
     public void drawOval(int x, int y, int width, int height) {
-
+        Shape oval = new Arc2D.Float(x, y, width, height, 0f, 360f, Arc2D.OPEN);
+        draw(oval);
     }
 
     @Override
     public void fillOval(int x, int y, int width, int height) {
-
+        Shape oval = new Arc2D.Float(x, y, width, height, 0f, 360f, Arc2D.OPEN);
+        fill(oval);
     }
 
     @Override
