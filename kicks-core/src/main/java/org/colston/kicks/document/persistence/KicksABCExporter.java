@@ -82,6 +82,11 @@ public class KicksABCExporter {
             while (repeat != null && note.isGreaterThan(repeat)) {
                 // while loop to handle consecutive repeats
                 writer.write(repeat.isBack() ? " ]" : " [");
+                switch (repeat.getStyle()) {
+                    case TRIANGLE_OUTLINE -> writer.write("t");
+                    case CIRCLE_FILLED ->  writer.write("C");
+                    case CIRCLE_OUTLINE -> writer.write("c");
+                }
                 repeatIndex = calcRepeatIndex(songRepeats, repeatIndex);
                 repeat = getRepeat(songRepeats, repeatIndex);
             }

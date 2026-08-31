@@ -632,7 +632,7 @@ public class PageRenderer implements Printable {
             if (repeat.getStyle() == RepeatStyle.CIRCLE_OUTLINE) {
                 g2.drawOval(cx, cy, REPEAT_HEAD_WIDTH, REPEAT_HEAD_WIDTH);
             } else {
-                g2.drawOval(cx, cy, REPEAT_HEAD_WIDTH, REPEAT_HEAD_WIDTH);
+                g2.fillOval(cx, cy, REPEAT_HEAD_WIDTH, REPEAT_HEAD_WIDTH);
             }
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
         }
