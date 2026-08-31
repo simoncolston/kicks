@@ -218,22 +218,16 @@ public class PDFBoxGraphics2D extends Graphics2D implements Cloneable {
     }
 
     private void iterateOverPath(Shape s) throws IOException {
-        float startx = 0f;
-        float starty = 0f;
         float[] coords = new float[6];
         PathIterator pi = s.getPathIterator(null);
         while (!pi.isDone()) {
             int type = pi.currentSegment(coords);
             switch (type) {
-                case PathIterator.SEG_MOVETO -> {
-                    startx = coords[0];
-                    starty = coords[1];
-                    shared.cstream.moveTo(startx, -starty);
-                }
+                case PathIterator.SEG_MOVETO -> shared.cstream.moveTo(coords[0], -coords[1]);
                 case PathIterator.SEG_LINETO -> shared.cstream.lineTo(coords[0], -coords[1]);
-                case PathIterator.SEG_CLOSE -> shared.cstream.closePath();
                 case PathIterator.SEG_QUADTO -> shared.cstream.curveTo1(coords[0], -coords[1], coords[2], -coords[3]);
                 case PathIterator.SEG_CUBICTO -> shared.cstream.curveTo(coords[0], -coords[1], coords[2], -coords[3], coords[4], -coords[5]);
+                case PathIterator.SEG_CLOSE -> shared.cstream.closePath();
                 default -> {
                 }
             }

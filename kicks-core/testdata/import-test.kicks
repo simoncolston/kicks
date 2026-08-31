@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <kunkunshi version="2">
     <properties>
-        <version>2026-08-09</version>
+        <version>2026-08-31</version>
         <layout>LANDSCAPE_11COL_12CELL</layout>
     </properties>
     <songs>
@@ -63,6 +63,22 @@
     </notes>
     <breaks/>
     <repeats>
+        <repeat index="12" offset="2">
+            <back>false</back>
+            <style>TRIANGLE_OUTLINE</style>
+        </repeat>
+        <repeat index="15" offset="10">
+            <back>true</back>
+            <style>TRIANGLE_OUTLINE</style>
+        </repeat>
+        <repeat index="16" offset="2">
+            <back>false</back>
+            <style>CIRCLE_OUTLINE</style>
+        </repeat>
+        <repeat index="19" offset="10">
+            <back>true</back>
+            <style>CIRCLE_OUTLINE</style>
+        </repeat>
         <repeat index="23" offset="12">
             <back>true</back>
         </repeat>

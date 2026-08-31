@@ -156,6 +156,8 @@
         <xs:restriction base="xs:string">
             <xs:enumeration value="TRIANGLE_FILLED"/>
             <xs:enumeration value="TRIANGLE_OUTLINE"/>
+            <xs:enumeration value="CIRCLE_FILLED"/>
+            <xs:enumeration value="CIRCLE_OUTLINE"/>
         </xs:restriction>
     </xs:simpleType>
 

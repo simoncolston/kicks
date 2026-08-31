@@ -96,28 +96,28 @@ and the numbers themselves become symbols for the notes, in the same way as the 
 
 ### Note modifiers
 
-Note modifiers come directly after the note number, in any order
+Note modifiers come directly after the note number or kanji, in any order
 e.g. `21^sf2` or `上^sf2` is `上` with upstroke, small size and finger 2.
 Note modifiers are standard ASCII characters.
 
 Note size
-:    `l` =  large, `s` = small (default: `l`. But `s` for notes on a cell boundary)
+: `l` =  large, `s` = small (default: `l`. But `s` for notes on a cell boundary)
 
 Accidental
-:   `b` = flat
+: `b` = flat
 
 Articulation
 : `'` = hammer (uchi utu), `^` = upstroke (kaki utu)
 
 Finger
-:       `f1`, `f2`, `f3`, `f4`
+: `f1`, `f2`, `f3`, `f4`
 
 Slur
-:         `)` = slur to next note
+: `)` = slur to next note
 
 Chord
-:        braces e.g. `{ 20 30 }` or `{ 四 工 }` (NOTE: brace must be surrounded by spaces - `{20 30}` is invalid)
-(NOTE: Absolute positioning of notes is not allowed for chords)
+: braces e.g. `{ 20 30 }` or `{ 四 工 }` (NOTE: brace must be surrounded by spaces - `{20 30}` is invalid)
+  (NOTE: Absolute positioning of notes is not allowed for chords)
 
 ### Note position
 
@@ -140,9 +140,19 @@ A shortcut for this is to precede the note with a full-stop `.`, e.g. `.20` = `2
 Repeats
 :      `[` = start repeat, `]` = end repeat
 
-A start repeat defaults to is positioned relative to the note that follows
+A start repeat is defaulted to a position relative to the note that follows
 and an end repeat is positioned relative to the note that precedes it.
 The absolute position can be controlled in the same way as for notes. E.g. `[<3>`
+
+#### Repeat Modifiers
+
+Repeat modifiers come directly after the repeat character, `[` or `]`.
+e.g. `[C` is a start repeat with a filled circular head style.
+Repeat modifiers are standard ASCII characters.
+
+Head style
+: `T` = triangle filled, `t` = triangle outline, `C` = circle filled, `c` = circle outline. 
+  (default: `T`)
 
 ## Word lines
 

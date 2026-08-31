@@ -26,8 +26,8 @@ public class KicksABCImporter {
     private boolean previousLineWasNote = true;
     // When not null indicates we're parsing a chord.  Chord notes are stored in this list.
     private List<Note> chordNotes = null;
-    // Indicates that the previous object was a repeat start that needs to be added with the next note
-    private boolean repeatStart = false;
+    // Not null indicates that the previous object was a repeat start that needs to be added with the next note
+    private Repeat repeatStart = null;
     // Indicates we are processing a song header
     private boolean header;
     // Index of the song we are currently parsing
@@ -200,10 +200,10 @@ public class KicksABCImporter {
         char ch = abcNote.charAt(0);
         if (ch == '[') {
             // repeat start
-            repeatStart(s, abcNote);
+            repeatStart(abcNote);
         } else if (ch == ']') {
             // repeat end
-            repeatEnd(s, abcNote);
+            repeatEnd(abcNote);
         } else if (ch == '{') {
             // chord start
             chordStart();
@@ -282,29 +282,14 @@ public class KicksABCImporter {
             } else {
                 doc.getNotes().add(note);
             }
-            if (repeatStart) {
-                repeatStart = false;
+            if (repeatStart != null) {
                 Repeat repeat = createStartRepeat(i, o);
                 doc.getRepeats().add(repeat);
+                repeatStart = null;
             }
         } else {
             raiseException("Illegal character: " + ch);
         }
-    }
-
-    private Repeat createStartRepeat(int i, int o) {
-        SimpleLocatable l = new SimpleLocatable(i, o);
-        l.move(0, -4);
-        // this might be the second of consecutive repeats
-        // therefore, make sure it comes after the previous repeat
-        if (!doc.getRepeats().isEmpty()) {
-            Repeat prev = doc.getRepeats().getLast();
-            if (prev.isGreaterThan(l)) {
-                l = new SimpleLocatable(prev.getIndex(), prev.getOffset());
-                l.move(0, 1);
-            }
-        }
-        return new Repeat(l.getIndex(), l.getOffset(), false);
     }
 
     private void chordEnd() {
@@ -352,12 +337,12 @@ public class KicksABCImporter {
         }
     }
 
-    private void repeatEnd(String s, StringBuilder abcn) throws Exception {
+    private void repeatEnd(StringBuilder repeatString) throws Exception {
         int o;
         int i;
-        if (s.contains("<")) {
+        if (repeatString.chars().anyMatch(c -> c == '<')) {
             // absolute positioning
-            o = calcOffset(abcn, 10);
+            o = calcOffset(repeatString, 10);
             i = calcIndex(o);
         } else {
             Locatable lastNote = doc.getNotes().getLast();
@@ -373,20 +358,66 @@ public class KicksABCImporter {
                 o = l.getOffset();
             }
         }
-        Repeat repeat = new Repeat(i, o, true);
+        Repeat repeat = createRepeat(i, o, true, repeatString);
         doc.getRepeats().add(repeat);
     }
 
-    private void repeatStart(String s, StringBuilder abcn) throws Exception {
-        if (s.contains("<")) {
-            // absolute positioning
-            int o = calcOffset(abcn, 2);
-            int i = calcIndex(o);
-            Repeat repeat = new Repeat(i, o, false);
+    private void repeatStart(StringBuilder repeatString) throws Exception {
+        int i = 0;
+        int o = 0;
+        boolean absolute = repeatString.chars().anyMatch(c -> c == '<');
+        if (absolute) {
+            o = calcOffset(repeatString, 2);
+            i = calcIndex(o);
+        }
+        Repeat repeat = createRepeat(i, o, false, repeatString);
+        if (absolute) {
+            // already fully defined so add it
             doc.getRepeats().add(repeat);
         } else {
-            repeatStart = true;
+            // store the repeat so that it can be positioned relative to the next note
+            repeatStart = repeat;
         }
+    }
+
+    private Repeat createStartRepeat(int i, int o) {
+        SimpleLocatable l = new SimpleLocatable(i, o);
+        l.move(0, -4);
+        // this might be the second of consecutive repeats
+        // therefore, make sure it comes after the previous repeat
+        if (!doc.getRepeats().isEmpty()) {
+            Repeat prev = doc.getRepeats().getLast();
+            if (prev.isGreaterThan(l)) {
+                l = new SimpleLocatable(prev.getIndex(), prev.getOffset());
+                l.move(0, 1);
+            }
+        }
+        Repeat repeat = new Repeat(l.getIndex(), l.getOffset(), false);
+        repeat.setStyle(repeatStart.getStyle());
+        return repeat;
+    }
+
+    private Repeat createRepeat(int i, int o, boolean back, StringBuilder repeatString) throws Exception {
+        Repeat repeat = new Repeat(i, o, back);
+        if (repeatString.length() > 1) {
+            switch (repeatString.charAt(1)) {
+                case 'T':
+                    // default so don't set it
+                    break;
+                case 't':
+                    repeat.setStyle(RepeatStyle.TRIANGLE_OUTLINE);
+                    break;
+                case 'C':
+                    repeat.setStyle(RepeatStyle.CIRCLE_FILLED);
+                    break;
+                    case 'c':
+                        repeat.setStyle(RepeatStyle.CIRCLE_OUTLINE);
+                        break;
+                default:
+                    raiseException("Invalid repeat specification: " + repeatString);
+            }
+        }
+        return repeat;
     }
 
     private boolean parseCommand(String line) throws Exception {

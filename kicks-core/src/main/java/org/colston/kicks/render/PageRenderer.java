@@ -624,7 +624,7 @@ public class PageRenderer implements Printable {
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
         } else if (repeat.getStyle() == RepeatStyle.CIRCLE_FILLED
                 || repeat.getStyle() == RepeatStyle.CIRCLE_OUTLINE) {
-            g2.setStroke(decorateStroke);
+//            g2.setStroke(decorateStroke);
             int cx = x - REPEAT_HEAD_WIDTH / 2;
             int cy = repeat.isBack() ? y - REPEAT_HEAD_WIDTH : y;
 

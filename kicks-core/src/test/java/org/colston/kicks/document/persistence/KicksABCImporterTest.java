@@ -13,8 +13,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class KicksABCImporterTest {
 
-    private static final int MARGIN = 20;
-
     @ParameterizedTest
     @ValueSource(strings = {"asadoyayunta-kanji"})
     @ValueSource(strings = {"asadoyayunta"})

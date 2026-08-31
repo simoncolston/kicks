@@ -87,7 +87,7 @@ class KicksDocumentTest {
         repeat = new Repeat(4, 4, false);
         doc.getRepeats().add(repeat);
 
-        repeat.setStyle(RepeatStyle.TRIANGLE_OUTLINE);
+        repeat.setStyle(RepeatStyle.CIRCLE_OUTLINE);
 
         Lyric lyric = new Lyric(4, 8, "ア");
         doc.getLyrics().add(lyric);
