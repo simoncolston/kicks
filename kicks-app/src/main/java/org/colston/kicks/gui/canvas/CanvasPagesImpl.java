@@ -121,6 +121,15 @@ class CanvasPagesImpl implements CanvasPages {
     }
 
     @Override
+    public void handleRepeat(JPopupMenu popup) {
+        int pageIndex = PageRenderer.calculatePageIndex(cursorModel.getCursorIndex());
+        CanvasPanel canvasPanel = canvasPanels.get(pageIndex);
+        int x = PageRenderer.x(cursorModel.getCursorIndex(), PageRenderer.calculatePageRange(pageIndex));
+        int y = PageRenderer.y(cursorModel.getCursorIndex(), cursorModel.getCursorOffset());
+        popup.show(canvasPanel, x, y);
+    }
+
+    @Override
     public void setDimensions(Dimension dimension) {
         canvasPanels.forEach(p -> {
             p.setPreferredSize(dimension);

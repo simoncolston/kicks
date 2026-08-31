@@ -83,7 +83,7 @@ class CanvasPanel extends JPanel {
             g2.setColor(PageRenderer.CURSOR_COLOUR);
             g2.setStroke(cursorStroke);
             int x = pageRenderer.x(cursorModel.getCursorIndex());
-            int y = pageRenderer.y(cursorModel.getCursorIndex(), cursorModel.getCursorOffset());
+            int y = PageRenderer.y(cursorModel.getCursorIndex(), cursorModel.getCursorOffset());
             if (!cursorModel.isCursorOnNote()) {
                 x += PageRenderer.COLUMN_WIDTH / 2;
             }
@@ -101,7 +101,7 @@ class CanvasPanel extends JPanel {
         } else {
             int size = PageRenderer.COLUMN_WIDTH / 2;
             int x = pageRenderer.x(cursorModel.getCursorIndex()) + 7 * PageRenderer.COLUMN_WIDTH / 8;
-            int y = pageRenderer.y(cursorModel.getCursorIndex(), cursorModel.getCursorOffset()) - size / 3;
+            int y = PageRenderer.y(cursorModel.getCursorIndex(), cursorModel.getCursorOffset()) - size / 3;
             // convert to screen coordinates
             x = (int) ((x + PageRenderer.BORDER_WIDTH) * zoomModel.getScale());
             y = (int) ((y + PageRenderer.BORDER_WIDTH) * zoomModel.getScale());

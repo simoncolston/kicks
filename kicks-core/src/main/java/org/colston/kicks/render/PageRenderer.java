@@ -681,6 +681,10 @@ public class PageRenderer implements Printable {
     }
 
     public int x(int index) {
+        return x(index, pageRange);
+    }
+
+    public static int x(int index, LocatableRange pageRange) {
         int col = (index - pageRange.getLow().getIndex()) / CELLS_PER_COL;
         return CANVAS_WIDTH - (COLUMN_SPACE + COLUMN_WIDTH) - (COLUMN_SPACE + COLUMN_WIDTH) * col;
     }
@@ -691,8 +695,8 @@ public class PageRenderer implements Printable {
         return y;
     }
 
-    public int y(int index, int offset) {
-        int cell = (index - pageRange.getLow().getIndex()) % CELLS_PER_COL;
+    public static int y(int index, int offset) {
+        int cell = index % CELLS_PER_COL;
         int y = CELL_HEIGHT * cell;
         y += (offset * CELL_HEIGHT) / Locatable.CELL_TICKS;
         return y;

@@ -2,11 +2,15 @@ package org.colston.kicks.gui.canvas;
 
 import org.colston.kicks.KicksApp;
 import org.colston.kicks.document.KicksDocument;
+import org.colston.kicks.document.Repeat;
+import org.colston.kicks.document.RepeatStyle;
 import org.colston.kicks.document.Song;
 import org.colston.kicks.render.PageRenderer;
+import org.colston.lib.i18n.Messages;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionListener;
 import java.awt.print.Printable;
 
 public final class CanvasFactory {
@@ -46,4 +50,30 @@ public final class CanvasFactory {
                 .includeVersion(KicksApp.settings().isIncludeVersion())
                 .romaji(KicksApp.settings().isRomaji());
     }
+
+    public static JPopupMenu createAndPrepareRepeatStylePopup(ActionListener actionListener) {
+        JPopupMenu popup = new JPopupMenu();
+        JMenuItem first = null;
+        for (RepeatStyle repeatStyle : RepeatStyle.values()) {
+            String text = Messages.get(CanvasFactory.class, "canvas.repeat." + repeatStyle.name());
+            JMenuItem item = new JMenuItem(text);
+            if  (first == null) {
+                first = item;
+            }
+            item.setActionCommand(repeatStyle.toString());
+            item.addActionListener(actionListener);
+            item.setFont(item.getFont().deriveFont(Font.PLAIN));
+            popup.add(item);
+        }
+        final JMenuItem finalFirst = first;
+        SwingUtilities.invokeLater(() -> {
+            MenuSelectionManager.defaultManager().setSelectedPath(new MenuElement[]{popup, finalFirst});
+        });
+        popup.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(Color.GRAY),
+                BorderFactory.createTitledBorder(Messages.get(CanvasFactory.class, "canvas.repeat.title"))));
+        return popup;
+    }
+
+
 }

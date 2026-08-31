@@ -1,5 +1,6 @@
 package org.colston.kicks.gui.canvas;
 
+import javax.swing.*;
 import java.awt.*;
 
 interface CanvasPages {
@@ -21,4 +22,6 @@ interface CanvasPages {
     void scrollPageToVisible(int pageIndex);
 
     void setDimensions(Dimension dimension);
+
+    void handleRepeat(JPopupMenu popup);
 }

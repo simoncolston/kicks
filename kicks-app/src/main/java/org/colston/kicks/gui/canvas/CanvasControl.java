@@ -18,6 +18,7 @@ import org.colston.kicks.document.Locatable;
 import org.colston.kicks.document.Lyric;
 import org.colston.kicks.document.Note;
 import org.colston.kicks.document.Repeat;
+import org.colston.kicks.document.RepeatStyle;
 import org.colston.kicks.document.Song;
 import org.colston.kicks.document.Utou;
 import org.colston.kicks.render.PageRenderer;
@@ -31,6 +32,7 @@ import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.Transferable;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.awt.print.Printable;
@@ -314,9 +316,14 @@ class CanvasControl implements Canvas {
         cursorModel.doAutoCursor();
     }
 
-    void addRepeat(boolean end) {
-        Repeat r = new Repeat(cursorModel.getCursorIndex(), cursorModel.getCursorOffset(), end);
-        model.getEditor().addRepeat(r);
+    void addRepeat(boolean back) {
+        ActionListener actionListener = e -> {
+            Repeat r = new Repeat(cursorModel.getCursorIndex(), cursorModel.getCursorOffset(), back);
+            r.setStyle(RepeatStyle.valueOf(e.getActionCommand()));
+            model.getEditor().addRepeat(r);
+        };
+        JPopupMenu popup = CanvasFactory.createAndPrepareRepeatStylePopup(actionListener);
+        canvasPages.handleRepeat(popup);
     }
 
     void setFlat() {
