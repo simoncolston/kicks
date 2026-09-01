@@ -16,13 +16,13 @@ public class PDFBoxFontMetrics extends FontMetrics {
 
     @Override
     public int getHeight() {
-        return (int) (pdfont.getFontDescriptor().getFontBoundingBox().getHeight() * getFont().getSize());
+        return (int) pdfont.getFontDescriptor().getFontBoundingBox().getHeight() * getFont().getSize() / 1000;
     }
 
 
     @Override
     public int getAscent() {
-        return getHeight();
+        return Math.round(pdfont.getFontDescriptor().getAscent() * getFont().getSize() / 1000);
     }
 
 
@@ -40,7 +40,7 @@ public class PDFBoxFontMetrics extends FontMetrics {
     @Override
     public int stringWidth(String str) {
         try {
-            return (int) pdfont.getStringWidth(str) * getFont().getSize() / 1000;
+            return Math.round(pdfont.getStringWidth(str) * getFont().getSize() / 1000);
         } catch (IOException e) {
             e.printStackTrace();
         }

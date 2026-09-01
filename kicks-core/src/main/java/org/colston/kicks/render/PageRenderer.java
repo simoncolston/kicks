@@ -359,18 +359,23 @@ public class PageRenderer implements Printable {
 
         //start with some analysis
         int titleCharWidth = 0;
+        int titleFontAscent = 0;
         int furiganaCharWidth = 0;
+        int furiganaFontAscent = 0;
         int romajiCharWidth = 0;
         if (title != null && !title.isBlank()) {
             char[] tchars = title.toCharArray();
             g2.setFont(titleFont);
             FontMetrics titleFontMetrics = g2.getFontMetrics();
+            titleFontAscent = titleFontMetrics.getAscent();
+            // find the width of the widest character
             for (char ch : tchars) {
                 titleCharWidth = Math.max(titleFontMetrics.charWidth(ch), titleCharWidth);
             }
             if (title.indexOf('{') >= 0) {
                 g2.setFont(ftitleFont);
                 FontMetrics ftitleFontMetrics = g2.getFontMetrics();
+                furiganaFontAscent = ftitleFontMetrics.getAscent();
                 for (char ch : tchars) {
                     furiganaCharWidth = Math.max(ftitleFontMetrics.charWidth(ch), furiganaCharWidth);
                 }
@@ -388,10 +393,12 @@ public class PageRenderer implements Printable {
             g2.setFont(titleFont);
             // centralise if there is no romaji
             x += romajiCharWidth > 0 ? 1 : (COLUMN_WIDTH - titleCharWidth - furiganaCharWidth) / 2;
-            y += TITLE_MARGIN + titleFont.getSize();
+            y += TITLE_MARGIN;
+
             for (int i = 0; i < tchars.length; i++) {
                 if (tchars[i] == '{') {
                     // start of kanji with furigana
+                    // 1. Find the start and end of kanji and furigana in the char array
                     int kstart = i + 1;
                     int kend = kstart;
                     int fstart = 0;
@@ -411,34 +418,45 @@ public class PageRenderer implements Printable {
                             }
                         }
                     }
-                    int kpad = 0;
-                    int fpad = 0;
+                    // 2. Height of each is number of chars x character size
                     int kheight = (kend - kstart) * titleFont.getSize();
                     int fheight = (fend - fstart) * ftitleFont.getSize();
+                    int kpad = 0;
+                    int fpad = 0;
+                    // 3. The smaller one gets padding between chars (+1 on denominator - think fence posts and panels!)
                     if (kheight > fheight) {
-                        fpad = (kheight - fheight) / (fend - fstart + 1);
+                        fpad = Math.round((float) (kheight - fheight) / (fend - fstart + 1));
                     } else if (kheight < fheight) {
-                        kpad = (fheight - kheight) / (kend - kstart + 1);
+                        kpad = Math.round((float) (fheight - kheight) / (kend - kstart + 1));
                     }
+
+                    // rendering
                     int ystart = y;
                     for (int j = kstart; j < kend; j++) {
+                        // add in the padding - it might be zero
                         y += kpad;
-                        g2.drawChars(tchars, j, 1, x, y);
+                        // draw at the ascent line...
+                        g2.drawChars(tchars, j, 1, x, y + titleFontAscent);
+                        // ... then move on whole character size
                         y += titleFont.getSize();
                     }
+                    y += kpad;
                     int yend = y;
-                    y = ystart - titleFont.getSize() + ftitleFont.getSize();
+
+                    y = ystart;
                     g2.setFont(ftitleFont);
                     for (int j = fstart; j < fend; j++) {
                         y += fpad;
-                        g2.drawChars(tchars, j, 1, x + titleCharWidth - 2, y); // -2 to cwtch up to the kanji a bit
+                        g2.drawChars(tchars, j, 1, x + titleCharWidth - 1, y + furiganaFontAscent); // -1 to cwtch up to the kanji a bit
                         y += ftitleFont.getSize();
                     }
-                    g2.setFont(titleFont);
-                    y = yend + kpad;
+                    y = yend;
                     i = fend;
+                    g2.setFont(titleFont);
                 } else {
-                    g2.drawChars(tchars, i, 1, x, y);
+                    // draw at the ascent line...
+                    g2.drawChars(tchars, i, 1, x, y + titleFontAscent);
+                    // ... then move on whole character size
                     y += titleFont.getSize();
                 }
             }
@@ -446,7 +464,7 @@ public class PageRenderer implements Printable {
         if (romaji != null && !romaji.isBlank()) {
             int x = calcTitleBaseX(song);
             x += COLUMN_WIDTH - romajiCharWidth;
-            int y = TITLE_MARGIN + titleFont.getSize() - rtitleFont.getSize();
+            int y = TITLE_MARGIN;
             g2.setFont(rtitleFont);
             g2.rotate(Math.toRadians(90), x, y);
             g2.drawString(romaji, x, y - 1);  // subtract from y to move slightly to the right
@@ -482,7 +500,11 @@ public class PageRenderer implements Printable {
     }
 
     private int calcTitleBaseX(Song song) {
-        return CANVAS_WIDTH - (COLUMN_WIDTH + COLUMN_SPACE) * (((song.getIndex() - pageRange.getLow().getIndex()) / CELLS_PER_COL) + 1);
+        return CANVAS_WIDTH - (COLUMN_WIDTH + COLUMN_SPACE) * (calculateColumnIndex(song.getIndex()) + 1);
+    }
+
+    private int calculateColumnIndex(int index) {
+        return (index - pageRange.getLow().getIndex()) / CELLS_PER_COL;
     }
 
     private void drawNote(Graphics2D g2, Note n, FontMetrics fm) {
@@ -624,7 +646,6 @@ public class PageRenderer implements Printable {
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
         } else if (repeat.getStyle() == RepeatStyle.CIRCLE_FILLED
                 || repeat.getStyle() == RepeatStyle.CIRCLE_OUTLINE) {
-//            g2.setStroke(decorateStroke);
             int cx = x - REPEAT_HEAD_WIDTH / 2;
             int cy = repeat.isBack() ? y - REPEAT_HEAD_WIDTH : y;
 

@@ -434,6 +434,9 @@ public class PDFBoxGraphics2D extends Graphics2D implements Cloneable {
 
     @Override
     public void setFont(Font font) {
+        if (font == this.font) {
+            return;
+        }
         PDFont pdfont = shared.fontStore.get(font);
         if (pdfont == null) {
             System.err.println("There is no font mapping for font: " + font);
