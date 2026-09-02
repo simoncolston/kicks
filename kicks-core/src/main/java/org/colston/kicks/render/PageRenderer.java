@@ -14,6 +14,8 @@ import org.colston.kicks.document.SimpleLocatable;
 import org.colston.kicks.document.SimpleLocatableRange;
 import org.colston.kicks.document.Song;
 import org.colston.kicks.document.Tuning;
+import org.colston.lib.java2d.JapaneseVerticalTextDrawer;
+import org.colston.lib.java2d.JapaneseVerticalTextDrawerFonts;
 import org.colston.utils.KanaConverter;
 
 import java.awt.*;
@@ -181,6 +183,10 @@ public class PageRenderer implements Printable {
 
     public void doPaint(Graphics2D g2) {
 
+        if (pageRange == null) {
+            pageRange = calculatePageRange(0);
+        }
+
         // draw properties
         drawProperties(g2);
 
@@ -217,8 +223,10 @@ public class PageRenderer implements Printable {
         FontMetrics fm;
         g2.setColor(FOREGROUND_COLOUR);
 
+        JapaneseVerticalTextDrawerFonts fonts = JapaneseVerticalTextDrawerFonts.create(titleFont, ftitleFont, g2);
+        JapaneseVerticalTextDrawer drawer = JapaneseVerticalTextDrawer.create(fonts);
         for (Song song : doc.getSongs(pageRange)) {
-            drawTitle(g2, song);
+            drawTitle(g2, song, drawer);
         }
 
         // draw the notes
@@ -353,114 +361,22 @@ public class PageRenderer implements Printable {
         }
     }
 
-    private void drawTitle(Graphics2D g2, Song song) {
+    private void drawTitle(Graphics2D g2, Song song, JapaneseVerticalTextDrawer drawer) {
         String title = song.getTitle();
         String romaji = song.getTitleRomaji();
 
-        //start with some analysis
-        int titleCharWidth = 0;
-        int titleFontAscent = 0;
-        int furiganaCharWidth = 0;
-        int furiganaFontAscent = 0;
         int romajiCharWidth = 0;
-        if (title != null && !title.isBlank()) {
-            char[] tchars = title.toCharArray();
-            g2.setFont(titleFont);
-            FontMetrics titleFontMetrics = g2.getFontMetrics();
-            titleFontAscent = titleFontMetrics.getAscent();
-            // find the width of the widest character
-            for (char ch : tchars) {
-                titleCharWidth = Math.max(titleFontMetrics.charWidth(ch), titleCharWidth);
-            }
-            if (title.indexOf('{') >= 0) {
-                g2.setFont(ftitleFont);
-                FontMetrics ftitleFontMetrics = g2.getFontMetrics();
-                furiganaFontAscent = ftitleFontMetrics.getAscent();
-                for (char ch : tchars) {
-                    furiganaCharWidth = Math.max(ftitleFontMetrics.charWidth(ch), furiganaCharWidth);
-                }
-            }
-        }
         if (romaji != null && !romaji.isBlank()) {
             romajiCharWidth = rtitleFont.getSize();
         }
 
         if (title != null && !title.isBlank()) {
-            char[] tchars = title.toCharArray();
             int x = calcTitleBaseX(song);
-            int y = 0;
-
-            g2.setFont(titleFont);
             // centralise if there is no romaji
-            x += romajiCharWidth > 0 ? 1 : (COLUMN_WIDTH - titleCharWidth - furiganaCharWidth) / 2;
-            y += TITLE_MARGIN;
-
-            for (int i = 0; i < tchars.length; i++) {
-                if (tchars[i] == '{') {
-                    // start of kanji with furigana
-                    // 1. Find the start and end of kanji and furigana in the char array
-                    int kstart = i + 1;
-                    int kend = kstart;
-                    int fstart = 0;
-                    int fend = 0;
-                    for (int j = kstart; j < tchars.length; j++) {
-                        if (tchars[j] == '}') {
-                            kend = j;
-                            break;
-                        }
-                    }
-                    if (tchars[kend + 1] == '{') {
-                        fstart = kend + 2;
-                        for (int j = fstart; j < tchars.length; j++) {
-                            if (tchars[j] == '}') {
-                                fend = j;
-                                break;
-                            }
-                        }
-                    }
-                    // 2. Height of each is number of chars x character size
-                    int kheight = (kend - kstart) * titleFont.getSize();
-                    int fheight = (fend - fstart) * ftitleFont.getSize();
-                    int kpad = 0;
-                    int fpad = 0;
-                    // 3. The smaller one gets padding between chars (+1 on denominator - think fence posts and panels!)
-                    if (kheight > fheight) {
-                        fpad = Math.round((float) (kheight - fheight) / (fend - fstart + 1));
-                    } else if (kheight < fheight) {
-                        kpad = Math.round((float) (fheight - kheight) / (kend - kstart + 1));
-                    }
-
-                    // rendering
-                    int ystart = y;
-                    for (int j = kstart; j < kend; j++) {
-                        // add in the padding - it might be zero
-                        y += kpad;
-                        // draw at the ascent line...
-                        g2.drawChars(tchars, j, 1, x, y + titleFontAscent);
-                        // ... then move on whole character size
-                        y += titleFont.getSize();
-                    }
-                    y += kpad;
-                    int yend = y;
-
-                    y = ystart;
-                    g2.setFont(ftitleFont);
-                    for (int j = fstart; j < fend; j++) {
-                        y += fpad;
-                        g2.drawChars(tchars, j, 1, x + titleCharWidth - 1, y + furiganaFontAscent); // -1 to cwtch up to the kanji a bit
-                        y += ftitleFont.getSize();
-                    }
-                    y = yend;
-                    i = fend;
-                    g2.setFont(titleFont);
-                } else {
-                    // draw at the ascent line...
-                    g2.drawChars(tchars, i, 1, x, y + titleFontAscent);
-                    // ... then move on whole character size
-                    y += titleFont.getSize();
-                }
-            }
+            x += romajiCharWidth > 0 ? 1 : (COLUMN_WIDTH - drawer.getFonts().getTextCharWidth()) / 2;
+            drawer.draw(g2, title, x, TITLE_MARGIN);
         }
+
         if (romaji != null && !romaji.isBlank()) {
             int x = calcTitleBaseX(song);
             x += COLUMN_WIDTH - romajiCharWidth;

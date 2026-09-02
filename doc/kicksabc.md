@@ -30,7 +30,7 @@ Each line is headed by a command.
 Command `T`
 : To put *furigana* (reading or ruby) beside kanji in the title use curly braces 
 e.g. `{安里屋}{あさどや}ユンタ`
-will render like this <ruby><rb>安里屋</rb><rt>あさどや</rt></ruby>ユンタ (but vertically!!)
+will render like this <ruby>安里屋<rt>あさどや</rt></ruby>ユンタ (but vertically!!)
 
 Command `I`
 : Instruction for how to process the `kicksabc` file.
