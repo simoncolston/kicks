@@ -72,6 +72,6 @@ class JapaneseVerticalTextDrawerTest {
 
         g2.dispose();
 
-        ImageIO.write(img, "png", new File("/home/simon/tmp/test.png"));
+        ImageIO.write(img, "png", new File("target/test.png"));
     }
 }
