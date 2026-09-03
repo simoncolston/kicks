@@ -35,9 +35,10 @@ public class Open extends AbstractAction {
         if (!KicksApp.checkSaveChangesToCurrentDocument()) {
             return;
         }
-        File f = Utils.chooseFile(KicksApp.frame(), Messages.get(Open.class, "open.file.choose.title"),
+        File f = Utils.chooseFile(KicksApp.frame(),
+                Messages.get(Open.class, "open.file.choose.title"),
                 Messages.get(Open.class, "open.file.choose.submit.button"),
-                null, FILE_FILTER, false, null);
+                null, FILE_FILTER, false, FILE_EXT);
         if (f == null || !f.exists()) {
             return;
         }

@@ -105,8 +105,8 @@ public class KicksApp extends GuiApp {
     }
 
     private static void setCurrentFile(File currentFile) {
-        kicks.currentFile = currentFile;
-        kicks.statusPanel.setMessage(currentFile == null ? " " : currentFile.getAbsolutePath());
+        kicks.currentFile = currentFile != null && currentFile.getName().endsWith(Open.FILE_EXT) ? currentFile : null;
+        kicks.statusPanel.setMessage(kicks.currentFile == null ? " " : kicks.currentFile.getAbsolutePath());
     }
 
     @Override

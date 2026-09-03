@@ -36,7 +36,7 @@ public class ImportKicksABC extends AbstractAction {
         }
         File f = Utils.chooseFile(KicksApp.frame(), Messages.get(ImportKicksABC.class, "import.kicksabc.file.choose.title"),
                 Messages.get(ImportKicksABC.class, "import.kicksabc.file.choose.submit.button"),
-                null, KICKSABC_FILE_FILTER, false, null);
+                null, KICKSABC_FILE_FILTER, false, KICKSABC_FILE_EXT);
         if (f == null || !f.exists()) {
             return;
         }

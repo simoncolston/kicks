@@ -5,6 +5,7 @@
 package org.colston.lib.gui;
 
 import org.colston.kicks.KicksApp;
+import org.colston.kicks.actions.Open;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
@@ -45,7 +46,7 @@ public class Utils {
                 chooser.setSelectedFile(selectedFile);
             }
         } else {
-            String dir = getLastDir();
+            String dir = getLastDir(fileExtension);
             chooser.setCurrentDirectory(dir == null ? null : new File(dir));
         }
         chooser.setFileFilter(filter);
@@ -53,10 +54,19 @@ public class Utils {
         chooser.setDialogTitle(title);
         int r = chooser.showDialog(frame, approveButtonText);
         if (r == JFileChooser.APPROVE_OPTION) {
-            Preferences.userNodeForPackage(KicksApp.class).put(LAST_DIR, chooser.getCurrentDirectory().toString());
+            Preferences.userNodeForPackage(KicksApp.class)
+                    .put(LAST_DIR + getFileExtension(chooser.getSelectedFile()), chooser.getCurrentDirectory().toString());
             return chooser.getSelectedFile();
         }
         return null;
+    }
+
+    public static String getFileExtension(File file) {
+        int i =  file.getName().lastIndexOf('.');
+        if (i > 0) {
+            return file.getName().substring(i).toLowerCase();
+        }
+        return "";
     }
 
     public static File fixFileExtension(File f, String to) {
@@ -75,15 +85,15 @@ public class Utils {
     }
 
     public static File getWorkingDirectory() {
-        String s = getLastDir();
+        String s = getLastDir(Open.FILE_EXT);
         if (s == null) {
             s = System.getProperty("user.home");
         }
         return new File(s);
     }
 
-    private static String getLastDir() {
-        return Preferences.userNodeForPackage(KicksApp.class).get(LAST_DIR, null);
+    private static String getLastDir(String fileExtension) {
+        return Preferences.userNodeForPackage(KicksApp.class).get(LAST_DIR + fileExtension, null);
     }
 
     /**
