@@ -82,6 +82,11 @@ public class PDFBoxGraphics2D extends Graphics2D implements Cloneable {
     @Override
     public Graphics create() {
         checkMode(Mode.NONE);
+        try {
+            shared.cstream.saveGraphicsState();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         return clone();
     }
 
@@ -92,16 +97,13 @@ public class PDFBoxGraphics2D extends Graphics2D implements Cloneable {
         }
         checkMode(Mode.NONE);
         if (parent != null) {
-            parent.restoreState();
-            disposed = true;
+            try {
+                shared.cstream.restoreGraphicsState();
+                disposed = true;
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         }
-    }
-
-    private void restoreState() {
-        //TODO: something with the transform!?!
-
-        setStroke(stroke);
-        setColor(colour);
     }
 
     private void checkMode(Mode m) {

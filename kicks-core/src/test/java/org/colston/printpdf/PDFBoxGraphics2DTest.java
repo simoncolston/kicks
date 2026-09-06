@@ -40,19 +40,27 @@ class PDFBoxGraphics2DTest {
                 Graphics2D graphics = new PDFBoxGraphics2D(cs, fontStore);
                 // set a border
                 graphics.translate(20, 30);
+                graphics.setFont(new Font("Serif", Font.PLAIN, 12));
                 drawStuff(graphics, 10, 0);
 
                 // draw with new graphics
                 Graphics2D g2 = (Graphics2D) graphics.create();
+                graphics.setFont(new Font("SansSerif", Font.BOLD | Font.ITALIC, 14));
                 drawStuff(g2, 210, 0);
                 g2.dispose();
 
                 // re-draw with old graphics
                 drawStuff(graphics, 420, 0);
 
+                // rotate test
                 graphics.drawString("Rotate test", 10, 200);
-                graphics.rotate(Math.toRadians(90), 100, 200);
-                graphics.drawString("Rotate test", 100, 200);
+
+                g2 = (Graphics2D) graphics.create();
+                g2.rotate(Math.toRadians(90), 100, 200);
+                g2.drawString("Rotate test", 100, 200);
+                g2.dispose();
+
+                graphics.drawString("Rotate test", 10, 220);
 
                 graphics.dispose();
             }
@@ -62,6 +70,7 @@ class PDFBoxGraphics2DTest {
     }
 
     private void drawStuff(Graphics2D graphics, int baseX, int baseY) {
+
         graphics.setColor(Color.BLACK);
         graphics.drawString("Hello, World!", baseX, baseY);
         graphics.setColor(Color.BLUE);
@@ -94,6 +103,6 @@ class PDFBoxGraphics2DTest {
         graphics.fillOval(baseX + 30, baseY + 55, 20, 20);
 
         graphics.setColor(Color.RED.darker());
-        graphics.drawString("Hello, World!", baseX + 110, baseY + 50);
+        graphics.drawString("Hello, World!", baseX + 90, baseY + 50);
     }
 }
