@@ -1,6 +1,5 @@
 package org.colston.kicks.render;
 
-import org.colston.kicks.document.Accidental;
 import org.colston.kicks.document.KicksDocument;
 import org.colston.kicks.document.KicksDocumentUtils;
 import org.colston.kicks.document.Locatable;
@@ -19,7 +18,6 @@ import org.colston.lib.java2d.JapaneseVerticalTextDrawerFonts;
 import org.colston.utils.KanaConverter;
 
 import java.awt.*;
-import java.awt.geom.AffineTransform;
 import java.awt.print.PageFormat;
 import java.awt.print.Printable;
 import java.awt.print.PrinterException;
@@ -86,7 +84,7 @@ public class PageRenderer implements Printable {
     private static final Font fontBold = new Font(FONT_NAME, Font.BOLD, 18);
     private static final Font sfont = new Font(FONT_NAME, Font.PLAIN, 14);
     private static final Font sfontBold = new Font(FONT_NAME, Font.BOLD, 14);
-    private static final Font flatFont = new Font(FONT_NAME, Font.PLAIN, 9);
+    private static final Font propertiesFont = new Font(FONT_NAME, Font.PLAIN, 9);
     private static final Font fingerFont = new Font(FONT_NAME, Font.PLAIN, 7);
     private static final Font tempoFont = new Font(R_FONT_NAME, Font.PLAIN, 9);
     public static final Font lyricFont = new Font(V_FONT_NAME, Font.PLAIN, 12);
@@ -107,6 +105,8 @@ public class PageRenderer implements Printable {
     private LocatableRange pageRange;
     private boolean fillPageWithColumns = false;
     private boolean includeVersion = false;
+
+    private NoteKanjiRenderer noteKanjiRenderer = new FontNoteKanjiRenderer();
 
     /*
      * State
@@ -154,6 +154,11 @@ public class PageRenderer implements Printable {
 
     public static Set<String> getFontResourceNames() {
         return Set.of(FONT_RESOURCE_NAME, V_FONT_RESOURCE_NAME, R_FONT_RESOURCE_NAME);
+    }
+
+    public PageRenderer withNoteKanjiRenderer(NoteKanjiRenderer noteKanjiRenderer) {
+        this.noteKanjiRenderer = noteKanjiRenderer;
+        return this;
     }
 
     @Override
@@ -322,12 +327,12 @@ public class PageRenderer implements Printable {
             return;
         }
         g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-        g2.setFont(flatFont);
+        g2.setFont(propertiesFont);
         g2.setColor(BORDER_BOX_COLOUR);
 
         String s = VERSION + " " + version;
         int width = g2.getFontMetrics().stringWidth(s);
-        g2.drawString(s, CANVAS_WIDTH + COLUMN_SPACE - width, flatFont.getSize() + 2);
+        g2.drawString(s, CANVAS_WIDTH + COLUMN_SPACE - width, propertiesFont.getSize() + 2);
 
         g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
     }
@@ -424,9 +429,8 @@ public class PageRenderer implements Printable {
     }
 
     private void drawNote(Graphics2D g2, Note n, FontMetrics fm) {
-        char[] ch = RendererResources.getNoteText(n.getString(), n.getPlacement()).toCharArray();
         int x = x(n.getIndex());
-        int y = y(n.getIndex(), n.getOffset(), fm) - 1;
+        int y = y(n.getIndex(), n.getOffset());
 
         if (n.getFinger() != 0) {
             Font tfont = g2.getFont();
@@ -437,82 +441,7 @@ public class PageRenderer implements Printable {
             g2.setFont(tfont);
         }
 
-        int chw;
-        if (ch.length == 1) {
-            chw = fm.charWidth(ch[0]);
-            x += (COLUMN_WIDTH / 2 - chw) / 2;
-            g2.drawChars(ch, 0, 1, x, y);
-        } else if ('下' == ch[0]) {
-            Font currentFont = g2.getFont();
-            Font font = currentFont.deriveFont(AffineTransform.getScaleInstance(1.0, 0.6));
-            g2.setFont(font);
-            FontMetrics fontMetrics = g2.getFontMetrics();
-            chw = fontMetrics.charWidth(ch[0]) + 2;
-
-            x += ((COLUMN_WIDTH / 2) - chw) / 2;
-            y = y(n.getIndex(), n.getOffset()) + 1;      //+1 here to squash them together vertically
-            g2.drawChars(ch, 0, 1, x + 1, y);
-            y += (font.getSize() / 2) - 1;                   //-1 here to squash them together vertically (if necessary)
-            g2.drawChars(ch, 1, 1, x + 1, y);
-
-            g2.setFont(currentFont);
-
-            y -= 2; //to add padding for the 'utou' for this type of double char
-        } else {
-            int chw0 = fm.charWidth(ch[0]) - 3;
-            int chw1 = fm.charWidth(ch[1]) - 3;
-            chw = chw0 + chw1;
-            x += ((COLUMN_WIDTH / 2) - chw) / 2;
-            g2.drawChars(ch, 0, 1, x - 1, y);
-            g2.drawChars(ch, 1, 1, x + chw0 - 1, y);
-
-            //to add a little more padding to the 'utou' for double characters
-            chw += 2;
-        }
-
-        if (n.getAccidental() == Accidental.FLAT) {
-            Font tfont = g2.getFont();
-            g2.setFont(flatFont);
-            g2.drawString("♭", x - 1 - flatFont.getSize() / 2, y);
-            g2.setFont(tfont);
-        }
-
-        // move to top right of note
-        x += chw + 1;
-        y -= fm.getFont().getSize() - 2; // -2 to move it down towards the note
-
-        switch (n.getUtou()) {
-            case KAKI -> {
-                g2.setStroke(decorateStroke);
-                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                g2.drawLine(x, y, x + 1 - fm.getFont().getSize() / 2, y);
-                g2.drawLine(x, y, x, y - 1 + fm.getFont().getSize() / 2);
-                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
-            }
-            case UCHI -> {
-                g2.setStroke(decorateStroke);
-                int[] xs = new int[3];
-                int[] ys = new int[3];
-
-                xs[0] = x - fm.getFont().getSize() / 4;
-                ys[0] = y;
-                xs[1] = x;
-                ys[1] = y + fm.getFont().getSize() / 4;
-                xs[2] = x + 1;
-                ys[2] = y - 1 + fm.getFont().getSize() / 4;
-                Polygon tri = new Polygon(xs, ys, 3);
-
-                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                g2.drawLine(xs[0], ys[0], xs[1], ys[1]);
-                g2.drawLine(xs[0], ys[0], xs[2], ys[2]);
-                g2.drawLine(xs[1], ys[1], xs[2], ys[2]);
-                g2.fill(tri);
-                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
-            }
-            case NONE -> {
-                // do nothing
-            }
-        }
+        noteKanjiRenderer.render(g2, n, x, y);
     }
 
     private void drawNoteJoiningLine(Graphics2D g2, Note start, Note end, int xOffset,
@@ -626,6 +555,7 @@ public class PageRenderer implements Printable {
         return CANVAS_WIDTH - (COLUMN_SPACE + COLUMN_WIDTH) - (COLUMN_SPACE + COLUMN_WIDTH) * col;
     }
 
+    // move down so that the middle of the text is anchored on the cell tick
     private int y(int index, int offset, FontMetrics fm) {
         int y = y(index, offset);
         y += fm.getFont().getSize() / 2;
