@@ -1,7 +1,9 @@
 package org.colston.printpdf;
 
+import org.apache.pdfbox.multipdf.LayerUtility;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.font.PDFont;
+import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
 import org.apache.pdfbox.util.Matrix;
 
 import java.awt.*;
@@ -10,6 +12,7 @@ import java.awt.font.FontRenderContext;
 import java.awt.font.GlyphVector;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Arc2D;
+import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.PathIterator;
 import java.awt.image.BufferedImage;
 import java.awt.image.BufferedImageOp;
@@ -41,6 +44,7 @@ public class PDFBoxGraphics2D extends Graphics2D implements Cloneable {
      * same value because we are writing to the same content stream.
      */
     private static class Shared {
+        public PDFBoxResourceImageCache resourceImageCache;
         private PDPageContentStream cstream;
         public PDFBoxFontStore fontStore;
     }
@@ -59,9 +63,10 @@ public class PDFBoxGraphics2D extends Graphics2D implements Cloneable {
     // flag indicated that this object has been disposed of and is dead
     private boolean disposed = false;
 
-    PDFBoxGraphics2D(PDPageContentStream cs, PDFBoxFontStore fontStore) {
+    PDFBoxGraphics2D(PDPageContentStream cs, PDFBoxFontStore fontStore, LayerUtility layerUtility) {
         this.shared.cstream = cs;
         this.shared.fontStore = fontStore;
+        this.shared.resourceImageCache = new  PDFBoxResourceImageCache(layerUtility);
     }
 
     @SuppressWarnings("CloneDoesntDeclareCloneNotSupportedException")
@@ -586,7 +591,22 @@ public class PDFBoxGraphics2D extends Graphics2D implements Cloneable {
 
     @Override
     public boolean drawImage(Image img, int x, int y, ImageObserver observer) {
-        return false;
+        checkMode(Mode.NONE);
+        if (img instanceof PDFBoxResourceImage image) {
+            PDFormXObject xobject = shared.resourceImageCache.get(image.getReferenceClass(), image.getResourceName());
+            AffineTransform at = AffineTransform.getTranslateInstance(x, -y);
+            if (image.getTransform() != null) {
+                at.concatenate(image.getTransform());
+            }
+            applyTransform(new Matrix(at));
+            try {
+                shared.cstream.drawForm(xobject);
+                applyTransform(new Matrix(at.createInverse()));
+            } catch (IOException | NoninvertibleTransformException e) {
+                e.printStackTrace();
+            }
+        }
+        return true;
     }
 
     @Override

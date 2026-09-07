@@ -2,9 +2,9 @@ package org.colston.kicks.gui.canvas;
 
 import org.colston.kicks.KicksApp;
 import org.colston.kicks.document.KicksDocument;
-import org.colston.kicks.document.Repeat;
 import org.colston.kicks.document.RepeatStyle;
 import org.colston.kicks.document.Song;
+import org.colston.kicks.render.PDFNoteKanjiRenderer;
 import org.colston.kicks.render.PageRenderer;
 import org.colston.lib.i18n.Messages;
 
@@ -48,7 +48,8 @@ public final class CanvasFactory {
     public static Printable createPrintable(KicksDocument doc) {
         return PageRenderer.create(doc)
                 .includeVersion(KicksApp.settings().isIncludeVersion())
-                .romaji(KicksApp.settings().isRomaji());
+                .romaji(KicksApp.settings().isRomaji())
+                .withNoteKanjiRenderer(new PDFNoteKanjiRenderer());
     }
 
     public static JPopupMenu createAndPrepareRepeatStylePopup(ActionListener actionListener) {

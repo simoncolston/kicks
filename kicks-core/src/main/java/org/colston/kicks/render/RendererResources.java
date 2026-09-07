@@ -8,6 +8,13 @@ public class RendererResources {
                     {"四", "上", "中", "尺", "下尺", "ﾛ五", "ｲ老", "ｲ四", "ｲ上"},
                     {"工", "五", "六", "七", "八", "九", "ｲ尺", "ｲ工", "ｲ五"}
             };
+    private static final String[][] RESOURCE_NAMES =
+            {
+                    {"maru", "", "", "", "", "", "", "", ""},
+                    {"ai", "otsu", "rou", "gerou", "koujou", "kounaka", "koushaku", "iai", "iotsu"},
+                    {"yon", "jou", "naka", "shaku", "geshaku", "kougo", "irou", "iyon", "ijou"},
+                    {"kou", "go", "roku", "shichi", "hachi", "kyuu", "ishaku", "ikou", "igo"}
+            };
     private static final String[] FINGER_VALUES = {"", "①", "②", "③", "④"};
 
     public static String getNoteText(int string, int placement) {
@@ -18,4 +25,7 @@ public class RendererResources {
         return FINGER_VALUES[finger];
     }
 
+    public static String getNoteResourceName(int string, int placement) {
+        return RESOURCE_NAMES[string][placement] + ".pdf";
+    }
 }

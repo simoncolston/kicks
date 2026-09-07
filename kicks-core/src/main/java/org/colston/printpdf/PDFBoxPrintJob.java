@@ -1,5 +1,6 @@
 package org.colston.printpdf;
 
+import org.apache.pdfbox.multipdf.LayerUtility;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
@@ -177,7 +178,7 @@ public class PDFBoxPrintJob implements DocPrintJob {
                             cs.transform(portrait);
                         }
 
-                        Graphics2D graphics = new PDFBoxGraphics2D(cs, fontStore);
+                        Graphics2D graphics = new PDFBoxGraphics2D(cs, fontStore, new LayerUtility(doc));
                         pageState = printable.print(graphics, pageFormat, pageIndex);
                         graphics.dispose();
                     }

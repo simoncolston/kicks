@@ -1,10 +1,12 @@
 package org.colston.printpdf;
 
+import org.apache.pdfbox.multipdf.LayerUtility;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.util.Matrix;
+import org.colston.kicks.render.PageRenderer;
 import org.junit.jupiter.api.Test;
 
 import javax.print.attribute.Size2DSyntax;
@@ -37,7 +39,7 @@ class PDFBoxGraphics2DTest {
                 Matrix landscape = Matrix.getRotateInstance(Math.PI / 2, 0, 0);
                 cs.transform(landscape);
 
-                Graphics2D graphics = new PDFBoxGraphics2D(cs, fontStore);
+                Graphics2D graphics = new PDFBoxGraphics2D(cs, fontStore, new LayerUtility(doc));
                 // set a border
                 graphics.translate(20, 30);
                 graphics.setFont(new Font("Serif", Font.PLAIN, 12));
@@ -61,6 +63,17 @@ class PDFBoxGraphics2DTest {
                 g2.dispose();
 
                 graphics.drawString("Rotate test", 10, 220);
+
+                PDFBoxResourceImage image = new PDFBoxResourceImage(PageRenderer.class, "ai.pdf");
+                graphics.drawImage(image, 10, 300, null);
+                graphics.drawRect(10, 300 - 36, 24 + 2, 36);
+                graphics.drawLine(5, 300, 15, 300);
+                graphics.drawLine(10, 290, 10, 310);
+
+                PDFBoxResourceImage image2 = new PDFBoxResourceImage(PageRenderer.class, "yon.pdf");
+                graphics.drawImage(image2, 10, 340, null);
+                PDFBoxResourceImage image3 = new PDFBoxResourceImage(PageRenderer.class, "ai.pdf");
+                graphics.drawImage(image3, 10, 380, null);
 
                 graphics.dispose();
             }
