@@ -11,7 +11,9 @@ import org.junit.jupiter.api.Test;
 
 import javax.print.attribute.Size2DSyntax;
 import java.awt.*;
+import java.awt.geom.AffineTransform;
 import java.awt.geom.Arc2D;
+import java.awt.image.BufferedImage;
 import java.awt.print.Paper;
 import java.io.IOException;
 
@@ -38,10 +40,18 @@ class PDFBoxGraphics2DTest {
                 //rotate to landscape - origin is now top-left so just always negate y
                 Matrix landscape = Matrix.getRotateInstance(Math.PI / 2, 0, 0);
                 cs.transform(landscape);
+                // for portrait - origin is bottom left so translate up to top-left
+//                Matrix m = Matrix.getTranslateInstance(0, (float) paper.getHeight());
+//                cs.transform(m);
 
                 Graphics2D graphics = new PDFBoxGraphics2D(cs, fontStore, new LayerUtility(doc));
                 // set a border
                 graphics.translate(20, 30);
+
+                Image bi = createBufferedImage();
+                graphics.drawImage(bi, 200, 400, null);
+
+
                 graphics.setFont(new Font("Serif", Font.PLAIN, 12));
                 drawStuff(graphics, 10, 0);
 
@@ -73,13 +83,34 @@ class PDFBoxGraphics2DTest {
                 PDFBoxResourceImage image2 = new PDFBoxResourceImage(PageRenderer.class, "yon.pdf");
                 graphics.drawImage(image2, 10, 340, null);
                 PDFBoxResourceImage image3 = new PDFBoxResourceImage(PageRenderer.class, "ai.pdf");
+                image3.setTransform(AffineTransform.getRotateInstance(Math.toRadians(-90)));
                 graphics.drawImage(image3, 10, 380, null);
+
+                g2 = (Graphics2D) graphics.create();
+                g2.translate(0, image3.getWidth(null));
+                g2.rotate(Math.toRadians(-90), 10, 380);
+                g2.drawRect(10, 380, image3.getWidth(null), image3.getHeight(null));
+                g2.dispose();
 
                 graphics.dispose();
             }
 
             doc.save("target/test.pdf");
         }
+    }
+
+    private Image createBufferedImage() {
+        BufferedImage image = new BufferedImage(100, 200, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g2d = (Graphics2D) image.getGraphics();
+        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        g2d.setColor(Color.BLACK);
+        g2d.drawRect(0, 0, image.getWidth() - 1, image.getHeight() - 1);
+        g2d.setColor(Color.CYAN.darker());
+        g2d.fillOval(40, 90, 20, 20);
+        g2d.setColor(Color.RED.darker());
+        g2d.drawOval(40, 90, 20, 20);
+        g2d.dispose();
+        return image;
     }
 
     private void drawStuff(Graphics2D graphics, int baseX, int baseY) {

@@ -1,9 +1,12 @@
 package org.colston.printpdf;
 
 import org.apache.pdfbox.multipdf.LayerUtility;
+import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject;
+import org.apache.pdfbox.pdmodel.graphics.image.LosslessFactory;
+import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.apache.pdfbox.util.Matrix;
 
 import java.awt.*;
@@ -45,6 +48,7 @@ public class PDFBoxGraphics2D extends Graphics2D implements Cloneable {
      */
     private static class Shared {
         public PDFBoxResourceImageCache resourceImageCache;
+        public PDDocument document;
         private PDPageContentStream cstream;
         public PDFBoxFontStore fontStore;
     }
@@ -66,6 +70,7 @@ public class PDFBoxGraphics2D extends Graphics2D implements Cloneable {
     PDFBoxGraphics2D(PDPageContentStream cs, PDFBoxFontStore fontStore, LayerUtility layerUtility) {
         this.shared.cstream = cs;
         this.shared.fontStore = fontStore;
+        this.shared.document = layerUtility.getDocument();
         this.shared.resourceImageCache = new  PDFBoxResourceImageCache(layerUtility);
     }
 
@@ -603,6 +608,23 @@ public class PDFBoxGraphics2D extends Graphics2D implements Cloneable {
                 shared.cstream.drawForm(xobject);
                 applyTransform(new Matrix(at.createInverse()));
             } catch (IOException | NoninvertibleTransformException e) {
+                e.printStackTrace();
+            }
+        } else {
+            BufferedImage bufferedImage;
+            if (img instanceof BufferedImage) {
+                bufferedImage = (BufferedImage) img;
+            } else {
+                // Create a buffered image with transparency support (ARGB)
+                bufferedImage = new BufferedImage(img.getWidth(null), img.getHeight(null), BufferedImage.TYPE_INT_ARGB);
+                Graphics2D g2d = bufferedImage.createGraphics();
+                g2d.drawImage(img, 0, 0, null);
+                g2d.dispose();
+            }
+            try {
+                PDImageXObject pdImage = LosslessFactory.createFromImage(shared.document, bufferedImage);
+                shared.cstream.drawImage(pdImage, x, -y, img.getWidth(null), img.getHeight(null));
+            } catch (IOException e) {
                 e.printStackTrace();
             }
         }
