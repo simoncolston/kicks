@@ -124,8 +124,8 @@ class CanvasPagesImpl implements CanvasPages {
     public void handleRepeat(JPopupMenu popup) {
         int pageIndex = PageRenderer.calculatePageIndex(cursorModel.getCursorIndex());
         CanvasPanel canvasPanel = canvasPanels.get(pageIndex);
-        int x = PageRenderer.x(cursorModel.getCursorIndex(), PageRenderer.calculatePageRange(pageIndex));
-        int y = PageRenderer.y(cursorModel.getCursorIndex(), cursorModel.getCursorOffset());
+        int x = canvasPanel.getRenderer().x(cursorModel.getCursorIndex(), PageRenderer.calculatePageRange(pageIndex));
+        int y = canvasPanel.getRenderer().y(cursorModel.getCursorIndex(), cursorModel.getCursorOffset());
         popup.show(canvasPanel, x, y);
     }
 
@@ -158,7 +158,7 @@ class CanvasPagesImpl implements CanvasPages {
                     return;
                 }
 
-                x = PageRenderer.CANVAS_WIDTH - x - PageRenderer.COLUMN_SPACE;
+                x = canvasPanel.getRenderer().getCanvasWidth() - x - PageRenderer.COLUMN_SPACE;
                 //Which column?
                 int col = x / (PageRenderer.COLUMN_WIDTH + PageRenderer.COLUMN_SPACE);
                 if (col < 0 || col >= PageRenderer.COLUMNS_PER_PAGE) {

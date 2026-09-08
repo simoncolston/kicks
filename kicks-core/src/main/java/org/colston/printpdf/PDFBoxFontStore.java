@@ -1,11 +1,16 @@
 package org.colston.printpdf;
 
+import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.font.PDFont;
+import org.apache.pdfbox.pdmodel.font.PDType0Font;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
 
 import java.awt.*;
+import java.io.BufferedInputStream;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import static org.apache.pdfbox.pdmodel.font.Standard14Fonts.FontName;
 
@@ -56,7 +61,7 @@ public final class PDFBoxFontStore {
     }
 
     public PDFont get(Font font) {
-        Map<Integer, PDFont> style = fonts.get(font.getFamily());
+        Map<Integer, PDFont> style = fonts.get(font.getName());
         if (style == null) {
             return null;
         }
@@ -64,7 +69,18 @@ public final class PDFBoxFontStore {
     }
 
     public void put(Font font, PDFont pdfont) {
-        Map<Integer, PDFont> style = fonts.computeIfAbsent(font.getFamily(), k -> new HashMap<>());
+        Map<Integer, PDFont> style = fonts.computeIfAbsent(font.getName(), k -> new HashMap<>());
         style.put(font.getStyle(), pdfont);
+    }
+
+    public PDFBoxFontStore loadFontMap(PDDocument doc, PDFBoxPrintFontMap fontMap) throws IOException {
+        for (PDFBoxPrintFontMap.Mapping m : fontMap) {
+            try (BufferedInputStream bis = new BufferedInputStream(
+                    Objects.requireNonNull(m.getCls().getResourceAsStream(m.getFontResourceName())))) {
+                PDFont pdfont = PDType0Font.load(doc, bis);
+                put(m.getFont(), pdfont);
+            }
+        }
+        return this;
     }
 }

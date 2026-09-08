@@ -112,13 +112,19 @@ public class PageRenderer implements Printable {
      * State
      */
     private boolean cursorHighlight =  false;
+    private int canvasWidth = CANVAS_WIDTH;
 
-    private PageRenderer(KicksDocument doc) {
+    private PageRenderer(KicksDocument doc, int pageIndex) {
         this.doc = doc;
+        this.pageRange = calculatePageRange(pageIndex);
     }
 
     public static PageRenderer create(KicksDocument doc) {
-        return new PageRenderer(doc);
+        return new PageRenderer(doc, 0);
+    }
+
+    public static PageRenderer create(KicksDocument doc, int pageIndex) {
+        return new PageRenderer(doc, pageIndex);
     }
 
     public PageRenderer selection(LocatableRange selection, Color selectionColour) {
@@ -134,11 +140,6 @@ public class PageRenderer implements Printable {
 
     public PageRenderer romaji(boolean romaji) {
         this.romaji = romaji;
-        return this;
-    }
-
-    public PageRenderer pageIndex(int pageIndex) {
-        this.pageRange = calculatePageRange(pageIndex);
         return this;
     }
 
@@ -161,6 +162,23 @@ public class PageRenderer implements Printable {
         return this;
     }
 
+    public PageRenderer useMinimumCanvas() {
+        int highestIndex = Math.min(
+                KicksDocumentUtils.calculateHighestIndex(doc),
+                pageRange.getHigh().getIndex());
+        int numberOfColumns = ((highestIndex - pageRange.getLow().getIndex()) / CELLS_PER_COL) + 1;
+        canvasWidth = numberOfColumns * (COLUMN_SPACE + COLUMN_WIDTH);
+        return this;
+    }
+
+    public int getCanvasWidth() {
+        return canvasWidth + 2 * BORDER_WIDTH;
+    }
+
+    public int getCanvasHeight() {
+        return CANVAS_HEIGHT + 2 * BORDER_WIDTH;
+    }
+
     @Override
     public int print(Graphics graphics, PageFormat pageFormat, int pageIndex) throws PrinterException {
         pageRange = calculatePageRange(pageIndex);
@@ -176,7 +194,7 @@ public class PageRenderer implements Printable {
         int y = (int) Math.ceil(pageFormat.getImageableY());
         g2.translate(x, y);
 
-        double scale = Math.min(pageFormat.getImageableWidth() / CANVAS_WIDTH,
+        double scale = Math.min(pageFormat.getImageableWidth() / canvasWidth,
                 pageFormat.getImageableHeight() / CANVAS_HEIGHT);
         g2.scale(scale, scale);
 
@@ -188,10 +206,6 @@ public class PageRenderer implements Printable {
 
     public void doPaint(Graphics2D g2) {
 
-        if (pageRange == null) {
-            pageRange = calculatePageRange(0);
-        }
-
         // draw properties
         drawProperties(g2);
 
@@ -201,7 +215,7 @@ public class PageRenderer implements Printable {
         drawSelection(g2);
 
         // draw the background cells
-        int x = CANVAS_WIDTH;
+        int x = canvasWidth;
         int y = 0;
         int index = pageRange.getLow().getIndex();
         int highestIndex = fillPageWithColumns ? Integer.MAX_VALUE : KicksDocumentUtils.calculateHighestIndex(doc);
@@ -332,7 +346,7 @@ public class PageRenderer implements Printable {
 
         String s = VERSION + " " + version;
         int width = g2.getFontMetrics().stringWidth(s);
-        g2.drawString(s, CANVAS_WIDTH + COLUMN_SPACE - width, propertiesFont.getSize() + 2);
+        g2.drawString(s, canvasWidth + COLUMN_SPACE - width, propertiesFont.getSize() + 2);
 
         g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
     }
@@ -421,7 +435,7 @@ public class PageRenderer implements Printable {
     }
 
     private int calcTitleBaseX(Song song) {
-        return CANVAS_WIDTH - (COLUMN_WIDTH + COLUMN_SPACE) * (calculateColumnIndex(song.getIndex()) + 1);
+        return canvasWidth - (COLUMN_WIDTH + COLUMN_SPACE) * (calculateColumnIndex(song.getIndex()) + 1);
     }
 
     private int calculateColumnIndex(int index) {
@@ -550,9 +564,9 @@ public class PageRenderer implements Printable {
         return x(index, pageRange);
     }
 
-    public static int x(int index, LocatableRange pageRange) {
+    public int x(int index, LocatableRange pageRange) {
         int col = (index - pageRange.getLow().getIndex()) / CELLS_PER_COL;
-        return CANVAS_WIDTH - (COLUMN_SPACE + COLUMN_WIDTH) - (COLUMN_SPACE + COLUMN_WIDTH) * col;
+        return canvasWidth - (COLUMN_SPACE + COLUMN_WIDTH) - (COLUMN_SPACE + COLUMN_WIDTH) * col;
     }
 
     // move down so that the middle of the text is anchored on the cell tick
@@ -562,7 +576,7 @@ public class PageRenderer implements Printable {
         return y;
     }
 
-    public static int y(int index, int offset) {
+    public int y(int index, int offset) {
         int cell = index % CELLS_PER_COL;
         int y = CELL_HEIGHT * cell;
         y += (offset * CELL_HEIGHT) / Locatable.CELL_TICKS;

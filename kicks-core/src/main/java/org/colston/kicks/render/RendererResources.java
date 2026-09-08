@@ -1,5 +1,9 @@
 package org.colston.kicks.render;
 
+import org.colston.printpdf.PDFBoxPrintFontMap;
+
+import java.awt.*;
+
 public class RendererResources {
     private static final String[][] VALUES =
             {
@@ -27,5 +31,16 @@ public class RendererResources {
 
     public static String getNoteResourceName(int string, int placement) {
         return RESOURCE_NAMES[string][placement] + ".pdf";
+    }
+
+    public static PDFBoxPrintFontMap createFontMap() {
+        PDFBoxPrintFontMap fontMap = new PDFBoxPrintFontMap();
+        Font font = new Font(PageRenderer.FONT_NAME, Font.PLAIN, 1);
+        fontMap.add(font, PageRenderer.class, PageRenderer.FONT_RESOURCE_NAME);
+        font = new Font(PageRenderer.V_FONT_NAME, Font.PLAIN, 1);
+        fontMap.add(font, PageRenderer.class, PageRenderer.V_FONT_RESOURCE_NAME);
+        font = new Font(PageRenderer.R_FONT_NAME, Font.PLAIN, 1);
+        fontMap.add(font, PageRenderer.class, PageRenderer.R_FONT_RESOURCE_NAME);
+        return fontMap;
     }
 }

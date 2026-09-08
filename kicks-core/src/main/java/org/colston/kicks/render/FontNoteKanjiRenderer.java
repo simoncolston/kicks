@@ -37,7 +37,7 @@ public class FontNoteKanjiRenderer implements  NoteKanjiRenderer {
             chw = fontMetrics.charWidth(ch[0]) + 2;
 
             x += ((PageRenderer.COLUMN_WIDTH / 2) - chw) / 2;
-            y = PageRenderer.y(n.getIndex(), n.getOffset()) + 1;      //+1 here to squash them together vertically
+            y = yy + 1;      //+1 here to squash them together vertically
             g2.drawChars(ch, 0, 1, x + 1, y);
             y += (font.getSize() / 2) - 1;                   //-1 here to squash them together vertically (if necessary)
             g2.drawChars(ch, 1, 1, x + 1, y);
