@@ -80,4 +80,12 @@ public class PDFBoxResourceImage extends Image {
         }
     }
 
+    @Override
+    public String toString() {
+        return "PDFBoxResourceImage{" +
+                "referenceClass=" + referenceClass +
+                ", resourceName='" + resourceName + '\'' +
+                ", transform=" + transform +
+                '}';
+    }
 }

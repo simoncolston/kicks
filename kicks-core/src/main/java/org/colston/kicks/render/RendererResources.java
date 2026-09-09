@@ -30,7 +30,7 @@ public class RendererResources {
     }
 
     public static String getNoteResourceName(int string, int placement) {
-        return RESOURCE_NAMES[string][placement] + ".pdf";
+        return "note_" + RESOURCE_NAMES[string][placement] + ".pdf";
     }
 
     public static PDFBoxPrintFontMap createFontMap() {

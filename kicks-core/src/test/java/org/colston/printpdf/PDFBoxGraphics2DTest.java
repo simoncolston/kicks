@@ -74,15 +74,15 @@ class PDFBoxGraphics2DTest {
 
                 graphics.drawString("Rotate test", 10, 220);
 
-                PDFBoxResourceImage image = new PDFBoxResourceImage(PageRenderer.class, "ai.pdf");
+                PDFBoxResourceImage image = new PDFBoxResourceImage(PageRenderer.class, "note_ai.pdf");
                 graphics.drawImage(image, 10, 300, null);
                 graphics.drawRect(10, 300 - 36, 24 + 2, 36);
                 graphics.drawLine(5, 300, 15, 300);
                 graphics.drawLine(10, 290, 10, 310);
 
-                PDFBoxResourceImage image2 = new PDFBoxResourceImage(PageRenderer.class, "yon.pdf");
+                PDFBoxResourceImage image2 = new PDFBoxResourceImage(PageRenderer.class, "note_yon.pdf");
                 graphics.drawImage(image2, 10, 340, null);
-                PDFBoxResourceImage image3 = new PDFBoxResourceImage(PageRenderer.class, "ai.pdf");
+                PDFBoxResourceImage image3 = new PDFBoxResourceImage(PageRenderer.class, "note_ai.pdf");
                 image3.setTransform(AffineTransform.getRotateInstance(Math.toRadians(-90)));
                 graphics.drawImage(image3, 10, 380, null);
 

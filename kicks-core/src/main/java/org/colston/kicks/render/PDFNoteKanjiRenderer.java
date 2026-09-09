@@ -18,11 +18,11 @@ public class PDFNoteKanjiRenderer implements NoteKanjiRenderer {
     public void render(Graphics2D g2, Note n, int x, int y) {
         renderResource(g2, n, x, y, RendererResources.getNoteResourceName(n.getString(), n.getPlacement()));
         if (n.getAccidental() == Accidental.FLAT) {
-            renderResource(g2, n, x, y, "flat.pdf");
+            renderResource(g2, n, x, y, "mark_flat.pdf");
         }
         switch (n.getUtou()) {
-            case KAKI ->  renderResource(g2, n, x, y, "kaki.pdf");
-            case UCHI ->   renderResource(g2, n, x, y, "uchi.pdf");
+            case KAKI -> renderResource(g2, n, x, y, "mark_kaki.pdf");
+            case UCHI -> renderResource(g2, n, x, y, "mark_uchi.pdf");
         }
     }
 
