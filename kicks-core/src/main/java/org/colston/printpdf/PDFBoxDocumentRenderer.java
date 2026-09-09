@@ -2,7 +2,7 @@ package org.colston.printpdf;
 
 import java.awt.*;
 
-public interface PDFBoxImageDocumentRenderer {
+public interface PDFBoxDocumentRenderer {
 
     /**
      * Width of image.

@@ -105,6 +105,7 @@ public class PageRenderer implements Printable {
     private LocatableRange pageRange;
     private boolean fillPageWithColumns = false;
     private boolean includeVersion = false;
+    private boolean minimumCanvas = false;
 
     private NoteKanjiRenderer noteKanjiRenderer = new FontNoteKanjiRenderer();
 
@@ -114,17 +115,12 @@ public class PageRenderer implements Printable {
     private boolean cursorHighlight =  false;
     private int canvasWidth = CANVAS_WIDTH;
 
-    private PageRenderer(KicksDocument doc, int pageIndex) {
+    private PageRenderer(KicksDocument doc) {
         this.doc = doc;
-        this.pageRange = calculatePageRange(pageIndex);
     }
 
     public static PageRenderer create(KicksDocument doc) {
-        return new PageRenderer(doc, 0);
-    }
-
-    public static PageRenderer create(KicksDocument doc, int pageIndex) {
-        return new PageRenderer(doc, pageIndex);
+        return new PageRenderer(doc);
     }
 
     public PageRenderer selection(LocatableRange selection, Color selectionColour) {
@@ -162,17 +158,27 @@ public class PageRenderer implements Printable {
         return this;
     }
 
-    public PageRenderer useMinimumCanvas() {
-        int highestIndex = Math.min(
-                KicksDocumentUtils.calculateHighestIndex(doc),
-                pageRange.getHigh().getIndex());
-        int numberOfColumns = ((highestIndex - pageRange.getLow().getIndex()) / CELLS_PER_COL) + 1;
-        canvasWidth = numberOfColumns * (COLUMN_SPACE + COLUMN_WIDTH);
+    public PageRenderer useMinimumCanvas(boolean minimumCanvas) {
+        this.minimumCanvas = minimumCanvas;
         return this;
     }
 
-    public int getCanvasWidth() {
+    public int getCanvasWidth(int pageIndex) {
+        setCanvasWidth(pageIndex);
         return canvasWidth + 2 * BORDER_WIDTH;
+    }
+
+    private void setCanvasWidth(int pageIndex) {
+        if (minimumCanvas) {
+            LocatableRange pageRange = calculatePageRange(pageIndex);
+            int highestIndex = Math.min(
+                    KicksDocumentUtils.calculateHighestIndex(doc),
+                    pageRange.getHigh().getIndex());
+            int numberOfColumns = ((highestIndex - pageRange.getLow().getIndex()) / CELLS_PER_COL) + 1;
+            canvasWidth = numberOfColumns * (COLUMN_SPACE + COLUMN_WIDTH);
+        } else {
+            canvasWidth = CANVAS_WIDTH;
+        }
     }
 
     public int getCanvasHeight() {
@@ -181,9 +187,8 @@ public class PageRenderer implements Printable {
 
     @Override
     public int print(Graphics graphics, PageFormat pageFormat, int pageIndex) throws PrinterException {
-        pageRange = calculatePageRange(pageIndex);
         Locatable highest = LocatableUtils.findHighest(doc.getAllLocatables());
-
+        this.pageRange = calculatePageRange(pageIndex);
         if (highest == null || highest.isLessThan(pageRange.getLow())) {
             return Printable.NO_SUCH_PAGE;
         }
@@ -198,13 +203,16 @@ public class PageRenderer implements Printable {
                 pageFormat.getImageableHeight() / CANVAS_HEIGHT);
         g2.scale(scale, scale);
 
-        doPaint(g2);
+        doPaint(g2, pageIndex);
 
         g2.dispose();
         return Printable.PAGE_EXISTS;
     }
 
-    public void doPaint(Graphics2D g2) {
+    public void doPaint(Graphics2D g2, int pageIndex) {
+
+        setCanvasWidth(pageIndex);
+        this.pageRange = calculatePageRange(pageIndex);
 
         // draw properties
         drawProperties(g2);

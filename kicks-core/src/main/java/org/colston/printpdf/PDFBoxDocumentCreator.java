@@ -11,12 +11,13 @@ import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 
-public class PDFBoxImageDocumentCreator {
+public class PDFBoxDocumentCreator {
 
-    public void save(PDFBoxImageDocumentRenderer renderer, File destination) throws IOException {
+    public void save(PDFBoxDocumentRenderer renderer, File destination) throws IOException {
         try (PDDocument doc = new PDDocument()) {
 
             PDPage page = new PDPage(new PDRectangle(renderer.getWidth(), renderer.getHeight()));
+//            page.setRotation(90);
             doc.addPage(page);
 
             try (PDPageContentStream cs = new PDPageContentStream(doc, page)) {

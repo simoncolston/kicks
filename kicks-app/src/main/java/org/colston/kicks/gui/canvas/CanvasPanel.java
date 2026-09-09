@@ -69,13 +69,13 @@ class CanvasPanel extends JPanel {
 
         g2.scale(zoomModel.getScale(), zoomModel.getScale());
 
-        pageRenderer = PageRenderer.create(model.getDocument(), pageIndex)
+        pageRenderer = PageRenderer.create(model.getDocument())
                 .fillPageWithColumns(true)
                 .romaji(KicksApp.settings().isRomaji())
                 .selection(cursorModel.getSelection(), SELECTION_COLOUR)
                 .includeVersion(KicksApp.settings().isIncludeVersion())
                 .cursor(new PageCursor(cursorModel.getCursorIndex(), cursorModel.getCursorOffset(), cursorModel.isCursorOnNote()));
-        pageRenderer.doPaint(g2);
+        pageRenderer.doPaint(g2, pageIndex);
 
         if (pageIndex == PageRenderer.calculatePageIndex(cursorModel.getCursorIndex())) {
             // draw the cursor

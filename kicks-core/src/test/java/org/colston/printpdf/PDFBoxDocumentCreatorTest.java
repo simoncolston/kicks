@@ -13,21 +13,21 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class PDFBoxImageDocumentCreatorTest {
+class PDFBoxDocumentCreatorTest {
 
     @Test
     void create() throws Exception {
-        PDFBoxImageDocumentCreator creator = new PDFBoxImageDocumentCreator();
-//        File file = new File("testdata/eisa-sonda.kicksabc");
-        File file = new File("testdata/import-test.kicks");
+        File file = new File("testdata/eisa-sonda.kicksabc");
+//        File file = new File("testdata/import-test.kicks");
         Optional<DocumentStore> documentStore = DocumentStoreFactory.create(file);
         assertTrue(documentStore.isPresent());
         KicksDocument kicksDocument = documentStore.get().load(file);
-        PageRenderer pageRenderer = PageRenderer.create(kicksDocument, 0).useMinimumCanvas();
-        PDFBoxImageDocumentRenderer renderer = new PDFBoxImageDocumentRenderer() {
+
+        PageRenderer pageRenderer = PageRenderer.create(kicksDocument).useMinimumCanvas(true);
+        PDFBoxDocumentRenderer renderer = new PDFBoxDocumentRenderer() {
             @Override
             public float getWidth() {
-                return pageRenderer.getCanvasWidth();
+                return pageRenderer.getCanvasWidth(0);
             }
 
             @Override
@@ -37,7 +37,7 @@ class PDFBoxImageDocumentCreatorTest {
 
             @Override
             public void render(Graphics2D g2) {
-                pageRenderer.doPaint(g2);
+                pageRenderer.doPaint(g2, 0);
             }
 
             @Override
@@ -45,6 +45,9 @@ class PDFBoxImageDocumentCreatorTest {
                 return RendererResources.createFontMap();
             }
         };
+
+
+        PDFBoxDocumentCreator creator = new PDFBoxDocumentCreator();
         creator.save(renderer, new File("target/test-pdfimage.pdf"));
     }
 }

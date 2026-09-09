@@ -158,7 +158,7 @@ class CanvasPagesImpl implements CanvasPages {
                     return;
                 }
 
-                x = canvasPanel.getRenderer().getCanvasWidth() - x - PageRenderer.COLUMN_SPACE;
+                x = canvasPanel.getRenderer().getCanvasWidth(pageIndex) - x - PageRenderer.COLUMN_SPACE;
                 //Which column?
                 int col = x / (PageRenderer.COLUMN_WIDTH + PageRenderer.COLUMN_SPACE);
                 if (col < 0 || col >= PageRenderer.COLUMNS_PER_PAGE) {
