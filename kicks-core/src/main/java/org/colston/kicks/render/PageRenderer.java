@@ -185,6 +185,11 @@ public class PageRenderer implements Printable {
         return CANVAS_HEIGHT + 2 * BORDER_WIDTH;
     }
 
+    public int getNumberOfPages() {
+        int highestIndex = KicksDocumentUtils.calculateHighestIndex(doc);
+        return PageRenderer.calculateNumberOfPages(highestIndex);
+    }
+
     @Override
     public int print(Graphics graphics, PageFormat pageFormat, int pageIndex) throws PrinterException {
         Locatable highest = LocatableUtils.findHighest(doc.getAllLocatables());
