@@ -5,7 +5,9 @@ public interface Locatable {
 
     int getIndex();
 
-    int getOffset();
+    default int getOffset() {
+        return 0;
+    }
 
     default void move(int indexDelta, int offsetDelta) {
         throw new UnsupportedOperationException();
