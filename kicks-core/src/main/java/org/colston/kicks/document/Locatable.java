@@ -1,9 +1,7 @@
 package org.colston.kicks.document;
 
-public interface Locatable {
+public interface Locatable extends Indexable {
     int CELL_TICKS = 12;
-
-    int getIndex();
 
     int getOffset();
 

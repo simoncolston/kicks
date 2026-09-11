@@ -13,7 +13,7 @@ import java.util.Objects;
                 "tempo",
                 "transcription"
         })
-public class Song {
+public class Song implements Indexable {
     @XmlAttribute
     private int index = 0;
     @XmlElement
