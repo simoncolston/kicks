@@ -4,7 +4,6 @@ import org.colston.kicks.document.KicksDocument;
 import org.colston.kicks.document.KicksDocumentUtils;
 import org.colston.kicks.document.Locatable;
 import org.colston.kicks.document.LocatableRange;
-import org.colston.kicks.document.LocatableUtils;
 import org.colston.kicks.document.Lyric;
 import org.colston.kicks.document.Note;
 import org.colston.kicks.document.Repeat;
@@ -18,16 +17,13 @@ import org.colston.lib.java2d.JapaneseVerticalTextDrawerFonts;
 import org.colston.utils.KanaConverter;
 
 import java.awt.*;
-import java.awt.print.PageFormat;
-import java.awt.print.Printable;
-import java.awt.print.PrinterException;
 import java.util.Set;
 
 /**
  * Class that uses a {@link java.awt.Graphics2D} object to render a single page of a {@link org.colston.kicks.document.KicksDocument}.
  * Used for both drawing to the screen and when printing.
  */
-public class PageRenderer implements Printable {
+public class PageRenderer {
 
     /*
      * Dimensions
@@ -188,30 +184,6 @@ public class PageRenderer implements Printable {
     public int getNumberOfPages() {
         int highestIndex = KicksDocumentUtils.calculateHighestIndex(doc);
         return PageRenderer.calculateNumberOfPages(highestIndex);
-    }
-
-    @Override
-    public int print(Graphics graphics, PageFormat pageFormat, int pageIndex) throws PrinterException {
-        Locatable highest = LocatableUtils.findHighest(doc.getAllLocatables());
-        this.pageRange = calculatePageRange(pageIndex);
-        if (highest == null || highest.isLessThan(pageRange.getLow())) {
-            return Printable.NO_SUCH_PAGE;
-        }
-
-        Graphics2D g2 = (Graphics2D) graphics.create();
-
-        int x = (int) Math.ceil(pageFormat.getImageableX());
-        int y = (int) Math.ceil(pageFormat.getImageableY());
-        g2.translate(x, y);
-
-        double scale = Math.min(pageFormat.getImageableWidth() / canvasWidth,
-                pageFormat.getImageableHeight() / CANVAS_HEIGHT);
-        g2.scale(scale, scale);
-
-        doPaint(g2, pageIndex);
-
-        g2.dispose();
-        return Printable.PAGE_EXISTS;
     }
 
     public void doPaint(Graphics2D g2, int pageIndex) {

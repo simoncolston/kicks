@@ -45,13 +45,6 @@ public final class CanvasFactory {
         return control;
     }
 
-    public static Printable createPrintable(KicksDocument doc) {
-        return PageRenderer.create(doc)
-                .includeVersion(KicksApp.settings().isIncludeVersion())
-                .romaji(KicksApp.settings().isRomaji())
-                .withNoteKanjiRenderer(new PDFNoteKanjiRenderer());
-    }
-
     public static JPopupMenu createAndPrepareRepeatStylePopup(ActionListener actionListener) {
         JPopupMenu popup = new JPopupMenu();
         JMenuItem first = null;

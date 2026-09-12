@@ -35,7 +35,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
-import java.awt.print.Printable;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
@@ -156,13 +155,6 @@ class CanvasControl implements Canvas {
     @Override
     public ActionProvider getActionProvider() {
         return actionProvider;
-    }
-
-    @Override
-    public Printable getPrintable() {
-        return PageRenderer.create(model.getDocument())
-                .includeVersion(KicksApp.settings().isIncludeVersion())
-                .romaji(KicksApp.settings().isRomaji());
     }
 
     @Override

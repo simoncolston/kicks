@@ -23,6 +23,7 @@ import org.colston.kicks.document.persistence.DocumentStoreFactory;
 import org.colston.kicks.gui.canvas.Canvas;
 import org.colston.kicks.gui.canvas.CanvasFactory;
 import org.colston.kicks.render.KicksDocumentRenderer;
+import org.colston.kicks.render.PDFNoteKanjiRenderer;
 import org.colston.kicks.render.PageRenderer;
 import org.colston.lib.args.Args;
 import org.colston.lib.gui.GuiApp;
@@ -146,6 +147,7 @@ public class KicksApp extends GuiApp {
                 .orientation(OrientationRequested.LANDSCAPE)
                 .asImage(argss.is("--as-image"));
         KicksDocumentRenderer renderer = KicksDocumentRenderer.create(doc)
+                .withNoteKanjiRenderer(new PDFNoteKanjiRenderer())
                 .romaji(argss.is("--romaji-lyrics"))
                 .includeVersion(false);  // TODO make this a command line option
         creator.save(renderer, outputFile);

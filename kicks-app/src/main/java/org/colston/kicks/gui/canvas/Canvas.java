@@ -17,8 +17,6 @@ public interface Canvas {
 
     ActionProvider getActionProvider();
 
-    Printable getPrintable();
-
     KicksDocument getDocument();
 
     KicksDocumentEditor getEditor();

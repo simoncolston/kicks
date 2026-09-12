@@ -27,6 +27,11 @@ public class KicksDocumentRenderer implements PDFBoxDocumentRenderer {
         return this;
     }
 
+    public KicksDocumentRenderer withNoteKanjiRenderer(NoteKanjiRenderer noteKanjiRenderer) {
+        pageRenderer.withNoteKanjiRenderer(noteKanjiRenderer);
+        return this;
+    };
+
     @Override
     public float getWidth(int pageIndex) {
         return pageRenderer.getCanvasWidth(pageIndex);
