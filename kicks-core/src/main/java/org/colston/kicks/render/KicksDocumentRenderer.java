@@ -1,5 +1,6 @@
 package org.colston.kicks.render;
 
+import org.colston.kicks.document.KicksDocument;
 import org.colston.printpdf.PDFBoxDocumentRenderer;
 import org.colston.printpdf.PDFBoxPrintFontMap;
 
@@ -8,8 +9,22 @@ import java.awt.*;
 public class KicksDocumentRenderer implements PDFBoxDocumentRenderer {
     private final PageRenderer pageRenderer;
 
-    public KicksDocumentRenderer(PageRenderer pageRenderer) {
-        this.pageRenderer = pageRenderer;
+    private KicksDocumentRenderer(KicksDocument kicksDocument) {
+        this.pageRenderer = PageRenderer.create(kicksDocument);
+    }
+
+    public static KicksDocumentRenderer create(KicksDocument kicksDocument) {
+        return new KicksDocumentRenderer(kicksDocument);
+    }
+
+    public KicksDocumentRenderer romaji(boolean romaji) {
+        pageRenderer.romaji(romaji);
+        return this;
+    }
+
+    public KicksDocumentRenderer includeVersion(boolean includeVersion) {
+        pageRenderer.includeVersion(includeVersion);
+        return this;
     }
 
     @Override

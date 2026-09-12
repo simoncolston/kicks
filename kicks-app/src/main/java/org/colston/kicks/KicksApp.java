@@ -22,22 +22,23 @@ import org.colston.kicks.document.persistence.DocumentStore;
 import org.colston.kicks.document.persistence.DocumentStoreFactory;
 import org.colston.kicks.gui.canvas.Canvas;
 import org.colston.kicks.gui.canvas.CanvasFactory;
+import org.colston.kicks.render.KicksDocumentRenderer;
 import org.colston.kicks.render.PageRenderer;
 import org.colston.lib.args.Args;
-import org.colston.lib.args.Param;
 import org.colston.lib.gui.GuiApp;
 import org.colston.lib.gui.Utils;
 import org.colston.lib.gui.task.Task;
 import org.colston.lib.i18n.Messages;
+import org.colston.printpdf.PDFBoxDocumentCreator;
 
 import javax.imageio.ImageIO;
+import javax.print.attribute.standard.OrientationRequested;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
-import java.awt.print.Printable;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.IOException;
@@ -113,18 +114,17 @@ public class KicksApp extends GuiApp {
     protected void cli(String[] args) throws Exception {
         Args argss = Args.builder()
                 .withVargs(true)
-                .parameters(
-                        new Param("--cli", "Run on command line without GUI", true),
-                        new Param("--to-pdf", "Convert document to pdf", true),
-                        new Param("--romaji-lyrics", "Convert the lyrics to romaji", true),
-                        new Param("--filename-suffix", "Suffix to add to the output file name", false),
-                        new Param("--output-dir", "Output directory", false)
-                )
+                .flag("--cli", "Run on command line without GUI")
+                .flag("--to-pdf", "Convert document to pdf")
+                .flag("--romaji-lyrics", "Convert the lyrics to romaji")
+                .parameter("--filename-suffix", "Suffix to add to the output file name")
+                .parameter("--output-dir", "Output directory")
+                .flag("--as-image", "Create minimal area PDF image, rather than a PDF document with print media page sizes")
                 .parse(args);
         if (!argss.is("--to-pdf") || !argss.is("--output-dir") || argss.getVargs().size() != 1) {
             getLogger().log(Level.INFO, """
                 Usage:
-                kicks --cli --to-pdf --romaji-lyrics --filename-suffix=<suffix> --output-dir=<output directory> <kicks filename>""");
+                kicks --cli --to-pdf [--romaji-lyrics] --filename-suffix=<suffix> --output-dir=<output directory> <kicks|kicksabc filename>""");
             return;
         }
         File file = new File(argss.getVargs().getFirst());
@@ -142,15 +142,13 @@ public class KicksApp extends GuiApp {
         getLogger().log(Level.INFO, "Input file: " + file.getAbsolutePath());
         getLogger().log(Level.INFO, "Exporting to: " + outputFile.getAbsolutePath());
 
-        if (argss.is("--romaji-lyrics")) {
-            settings().setRomaji(true);
-        }
-        // TODO: make this a command line option
-        settings.setIncludeVersion(false);
-
-        Printable canvas = CanvasFactory.createPrintable(doc);
-        ExportAsPDF action = new ExportAsPDF();
-        action.export(canvas, outputFile);
+        PDFBoxDocumentCreator creator = PDFBoxDocumentCreator.getInstance()
+                .orientation(OrientationRequested.LANDSCAPE)
+                .asImage(argss.is("--as-image"));
+        KicksDocumentRenderer renderer = KicksDocumentRenderer.create(doc)
+                .romaji(argss.is("--romaji-lyrics"))
+                .includeVersion(false);  // TODO make this a command line option
+        creator.save(renderer, outputFile);
     }
 
     @Override

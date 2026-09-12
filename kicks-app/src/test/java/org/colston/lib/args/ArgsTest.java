@@ -13,13 +13,11 @@ class ArgsTest {
         String[] args = a.split(" ");
         Args argss = Args.builder()
                 .withVargs(true)
-                .parameters(
-                        new Param("--cli", "Run on command line without GUI", true),
-                        new Param("--to-pdf", "Convert document to pdf", true),
-                        new Param("--romaji-lyrics", "Convert the lyrics to romaji", true),
-                        new Param("--filename-suffix", "Suffix to add to the output file name", false),
-                        new Param("--output-dir", "Output directory", false)
-                )
+                .flag("--cli", "Run on command line without GUI")
+                .flag("--to-pdf", "Convert document to pdf")
+                .flag("--romaji-lyrics", "Convert the lyrics to romaji")
+                .parameter("--filename-suffix", "Suffix to add to the output file name")
+                .parameter("--output-dir", "Output directory")
                 .parse(args);
         assertTrue(argss.is("--cli"));
         assertTrue(argss.is("--to-pdf"));

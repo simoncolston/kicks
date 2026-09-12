@@ -24,8 +24,7 @@ class PDFBoxDocumentCreatorTest {
         assertTrue(documentStore.isPresent());
         KicksDocument kicksDocument = documentStore.get().load(file);
 
-        PageRenderer pageRenderer = PageRenderer.create(kicksDocument);
-        KicksDocumentRenderer renderer = new KicksDocumentRenderer(pageRenderer);
+        KicksDocumentRenderer renderer = KicksDocumentRenderer.create(kicksDocument);
 
         PDFBoxDocumentCreator creator = PDFBoxDocumentCreator.getInstance().asImage(true);
         creator.save(renderer, new File("target/test-pdfimage-minimumCanvas.pdf"));
@@ -38,8 +37,7 @@ class PDFBoxDocumentCreatorTest {
         assertTrue(documentStore.isPresent());
         KicksDocument kicksDocument = documentStore.get().load(file);
 
-        PageRenderer pageRenderer = PageRenderer.create(kicksDocument);
-        KicksDocumentRenderer renderer = new KicksDocumentRenderer(pageRenderer);
+        KicksDocumentRenderer renderer = KicksDocumentRenderer.create(kicksDocument);
 
         PDFBoxDocumentCreator creator = PDFBoxDocumentCreator.getInstance()
                 .orientation(OrientationRequested.LANDSCAPE);

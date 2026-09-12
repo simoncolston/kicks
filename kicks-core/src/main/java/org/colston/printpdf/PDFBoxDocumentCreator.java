@@ -65,13 +65,13 @@ public class PDFBoxDocumentCreator {
     private void addPage(PDFBoxDocumentRenderer renderer, int pageIndex, PDDocument doc) throws IOException {
         PDRectangle mediaBox = getMediaBox(renderer, pageIndex);
         PDPage page = new PDPage(mediaBox);
-        if (orientation == OrientationRequested.LANDSCAPE) {
+        if (!asImage && orientation == OrientationRequested.LANDSCAPE) {
             page.setRotation(90);
         }
         doc.addPage(page);
 
         try (PDPageContentStream cs = new PDPageContentStream(doc, page)) {
-            if (orientation == OrientationRequested.LANDSCAPE) {
+            if (!asImage && orientation == OrientationRequested.LANDSCAPE) {
                 //rotate to landscape - origin is now top-left so just always negate y
                 Matrix landscape = Matrix.getRotateInstance(Math.PI / 2, 0, 0);
                 cs.transform(landscape);

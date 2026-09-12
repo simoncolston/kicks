@@ -7,11 +7,11 @@ import java.util.Map;
 
 public class Args {
 
-    private final Map<String, Param> params = new HashMap<String, Param>();
+    private final Map<String, Param> params = new HashMap<>();
     private final Map<String, String> values = new HashMap<>();
 
     private boolean allowVargs = false;
-    private final List<String> vargs = new ArrayList<String>();
+    private final List<String> vargs = new ArrayList<>();
 
     public static Args builder() {
         return new Args();
@@ -47,7 +47,7 @@ public class Args {
                     if (value != null) {
                         throw new IllegalArgumentException("Parameter " + name + " cannot have a value");
                     }
-                    values.put(name, "SET");
+                    values.put(name, "true");
                 } else {
                     if (value == null) {
                         throw new IllegalArgumentException("Parameter " + name + " must have a value");
@@ -76,10 +76,13 @@ public class Args {
         return this;
     }
 
-    public Args parameters(Param... params) {
-        for (Param param : params) {
-            this.params.put(param.name(), param);
-        }
+    public Args flag(String name, String description) {
+        params.put(name, new Param(name, description, true));
+        return this;
+    }
+
+    public Args parameter(String name, String description) {
+        params.put(name, new Param(name, description, false));
         return this;
     }
 }
