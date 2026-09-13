@@ -46,15 +46,19 @@ public class FontNoteKanjiRenderer implements  NoteKanjiRenderer {
 
             y -= 2; //to add padding for the 'utou' for this type of double char
         } else {
-            int chw0 = fm.charWidth(ch[0]) - 3;
-            int chw1 = fm.charWidth(ch[1]) - 3;
+            Font currentFont = g2.getFont();
+            FontMetrics fontMetrics = g2.getFontMetrics();
+            int chw0 = Math.round(fontMetrics.charWidth(ch[0]) * 2f/3);
+            int chw1 = Math.round(fontMetrics.charWidth(ch[1]) * 2f/3);
+            Font font = currentFont.deriveFont(AffineTransform.getScaleInstance(2f/3, 1.0));
+            g2.setFont(font);
             chw = chw0 + chw1;
             x += ((PageRenderer.COLUMN_WIDTH / 2) - chw) / 2;
-            g2.drawChars(ch, 0, 1, x - 1, y);
-            g2.drawChars(ch, 1, 1, x + chw0 - 1, y);
+            g2.drawChars(ch, 0, 1, x + 1, y);
+            g2.drawChars(ch, 1, 1, x + chw0, y);
 
-            //to add a little more padding to the 'utou' for double characters
-            chw += 2;
+            g2.setFont(currentFont);
+
         }
 
         if (n.getAccidental() == Accidental.FLAT) {
