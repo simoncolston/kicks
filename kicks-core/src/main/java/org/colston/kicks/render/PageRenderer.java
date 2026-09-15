@@ -6,6 +6,7 @@ import org.colston.kicks.document.Locatable;
 import org.colston.kicks.document.LocatableRange;
 import org.colston.kicks.document.Lyric;
 import org.colston.kicks.document.Note;
+import org.colston.kicks.document.Phrase;
 import org.colston.kicks.document.Repeat;
 import org.colston.kicks.document.RepeatStyle;
 import org.colston.kicks.document.SimpleLocatable;
@@ -159,12 +160,16 @@ public class PageRenderer {
         return this;
     }
 
-    public int getCanvasWidth(int pageIndex) {
-        setCanvasWidth(pageIndex);
-        return canvasWidth + 2 * BORDER_WIDTH;
+    public int getTotalCanvasWidth(int pageIndex) {
+        return getCanvasWidth(pageIndex) + 2 * BORDER_WIDTH;
     }
 
-    private void setCanvasWidth(int pageIndex) {
+    public int getCanvasWidth(int pageIndex) {
+        calculateAndSetCanvasWidth(pageIndex);
+        return canvasWidth;
+    }
+
+    private void calculateAndSetCanvasWidth(int pageIndex) {
         if (minimumCanvas) {
             LocatableRange pageRange = calculatePageRange(pageIndex);
             int highestIndex = Math.min(
@@ -188,7 +193,7 @@ public class PageRenderer {
 
     public void doPaint(Graphics2D g2, int pageIndex) {
 
-        setCanvasWidth(pageIndex);
+        calculateAndSetCanvasWidth(pageIndex);
         this.pageRange = calculatePageRange(pageIndex);
 
         // draw properties
@@ -293,6 +298,7 @@ public class PageRenderer {
         }
 
         // draw the repeats
+        g2.setStroke(stroke);
         for (Repeat r : doc.getRepeats(pageRange)) {
             cursorStartHighlight(g2, r, true, null);
             drawRepeat(g2, r);
@@ -314,6 +320,27 @@ public class PageRenderer {
 
                 }
             }
+        }
+
+        // draw the phrase markers
+        g2.setStroke(stroke);
+        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        for (Phrase phrase : doc.getPhrases(pageRange)) {
+            cursorStartHighlight(g2, phrase, true, null);
+            drawPhrase(g2, phrase);
+            cursorEndHighlight(g2, null);
+        }
+        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
+    }
+
+    private void drawPhrase(Graphics2D g2, Phrase phrase) {
+        int x = x(phrase.getIndex()) + (COLUMN_WIDTH / 2) + 1;
+        int y = y(phrase.getIndex(), phrase.getOffset()) + 1;
+        int dimension = 6;
+        if (phrase.isStart()) {
+            g2.drawOval(x - dimension, y - dimension / 2, dimension, dimension);
+        } else {
+            g2.drawRect(x - dimension, y - dimension / 2, dimension, dimension);
         }
     }
 
@@ -457,7 +484,6 @@ public class PageRenderer {
     }
 
     private void drawRepeat(Graphics2D g2, Repeat repeat) {
-        g2.setStroke(stroke);
         int x = x(repeat.getIndex()) + (COLUMN_WIDTH / 2);
         int y = y(repeat.getIndex(), repeat.getOffset());
         int x1 = x + (COLUMN_WIDTH / 8) * 3;

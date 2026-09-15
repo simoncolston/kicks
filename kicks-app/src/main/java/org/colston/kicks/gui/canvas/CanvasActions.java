@@ -282,6 +282,12 @@ final class CanvasActions {
         map.put("canvas.repeatend", new CanvasAction((c, e) -> c.addRepeat(true),
                 new KeyStroke[]{KeyStroke.getKeyStroke(KeyEvent.VK_CLOSE_BRACKET, 0)},
                 "canvas.repeatend"));
+        map.put("canvas.phrasestart", new CanvasAction((c, e) -> c.addPhrase(true),
+                new KeyStroke[]{KeyStroke.getKeyStroke(KeyEvent.VK_F5, 0)},
+                "canvas.phrasestart"));
+        map.put("canvas.phraseend", new CanvasAction((c, e) -> c.addPhrase(false),
+                new KeyStroke[]{KeyStroke.getKeyStroke(KeyEvent.VK_F6, 0)},
+                "canvas.phraseend"));
 
         // Lyric text input specialised actions
         map.put("canvastext.enter", new CanvasAction((c, e) -> c.addLyric(),

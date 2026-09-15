@@ -57,6 +57,14 @@
                     </xs:complexType>
                 </xs:element>
 
+                <xs:element name="phrases" minOccurs="0">
+                    <xs:complexType>
+                        <xs:sequence minOccurs="0" maxOccurs="unbounded">
+                            <xs:element name="phrase" type="phrase"/>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+
             </xs:sequence>
 
             <!-- Schema version number -->
@@ -104,6 +112,13 @@
         <xs:sequence>
             <xs:element name="back" type="xs:boolean"/>
             <xs:element name="style" type="repeatStyle" minOccurs="0" default="TRIANGLE_FILLED"/>
+        </xs:sequence>
+        <xs:attributeGroup ref="locatable"/>
+    </xs:complexType>
+
+    <xs:complexType name="phrase">
+        <xs:sequence>
+            <xs:element name="start" type="xs:boolean"/>
         </xs:sequence>
         <xs:attributeGroup ref="locatable"/>
     </xs:complexType>

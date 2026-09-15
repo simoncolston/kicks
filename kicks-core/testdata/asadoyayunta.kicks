@@ -298,4 +298,12 @@
             <value>ヨ</value>
         </lyric>
     </lyrics>
+    <phrases>
+        <phrase index="48" offset="6">
+            <start>true</start>
+        </phrase>
+        <phrase index="106" offset="12">
+            <start>false</start>
+        </phrase>
+    </phrases>
 </kunkunshi>

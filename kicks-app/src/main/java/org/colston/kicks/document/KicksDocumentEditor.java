@@ -53,6 +53,11 @@ public class KicksDocumentEditor {
             listIndex = -listIndex - 1;
             doc.getLyrics().addAll(listIndex, document.getLyrics());
         }
+        if (!document.getPhrases().isEmpty()) {
+            int listIndex = Collections.binarySearch(doc.getPhrases(), document.getPhrases().getFirst(), comparator);
+            listIndex = -listIndex - 1;
+            doc.getPhrases().addAll(listIndex, document.getPhrases());
+        }
     }
 
     private void remove(KicksDocument document) {
@@ -60,6 +65,7 @@ public class KicksDocumentEditor {
         doc.getNotes().removeAll(document.getNotes());
         doc.getRepeats().removeAll(document.getRepeats());
         doc.getLyrics().removeAll(document.getLyrics());
+        doc.getPhrases().removeAll(document.getPhrases());
     }
 
     public void setTitle(String newTitle) {
@@ -67,15 +73,6 @@ public class KicksDocumentEditor {
         UndoableEdit edit = new SetEdit<>(song, song.getTitle(), newTitle, Song::setTitle,
                 Messages.get(getClass(), "undo.set.title"));
         song.setTitle(newTitle);
-        fireUndoableEditHappened(new UndoableEditEvent(this, edit));
-        fireDocumentUpdated();
-    }
-
-    public void setTuning(Tuning tuning) {
-        Song song = doc.getSongs().getFirst();
-        UndoableEdit edit = new SetEdit<>(song, song.getTuning(), tuning, Song::setTuning,
-                Messages.get(getClass(), "undo.set.tuning"));
-        song.setTuning(tuning);
         fireUndoableEditHappened(new UndoableEditEvent(this, edit));
         fireDocumentUpdated();
     }
@@ -286,6 +283,38 @@ public class KicksDocumentEditor {
         }
     }
 
+    public void addPhrase(Phrase phrase) {
+        List<Phrase> phrases = doc.getPhrases();
+        UndoableEdit edit;
+        int listIndex = Collections.binarySearch(phrases, phrase, comparator);
+        if (listIndex < 0) {
+            listIndex = -listIndex - 1;
+            phrases.add(listIndex, phrase);
+            edit = new AddEdit<>(phrase.getIndex(), phrase.getOffset(), phrases, listIndex,
+                    Messages.get(getClass(), "undo.add.phrase"));
+        } else {
+            Phrase p = phrases.set(listIndex, phrase);
+            edit = new ReplaceEdit<>(p.getIndex(), p.getOffset(), phrases, listIndex, p,
+                    Messages.get(getClass(), "undo.replace.phrase"));
+        }
+        fireUndoableEditHappened(new UndoableEditEvent(this, edit));
+        fireDocumentUpdated();
+    }
+
+    public void removePhrase(int index, int offset) {
+        List<Phrase> phrases = doc.getPhrases();
+        key.index = index;
+        key.offset = offset;
+        int listIndex = Collections.binarySearch(phrases, key, comparator);
+        if (listIndex >= 0) {
+            Phrase p = phrases.remove(listIndex);
+            UndoableEdit edit = new RemoveEdit<>(index, offset, phrases, listIndex, p,
+                    Messages.get(getClass(), "undo.remove.phrase"));
+            fireUndoableEditHappened(new UndoableEditEvent(this, edit));
+            fireDocumentUpdated();
+        }
+    }
+
     public void addSong(Song song, int cursorIndex, int cursorOffset) {
         List<Song> songs = doc.getSongs();
         UndoableEdit edit;
@@ -329,13 +358,15 @@ public class KicksDocumentEditor {
         List<Note> notes = retrieveFromList(doc.getNotes(), range, false);
         List<Repeat> repeats = retrieveFromList(doc.getRepeats(), range, false);
         List<Lyric> lyrics = retrieveFromList(doc.getLyrics(), range, false);
-        if (notes.isEmpty() && repeats.isEmpty() && lyrics.isEmpty()) {
+        List<Phrase> phrases = retrieveFromList(doc.getPhrases(), range, false);
+        if (notes.isEmpty() && repeats.isEmpty() && lyrics.isEmpty() && phrases.isEmpty()) {
             return null;
         }
         KicksDocument kicksDoc = new KicksDocument();
         kicksDoc.getNotes().addAll(notes);
         kicksDoc.getRepeats().addAll(repeats);
         kicksDoc.getLyrics().addAll(lyrics);
+        kicksDoc.getPhrases().addAll(phrases);
         return kicksDoc;
     }
 
@@ -345,9 +376,11 @@ public class KicksDocumentEditor {
         Locatable lowest = LocatableUtils.findLowest(null, doc.getNotes());
         lowest = LocatableUtils.findLowest(lowest, doc.getRepeats());
         lowest = LocatableUtils.findLowest(lowest, doc.getLyrics());
+        lowest = LocatableUtils.findLowest(lowest, doc.getPhrases());
         Locatable highest = LocatableUtils.findHighest(null, doc.getNotes());
         highest = LocatableUtils.findHighest(highest, doc.getRepeats());
         highest = LocatableUtils.findHighest(highest, doc.getLyrics());
+        highest = LocatableUtils.findHighest(highest, doc.getPhrases());
         KicksDocument removed = removeRange(new SimpleLocatableRange(lowest.getIndex(), lowest.getOffset(), highest.getIndex(), highest.getOffset()));
         add(doc);
         UndoableEdit edit = new ReplaceDocumentEdit(cursorIndex, cursorOffset, doc, removed,
@@ -361,11 +394,13 @@ public class KicksDocumentEditor {
         Locatable lowest = LocatableUtils.findLowest(null, doc.getNotes());
         lowest = LocatableUtils.findLowest(lowest, doc.getRepeats());
         lowest = LocatableUtils.findLowest(lowest, doc.getLyrics());
+        lowest = LocatableUtils.findLowest(lowest, doc.getPhrases());
         int indexDelta = index - lowest.getIndex();
         int offsetDelta = offset - lowest.getOffset();
         moveLocatables(indexDelta, offsetDelta, doc.getNotes());
         moveLocatables(indexDelta, offsetDelta, doc.getRepeats());
         moveLocatables(indexDelta, offsetDelta, doc.getLyrics());
+        moveLocatables(indexDelta, offsetDelta, doc.getPhrases());
     }
 
     private <T extends Locatable> void moveLocatables(int indexDelta, int offsetDelta, List<T> locatables) {
@@ -389,13 +424,16 @@ public class KicksDocumentEditor {
         List<Note> removedNotes = retrieveFromList(doc.getNotes(), range, true);
         List<Repeat> removedRepeats = retrieveFromList(doc.getRepeats(), range, true);
         List<Lyric> removedLyrics = retrieveFromList(doc.getLyrics(), range, true);
+        List<Phrase> removedPhrases = retrieveFromList(doc.getPhrases(), range, true);
         if (!removedNotes.isEmpty()
                 || !removedRepeats.isEmpty()
-                || !removedLyrics.isEmpty()) {
+                || !removedLyrics.isEmpty()
+                || !removedPhrases.isEmpty()) {
             KicksDocument kicksDoc = new KicksDocument();
             kicksDoc.getNotes().addAll(removedNotes);
             kicksDoc.getRepeats().addAll(removedRepeats);
             kicksDoc.getLyrics().addAll(removedLyrics);
+            kicksDoc.getPhrases().addAll(removedPhrases);
             return kicksDoc;
         }
         return null;

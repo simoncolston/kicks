@@ -163,6 +163,16 @@ The position of the syllable can be controlled in the same way as for notes.  E.
 The syllables are written in romaji, which is converted to katakana.
 Unknown values remain unchanged.
 
+### Singing start and stop (Phrases)
+
+Phrases
+: `(` = start phrase, `)` = end phrase
+
+A start phrase is defaulted to a position relative to the syllable that follows
+and an end phrase is positioned relative to the syllable that precedes it.
+The absolute position can be controlled in the same way as for notes. E.g. `)<3>`
+
+
 ## Comments
 
 Comments are a single line that starts with `%`.
@@ -181,7 +191,7 @@ K:honchoshi
 20 10.20 21 10 21 22.21^ 10 30 10 11 20 22 21 12 20 00 ]
 
 20 10.20 21 10 22 30 22 10.20 21 10 20 10.20 21 22 30 10 30 31 30 10
-sa * ki * mi ha no na ka no i ba ra no ha * na * ka
+( sa * ki * mi ha no na ka no i ba ra no ha * na * ka
 
 30 10 31 10 31 10 30
 sa * yu i<10> * yu i<10>
@@ -190,7 +200,7 @@ sa * yu i<10> * yu i<10>
 ku re te ka e re ba ya re ho ni hi ki to me ru
 
 20 10.20 21 10 22 21 10 30 10s 11s 20 22 21 12 20 10 ]
-ma ta ha * ri nu chi n da ra ka nu sha ma yo
+ma ta ha * ri nu chi n da ra ka nu sha ma yo )
 ```
 
 2. Note Format Kanji
@@ -206,7 +216,7 @@ I:note-format kanji
 四　合.四　上　合　上　中.上^　合　工　合　乙　四　中　上　老　四　０　]
 
 四　合.四　上　合　中　工　中　合.四　上　合　四　合.四　上　中　工　合　工　五　工　合
-sa *     ki  *  mi ha  no na    ka no i  ba     ra no  ha *  na *   ka
+( sa *     ki  *  mi ha  no na    ka no i  ba     ra no  ha *  na *   ka
 
 工　合　五　　　　合　五　　　　合　工
 sa *  yu i<10> *  yu i<10>
@@ -215,6 +225,6 @@ sa *  yu i<10> *  yu i<10>
 ku re te ka e     re ba ya re    ho ni hi ki to me ru
 
 四　合.四　上　合　中　上　合　　工　合　乙　四　中　上　　老　四　合　]
-ma ta    ha *  ri nu chi n  da ra ka nu sha ma yo
+ma ta    ha *  ri nu chi n  da ra ka nu sha ma yo )
 
 ```

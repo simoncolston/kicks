@@ -47,8 +47,6 @@ public interface Canvas {
 
     void setNoteSizeSmall();
 
-    void setFinger(int finger);
-
     void editSongHeader();
 
     void addSongHeader();

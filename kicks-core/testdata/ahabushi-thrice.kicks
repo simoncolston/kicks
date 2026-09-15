@@ -388,4 +388,12 @@
             <value>ヤ</value>
         </lyric>
     </lyrics>
+    <phrases>
+        <phrase index="21" offset="6">
+            <start>true</start>
+        </phrase>
+        <phrase index="54" offset="12">
+            <start>false</start>
+        </phrase>
+    </phrases>
 </kunkunshi>

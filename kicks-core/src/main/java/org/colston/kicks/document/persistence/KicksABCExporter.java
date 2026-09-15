@@ -30,13 +30,13 @@ public class KicksABCExporter {
             writeHeader(writer, song);
             LocatableRange songRange = calcSongRange(doc, songIndex);
             writeNotesAndRepeats(doc, writer, songRange);
-            writeLyrics(doc, writer, songRange);
+            writeLyricsAndPhrases(doc, writer, songRange);
 
             writer.newLine();
         }
     }
 
-    private void writeLyrics(KicksDocument doc, BufferedWriter writer, LocatableRange songRange) throws IOException {
+    private void writeLyricsAndPhrases(KicksDocument doc, BufferedWriter writer, LocatableRange songRange) throws IOException {
         // initial space from first note to first lyric, probably sanshin intro
         Locatable prev = null;
         Iterator<Note> iterator = doc.getNotes(songRange).iterator();
@@ -44,7 +44,18 @@ public class KicksABCExporter {
             prev = iterator.next();
             prev = new SimpleLocatable(prev.getIndex() -1 , prev.getOffset());
         }
+        List<Phrase> songPhrases = extractSongPhrases(doc, songRange);
+        int phraseIndex = songPhrases.isEmpty() ? -1 : 0;
+
         for (Lyric lyric : doc.getLyrics(songRange)) {
+            Phrase phrase = getFromList(songPhrases, phraseIndex);
+            while (phrase != null && lyric.isGreaterThan(phrase)) {
+                // while loop to handle consecutive repeats
+                writer.write(phrase.isStart() ? " (" : " )");
+                phraseIndex = calcIndex(songPhrases, phraseIndex);
+                phrase = getFromList(songPhrases, phraseIndex);
+            }
+
             if (prev != null) {
                 for (int i = prev.getIndex(); i < lyric.getIndex() - 1; i++) {
                     writer.write(" *");
@@ -69,6 +80,12 @@ public class KicksABCExporter {
             writer.write(absoluteOffset);
             prev = lyric;
         }
+        // there might be a phrase after the notes
+        Phrase phrase = getFromList(songPhrases, phraseIndex);
+        if (phrase != null) {
+            writer.write(phrase.isStart() ? " (" : " )");
+        }
+
         writer.newLine();
     }
 
@@ -78,7 +95,7 @@ public class KicksABCExporter {
 
         boolean chordStarted = false;
         for (Note note : doc.getNotes(songRange)) {
-            Repeat repeat = getRepeat(songRepeats, repeatIndex);
+            Repeat repeat = getFromList(songRepeats, repeatIndex);
             while (repeat != null && note.isGreaterThan(repeat)) {
                 // while loop to handle consecutive repeats
                 writer.write(repeat.isBack() ? " ]" : " [");
@@ -87,8 +104,8 @@ public class KicksABCExporter {
                     case CIRCLE_FILLED ->  writer.write("C");
                     case CIRCLE_OUTLINE -> writer.write("c");
                 }
-                repeatIndex = calcRepeatIndex(songRepeats, repeatIndex);
-                repeat = getRepeat(songRepeats, repeatIndex);
+                repeatIndex = calcIndex(songRepeats, repeatIndex);
+                repeat = getFromList(songRepeats, repeatIndex);
             }
             if (note.isChord()) {
                 if (!chordStarted) {
@@ -141,7 +158,7 @@ public class KicksABCExporter {
             }
         }
         // there might be a repeat after the notes
-        Repeat repeat = getRepeat(songRepeats, repeatIndex);
+        Repeat repeat = getFromList(songRepeats, repeatIndex);
         if (repeat != null) {
             writer.write(repeat.isBack() ? " ]" : " [");
         }
@@ -168,6 +185,12 @@ public class KicksABCExporter {
         writer.newLine();
     }
 
+    private List<Phrase> extractSongPhrases(KicksDocument doc, LocatableRange songRange) {
+        List<Phrase> repeats = new ArrayList<>();
+        doc.getPhrases(songRange).forEach(repeats::add);
+        return repeats;
+    }
+
     private List<Repeat> extractSongRepeats(KicksDocument doc, LocatableRange songRange) {
         List<Repeat> repeats = new ArrayList<>();
         doc.getRepeats(songRange).forEach(repeats::add);
@@ -187,16 +210,16 @@ public class KicksABCExporter {
         return lr;
     }
 
-    private Repeat getRepeat(List<Repeat> repeats, int repeatIndex) {
-        return repeatIndex >=0 ? repeats.get(repeatIndex) : null;
+    private <T> T getFromList(List<T> list, int index) {
+        return index >=0 ? list.get(index) : null;
     }
 
-    private int calcRepeatIndex(List<Repeat> repeats, int next) {
+    private <T> int calcIndex(List<T> list, int next) {
         if (next < 0) {
             return -1;
         }
         next = next + 1;
-        return next == repeats.size() ? -1 : next;
+        return next == list.size() ? -1 : next;
     }
 
     private String convertTuning(Tuning tuning) {

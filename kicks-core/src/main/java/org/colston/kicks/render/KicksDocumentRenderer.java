@@ -34,7 +34,7 @@ public class KicksDocumentRenderer implements PDFBoxDocumentRenderer {
 
     @Override
     public float getWidth(int pageIndex) {
-        return pageRenderer.getCanvasWidth(pageIndex);
+        return pageRenderer.getTotalCanvasWidth(pageIndex);
     }
 
     @Override

@@ -1,6 +1,17 @@
 package org.colston.kicks.document.persistence;
 
-import org.colston.kicks.document.*;
+import org.colston.kicks.document.Accidental;
+import org.colston.kicks.document.KicksDocument;
+import org.colston.kicks.document.Locatable;
+import org.colston.kicks.document.Lyric;
+import org.colston.kicks.document.Note;
+import org.colston.kicks.document.Phrase;
+import org.colston.kicks.document.Repeat;
+import org.colston.kicks.document.RepeatStyle;
+import org.colston.kicks.document.SimpleLocatable;
+import org.colston.kicks.document.Song;
+import org.colston.kicks.document.Tuning;
+import org.colston.kicks.document.Utou;
 import org.colston.utils.KanaConverter;
 
 import java.io.BufferedReader;
@@ -17,17 +28,19 @@ public class KicksABCImporter {
 
     // state
     // index and offset within the kicks document being generated
-    private int docIndex = 0;
-    private int docOffset = 0;
+    private final SimpleLocatable loc = new SimpleLocatable(0, 0);
     // indexes used to align the lyrics with the notes in the previous line
     private int noteLineStartDocIndex;  // docIndex when starting a note line from the abc file
     private int noteLineEndDocIndex;    // docIndex when ending a note line from the abc file
+    private int noteLineEndDocOffset;
     // validation that lyric line follows note line
     private boolean previousLineWasNote = true;
     // When not null indicates we're parsing a chord.  Chord notes are stored in this list.
     private List<Note> chordNotes = null;
     // Not null indicates that the previous object was a repeat start that needs to be added with the next note
     private Repeat repeatStart = null;
+    // Not null indicates that the previous object was a phrase start that needs to be added with the next lyric
+    private Phrase phraseStart = null;
     // Indicates we are processing a song header
     private boolean header;
     // Index of the song we are currently parsing
@@ -43,36 +56,38 @@ public class KicksABCImporter {
     private int calcIndex(int o) {
         // if we are currently processing a chord we don't move the index on
         if (chordNotes != null) {
-            return docIndex;
+            return loc.getIndex();
         }
-        if (docOffset != 0 && o <= docOffset) {
+        if (loc.getOffset() != 0 && o <= loc.getOffset()) {
             // must have moved on to the next cell
-            docIndex++;
+            loc.setIndex(loc.getIndex() + 1);
         }
-        docOffset = o;
-        return docIndex;
+        loc.setOffset(o);
+        return loc.getIndex();
     }
 
     private void incrementIndex() {
-        docIndex++;
-        docOffset = 0;
+        loc.setIndex(loc.getIndex() + 1);
+        loc.setOffset(0);
     }
 
     private void startNotesSetIndex() {
-        noteLineStartDocIndex = docIndex + 1;
+        noteLineStartDocIndex = loc.getIndex() + 1;
     }
 
     private void endNotesSetIndex() {
-        noteLineEndDocIndex = docIndex;
+        noteLineEndDocIndex = loc.getIndex();
+        noteLineEndDocOffset = loc.getOffset();
     }
 
     private void startLyricsSetIndex() {
-        docIndex = noteLineStartDocIndex;
-        docOffset = 0;
+        loc.setIndex(noteLineStartDocIndex);
+        loc.setOffset(0);
     }
 
     private void endLyricsSetIndex() {
-        docIndex = noteLineEndDocIndex;
+        loc.setIndex(noteLineEndDocIndex);
+        loc.setOffset(noteLineEndDocOffset);
     }
 
     private int calcOffset(StringBuilder s, int defaultValue) throws Exception {
@@ -127,7 +142,7 @@ public class KicksABCImporter {
                 || (noteFormatKanji && KicksABCResources.isNoteFormatKanjiChar(ch))) {
             parseNotes(line);
             previousLineWasNote = true;
-        } else if (Character.isLetter(ch) || ch == '*') {
+        } else if (Character.isLetter(ch) || ch == '*' || ch == '(' || ch == ')') {
             if (!previousLineWasNote) {
                 raiseException("Lyric line must be preceded by note line: " + line);
             }
@@ -140,9 +155,9 @@ public class KicksABCImporter {
 
     private void parseLyrics(String line) throws Exception {
         startLyricsSetIndex();
-        if (doc.getSongs().getLast().getIndex() == docIndex - doc.getProperties().getLayout().getCellsPerColumn() - 1) {
+        if (doc.getSongs().getLast().getIndex() == loc.getIndex() - doc.getProperties().getLayout().getCellsPerColumn() - 1) {
             // if it is the first lyric after a song title docIndex needs tweaking
-            docIndex--;
+            loc.setIndex(loc.getIndex() - 1);
         }
         String[] abcLyrics = line.split("\\p{javaWhitespace}+");
         for (String abcLyric : abcLyrics) {
@@ -168,14 +183,69 @@ public class KicksABCImporter {
             // these two methods do the calculation of docIndex as if a lyric was imported
             int o = calcOffset(abcLyric, 6);
             int i = calcIndex(o);
+        } else if (ch == '(') {
+            phraseStart(abcLyric);
+        } else if (ch == ')') {
+            phraseEnd(abcLyric);
         } else  {
             int o = calcOffset(abcLyric, 6);
             int i = calcIndex(o);
             String syllable = KanaConverter.toKatakana(abcLyric.toString());
             Lyric lyric = new Lyric(i, o, syllable);
             doc.getLyrics().add(lyric);
+
+            if (phraseStart != null) {
+                Phrase phrase = new Phrase(i, o, true);
+                doc.getPhrases().add(phrase);
+                phraseStart = null;
+            }
         }
     }
+
+    private void phraseEnd(StringBuilder phraseString) throws Exception {
+        int o;
+        int i;
+        Locatable lastLyric = doc.getLyrics().getLast();
+        // TODO: check if lyric is same position as current position - if not there has been a 'rest' inserted
+        if (phraseString.chars().anyMatch(c -> c == '<') || !loc.isEqualTo(lastLyric)) {
+            // absolute positioning, or relative to a 'rest', or both
+            o = calcOffset(phraseString, 7);
+            i = calcIndex(o);
+        } else {
+            SimpleLocatable l = new SimpleLocatable(lastLyric);
+            l.move(0, 6);
+            if (l.getIndex() == lastLyric.getIndex() + 1 && l.getIndex() % doc.getProperties().getLayout().getCellsPerColumn() == 0) {
+                // moved over a column boundary so set the phrase end at the bottom of the previous column
+                i = lastLyric.getIndex();
+                o = Locatable.CELL_TICKS;
+            } else {
+                // move the phrase to a nice distance after the last lyric
+                i = l.getIndex();
+                o = l.getOffset();
+            }
+        }
+        Phrase phrase = new Phrase(i, o, false);
+        doc.getPhrases().add(phrase);
+    }
+
+    private void phraseStart(StringBuilder phraseString) throws Exception {
+        int i = 0;
+        int o = 0;
+        boolean absolute = phraseString.chars().anyMatch(c -> c == '<');
+        if (absolute) {
+            o = calcOffset(phraseString, 2);
+            i = calcIndex(o);
+        }
+        Phrase phrase = new Phrase(i, o, true);
+        if (absolute) {
+            // already fully defined so add it
+            doc.getPhrases().add(phrase);
+        } else {
+            // store the phrase so that it can be positioned relative to the next syllable
+            phraseStart = phrase;
+        }
+    }
+
 
     private void parseNotes(String line) throws Exception {
         startNotesSetIndex();
@@ -331,7 +401,7 @@ public class KicksABCImporter {
 
     private void chordStart() {
         chordNotes = new ArrayList<>();
-        if (docOffset > 0) {
+        if (loc.getOffset() > 0) {
             // only increment if we are not at the start of an empty cell
             incrementIndex();
         }
@@ -445,10 +515,10 @@ public class KicksABCImporter {
             case 'T':
                 songIndex++;
                 int cellsPerColumn = doc.getProperties().getLayout().getCellsPerColumn();
-                int cellInCol = docIndex % cellsPerColumn;
-                int i = cellInCol == 0 ? docIndex : docIndex + cellsPerColumn - cellInCol;
-                docIndex = i + doc.getProperties().getLayout().getCellsPerColumn();
-                docOffset = 0;
+                int cellInCol = loc.getIndex() % cellsPerColumn;
+                int i = cellInCol == 0 ? loc.getIndex() : loc.getIndex() + cellsPerColumn - cellInCol;
+                loc.setIndex(i + doc.getProperties().getLayout().getCellsPerColumn());
+                loc.setOffset(0);
                 Song song = new Song(i);
                 song.setTitle(line.substring(2));
                 doc.getSongs().add(song);

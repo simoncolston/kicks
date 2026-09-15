@@ -27,7 +27,8 @@ import java.util.Optional;
                         "notes",
                         "breaks",
                         "repeats",
-                        "lyrics"
+                        "lyrics",
+                        "phrases"
                 })
 public class KicksDocument {
 
@@ -58,6 +59,10 @@ public class KicksDocument {
     @XmlElementWrapper(name = "lyrics")
     @XmlElement(name = "lyric")
     private final List<Lyric> lyrics = new ArrayList<>();
+
+    @XmlElementWrapper(name = "phrases")
+    @XmlElement(name = "phrase")
+    private final List<Phrase> phrases = new ArrayList<>();
 
     public KicksDocument() {
     }
@@ -108,7 +113,7 @@ public class KicksDocument {
     }
 
     public List<List<? extends Locatable>> getAllLocatables() {
-        return List.of(notes, repeats, lyrics);
+        return List.of(notes, repeats, lyrics,  phrases);
     }
 
     public List<Note> getNotes() {
@@ -153,8 +158,12 @@ public class KicksDocument {
         return off >= 0 ? lyrics.get(off) : null;
     }
 
-    public String getTranscription() {
-        return songs.isEmpty() ? null : songs.getFirst().getTranscription();
+    public List<Phrase> getPhrases() {
+        return phrases;
+    }
+
+    public Iterable<Phrase> getPhrases(LocatableRange range) {
+        return () -> new LocatableIterator<>(phrases, range);
     }
 
     public String getDocumentVersion() {
@@ -170,6 +179,7 @@ public class KicksDocument {
         result = prime * result + notes.hashCode();
         result = prime * result + properties.hashCode();
         result = prime * result + repeats.hashCode();
+        result = prime * result + phrases.hashCode();
         result = prime * result + songs.hashCode();
         result = prime * result + version;
         return result;
@@ -193,6 +203,8 @@ public class KicksDocument {
         if (!properties.equals(other.properties))
             return false;
         if (!repeats.equals(other.repeats))
+            return false;
+        if (!phrases.equals(other.phrases))
             return false;
         return songs.equals(other.songs);
     }

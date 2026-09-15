@@ -17,6 +17,7 @@ import org.colston.kicks.document.KicksDocumentListener;
 import org.colston.kicks.document.Locatable;
 import org.colston.kicks.document.Lyric;
 import org.colston.kicks.document.Note;
+import org.colston.kicks.document.Phrase;
 import org.colston.kicks.document.Repeat;
 import org.colston.kicks.document.RepeatStyle;
 import org.colston.kicks.document.Song;
@@ -318,6 +319,12 @@ class CanvasControl implements Canvas {
         canvasPages.handleRepeat(popup);
     }
 
+
+    public void addPhrase(boolean start) {
+        Phrase p = new Phrase(cursorModel.getCursorIndex(), cursorModel.getCursorOffset(), start);
+        model.getEditor().addPhrase(p);
+    }
+
     void setFlat() {
         model.getEditor().setFlat(cursorModel.getCursorIndex(), cursorModel.getCursorOffset());
     }
@@ -392,6 +399,7 @@ class CanvasControl implements Canvas {
         } else if (cursorModel.isCursorOnNote()) {
             model.getEditor().removeNote(cursorModel.getCursorIndex(), cursorModel.getCursorOffset());
             model.getEditor().removeRepeat(cursorModel.getCursorIndex(), cursorModel.getCursorOffset());
+            model.getEditor().removePhrase(cursorModel.getCursorIndex(), cursorModel.getCursorOffset());
         } else {
             model.getEditor().removeLyric(cursorModel.getCursorIndex(), cursorModel.getCursorOffset());
         }
@@ -407,7 +415,6 @@ class CanvasControl implements Canvas {
         model.getEditor().setNoteSize(cursorModel.getCursorIndex(), cursorModel.getCursorOffset(), true);
     }
 
-    @Override
     public void setFinger(int finger) {
         model.getEditor().setFinger(cursorModel.getCursorIndex(), cursorModel.getCursorOffset(), finger);
     }
